@@ -1,6 +1,6 @@
 import ComponentCard from "@/components/common/ComponentCard";
 import PageBreadcrumb from "@/components/common/PageBreadCrumb";
-import DataTableTwo from "@/components/tables/DataTables/TableTwo/DataTableTwo";
+import TableTareas from "@/components/tables/DataTables/TableTwo/TableTareas";
 
 import { Metadata } from "next";
 import React from "react";
@@ -22,13 +22,13 @@ export default async function DataTables({
     [key: string]: string | string[] | undefined;
   }>;
 }) {
-  const {status} = await params;
+  const { status } = await params;
   return (
     <div>
-      <PageBreadcrumb pageTitle="Tickets" />
+      <PageBreadcrumb pageTitle="Tareas" />
       <div className="space-y-5 sm:space-y-6">
-        <ComponentCard title={`Tickets - ${status}`}>
-          <DataTableTwo status/>
+        <ComponentCard title={`Tarea - ${status}`}>
+          <TableTareas />
         </ComponentCard>
       </div>
     </div>

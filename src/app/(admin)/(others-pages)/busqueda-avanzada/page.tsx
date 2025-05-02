@@ -1,9 +1,10 @@
-import React from 'react'
-
+import TableBusqueda from "@/components/tables/DataTables/TableTwo/TableBusqueda";
 const BusquedaAvanzada = () => {
   return (
-    <div>busqueda avanzada</div>
-  )
-}
+    <div>
+      <TableBusqueda />
+    </div>
+  );
+};
 
-export default BusquedaAvanzada
+export default BusquedaAvanzada;

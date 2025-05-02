@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import {
   Table,
   TableBody,
@@ -21,85 +21,32 @@ import { Tooltip } from "@/components/ui/tooltip/Tooltip";
 import Switch from "@/components/form/switch/Switch";
 import FormularioUsuarios from "@/components/form/example-form/FormularioUsuarios";
 import Button from "@/components/ui/button/Button";
-const tableRowData = [
-  {
-    nombre: "Josué Yahir Pérez Gómez",
-    correo: "fernando.sanchez3411@ipejal.gob.mx",
-    username: "edanga",
-    area: "Desarrollo",
-  },
-  {
-    resolutor: "Fernando Sanchez Plascencia",
-    nombre: "Fatima Sanchez Plascencia",
-    correo: "fernando.sanchez3411@ipejal.gob.mx",
-    username: "edanga",
-    area: "Desarrollo",
-  },
-  {
-    nombre: "Josué Yahir Pérez Gómez",
-    correo: "fernando.sanchez3411@ipejal.gob.mx",
-    username: "edanga",
-    area: "Desarrollo",
-  },
-  {
-    nombre: "Josué Yahir Pérez Gómez",
-    correo: "fernando.sanchez3411@ipejal.gob.mx",
-    username: "edanga",
-    area: "Desarrollo",
-  },
-  {
-    nombre: "Josué Yahir Pérez Gómez",
-    correo: "fernando.sanchez3411@ipejal.gob.mx",
-    username: "edanga",
-    area: "Desarrollo",
-  },
-  {
-    nombre: "Josué Yahir Pérez Gómez",
-    correo: "fernando.sanchez3411@ipejal.gob.mx",
-    username: "edanga",
-    area: "Desarrollo",
-  },
-  {
-    nombre: "Josué Yahir Pérez Gómez",
-    correo: "fernando.sanchez3411@ipejal.gob.mx",
-    username: "edanga",
-    area: "Desarrollo",
-  },
-  {
-    nombre: "Josué Yahir Pérez Gómez",
-    correo: "fernando.sanchez3411@ipejal.gob.mx",
-    username: "edanga",
-    area: "Desarrollo",
-  },
-  {
-    nombre: "Josué Yahir Pérez Gómez",
-    correo: "fernando.sanchez3411@ipejal.gob.mx",
-    username: "edanga",
-    area: "Desarrollo",
-  },
-  {
-    nombre: "Josué Yahir Pérez Gómez",
-    correo: "fernando.sanchez3411@ipejal.gob.mx",
-    username: "edanga",
-    area: "Desarrollo",
-  },
-  {
-    nombre: "Josué Yahir Pérez Gómez",
-    correo: "fernando.sanchez3411@ipejal.gob.mx",
-    username: "edanga",
-    area: "Desarrollo",
-  },
-];
-type SortKey = "nombre" | "correo" | "username" | "area";
+import { getUsers } from "@/services/userService";
+type SortKey = "Nombre" | "Correo" | "Username" | "Area";
 type SortOrder = "asc" | "desc";
+
+interface data {
+  Area: Array<{ _id: string; Area: string }>;
+  Nombre: string;
+  Correo: string;
+  Rol: object;
+  Tickets_resueltos: object;
+  Username: string;
+  _id: string;
+  isActive: boolean;
+}
 
 export default function TableUsuarios() {
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(5);
-  const [sortKey, setSortKey] = useState<SortKey>("nombre");
+  const [sortKey, setSortKey] = useState<SortKey>("Nombre");
   const [sortOrder, setSortOrder] = useState<SortOrder>("asc");
   const [searchTerm, setSearchTerm] = useState("");
   const { isOpen, openModal, closeModal } = useModal();
+  const [tableRowData, setTableRowData] = useState<Array<data>>([]);
+  useEffect(() => {
+    getUsers().then((res) => setTableRowData(res.data));
+  }, []);
   const {
     isOpen: isOpenEditarTicket,
     openModal: openModalEditarTicket,
@@ -118,7 +65,7 @@ export default function TableUsuarios() {
           ? String(a[sortKey]).localeCompare(String(b[sortKey]))
           : String(b[sortKey]).localeCompare(String(a[sortKey]));
       });
-  }, [sortKey, sortOrder, searchTerm]);
+  }, [sortKey, sortOrder, searchTerm, tableRowData]);
 
   const totalItems = filteredAndSortedData.length;
   const totalPages = Math.ceil(totalItems / itemsPerPage);
@@ -139,7 +86,7 @@ export default function TableUsuarios() {
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = Math.min(startIndex + itemsPerPage, totalItems);
   const currentData = filteredAndSortedData.slice(startIndex, endIndex);
-
+  console.log(currentData);
   return (
     <>
       <div className="flex gap-3 my-3">
@@ -246,10 +193,10 @@ export default function TableUsuarios() {
                     </div>
                   </TableCell>
                   {[
-                    { key: "nombre", label: "Nombre" },
-                    { key: "correo", label: "Correo" },
-                    { key: "username", label: "Username" },
-                    { key: "area", label: "Área" },
+                    { key: "Nombre", label: "Nombre" },
+                    { key: "Correo", label: "Correo" },
+                    { key: "Username", label: "Username" },
+                    { key: "Area", label: "Área" },
                   ].map(({ key, label }) => (
                     <TableCell
                       key={key}
@@ -322,21 +269,21 @@ export default function TableUsuarios() {
                       <div className="flex gap-3">
                         <div>
                           <p className="block font-medium text-gray-800 text-theme-sm dark:text-white/90">
-                            {item.nombre}
+                            {item.Nombre}
                           </p>
                         </div>
                       </div>
                     </TableCell>
                     {/* id */}
                     <TableCell className="px-4 py-4 font-normal text-gray-800 border border-gray-100 dark:border-white/[0.05] text-theme-sm dark:text-white/90 whitespace-nowrap">
-                      {item.correo}
+                      {item.Correo}
                     </TableCell>
                     {/* estado */}
                     <TableCell className="px-4 py-4 font-normal text-gray-800 border border-gray-100 dark:border-white/[0.05] text-theme-sm dark:text-white/90 whitespace-nowrap">
                       <div className="flex gap-3">
                         <div>
                           <p className="block font-medium text-gray-800 text-theme-sm dark:text-white/90">
-                            {item.username}
+                            {item.Username}
                           </p>
                         </div>
                       </div>
@@ -346,7 +293,7 @@ export default function TableUsuarios() {
                       <div className="flex gap-3">
                         <div>
                           <p className="block font-medium text-gray-800 text-theme-sm dark:text-white/90">
-                            {item.area}
+                            {item.Area?.map((a) => a.Area).join(", ")}
                           </p>
                         </div>
                       </div>

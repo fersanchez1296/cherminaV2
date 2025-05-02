@@ -5,19 +5,19 @@ import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { useSidebar } from "../context/SidebarContext";
 import {
-  BoxCubeIcon,
+  // BoxCubeIcon,
   CalenderIcon,
-  ChatIcon,
+  //ChatIcon,
   ChevronDownIcon,
   DocsIcon,
   GridIcon,
   HorizontaLDots,
-  ListIcon,
-  MailIcon,
-  PageIcon,
-  PieChartIcon,
-  PlugInIcon,
-  TableIcon,
+  // ListIcon,
+  //MailIcon,
+  // PageIcon,
+  // PieChartIcon,
+  // PlugInIcon,
+  // TableIcon,
   TaskIcon,
   UserCircleIcon,
   FileCirclePlusIcon,
@@ -32,6 +32,7 @@ type NavItem = {
   icon: React.ReactNode;
   path?: string;
   visible?: string[];
+  new?: boolean;
   subItems?: {
     name: string;
     path: string;
@@ -46,12 +47,14 @@ const navItems: NavItem[] = [
     icon: <UserCircleIcon />,
     name: "Perfil",
     path: "/profile",
+    new: true,
     visible: ["admin", "teacher", "student", "parent"],
   },
   {
     icon: <CalenderIcon />,
     name: "Calendario",
     path: "/calendar",
+    new: true,
     visible: ["admin", "teacher", "student", "parent"],
   },
   {
@@ -155,16 +158,16 @@ const navItems: NavItem[] = [
         path: "/tickets/cerrado",
         visible: ["admin", "teacher", "student", "parent"],
       },
-      {
-        name: "List",
-        path: "/task-list",
-        visible: ["admin", "teacher", "student", "parent"],
-      },
-      {
-        name: "Kanban",
-        path: "/task-kanban",
-        visible: ["admin", "teacher", "student", "parent"],
-      },
+      // {
+      //   name: "List",
+      //   path: "/task-list",
+      //   visible: ["admin", "teacher", "student", "parent"],
+      // },
+      // {
+      //   name: "Kanban",
+      //   path: "/task-kanban",
+      //   visible: ["admin", "teacher", "student", "parent"],
+      // },
     ],
     visible: ["admin", "teacher", "student", "parent"],
   },
@@ -172,11 +175,34 @@ const navItems: NavItem[] = [
     name: "Tareas",
     icon: <TaskIcon />,
     subItems: [
-      { name: "Nuevas", path: "/task-kanban" },
-      { name: "En curso", path: "/task-kanban" },
-      { name: "Resueltas", path: "/task-kanban" },
-      { name: "List", path: "/task-list" },
-      { name: "Kanban", path: "/task-kanban" },
+      {
+        name: "Nuevas",
+        path: "/tareas/nuevo",
+        new: true,
+        visible: ["admin", "teacher", "student", "parent"],
+      },
+      {
+        name: "En curso",
+        path: "/tareas/curso",
+        new: true,
+        visible: ["admin", "teacher", "student", "parent"],
+      },
+      {
+        name: "Resueltas",
+        path: "/tareas/resuelto",
+        new: true,
+        visible: ["admin", "teacher", "student", "parent"],
+      },
+      // {
+      //   name: "List",
+      //   path: "/task-list",
+      //   visible: ["admin", "teacher", "student", "parent"],
+      // },
+      // {
+      //   name: "Kanban",
+      //   path: "/task-kanban",
+      //   visible: ["admin", "teacher", "student", "parent"],
+      // },
     ],
     visible: ["admin", "teacher", "student", "parent"],
   },
@@ -192,326 +218,326 @@ const navItems: NavItem[] = [
     path: "/clientes",
     visible: ["admin", "teacher", "student", "parent"],
   },
-  {
-    name: "Forms",
-    icon: <ListIcon />,
-    subItems: [
-      {
-        name: "Form Elements",
-        path: "/form-elements",
-        pro: false,
-        visible: ["admin", "teacher", "student", "parent"],
-      },
-      {
-        name: "Form Layout",
-        path: "/form-layout",
-        pro: true,
-        visible: ["admin", "teacher", "student", "parent"],
-      },
-    ],
-    visible: ["admin", "teacher", "student", "parent"],
-  },
-  {
-    name: "Tables",
-    icon: <TableIcon />,
-    subItems: [
-      {
-        name: "Basic Tables",
-        path: "/basic-tables",
-        pro: false,
-        visible: ["admin", "teacher", "student", "parent"],
-      },
-      {
-        name: "Data Tables",
-        path: "/data-tables",
-        pro: true,
-        visible: ["admin", "teacher", "student", "parent"],
-      },
-    ],
-    visible: ["admin", "teacher", "student", "parent"],
-  },
-  {
-    name: "Pages",
-    icon: <PageIcon />,
-    subItems: [
-      {
-        name: "File Manager",
-        path: "/file-manager",
-        pro: true,
-        visible: ["admin", "teacher", "student", "parent"],
-      },
-      {
-        name: "Pricing Tables",
-        path: "/pricing-tables",
-        pro: true,
-        visible: ["admin", "teacher", "student", "parent"],
-      },
-      {
-        name: "Faqs",
-        path: "/faq",
-        pro: true,
-        visible: ["admin", "teacher", "student", "parent"],
-      },
-      {
-        name: "Blank Page",
-        path: "/blank",
-        pro: true,
-        visible: ["admin", "teacher", "student", "parent"],
-      },
-      {
-        name: "404 Error",
-        path: "/error-404",
-        pro: true,
-        visible: ["admin", "teacher", "student", "parent"],
-      },
-      {
-        name: "500 Error",
-        path: "/error-500",
-        pro: true,
-        visible: ["admin", "teacher", "student", "parent"],
-      },
-      {
-        name: "503 Error",
-        path: "/error-503",
-        pro: true,
-        visible: ["admin", "teacher", "student", "parent"],
-      },
-      {
-        name: "Coming Soon",
-        path: "/coming-soon",
-        pro: true,
-        visible: ["admin", "teacher", "student", "parent"],
-      },
-      {
-        name: "Maintenance",
-        path: "/maintenance",
-        pro: true,
-        visible: ["admin", "teacher", "student", "parent"],
-      },
-      {
-        name: "Success",
-        path: "/success",
-        pro: true,
-        visible: ["admin", "teacher", "student", "parent"],
-      },
-    ],
-    visible: ["admin", "teacher", "student", "parent"],
-  },
+  // {
+  //   name: "Forms",
+  //   icon: <ListIcon />,
+  //   subItems: [
+  //     {
+  //       name: "Form Elements",
+  //       path: "/form-elements",
+  //       pro: false,
+  //       visible: ["admin", "teacher", "student", "parent"],
+  //     },
+  //     {
+  //       name: "Form Layout",
+  //       path: "/form-layout",
+  //       pro: true,
+  //       visible: ["admin", "teacher", "student", "parent"],
+  //     },
+  //   ],
+  //   visible: ["admin", "teacher", "student", "parent"],
+  // },
+  // {
+  //   name: "Tables",
+  //   icon: <TableIcon />,
+  //   subItems: [
+  //     {
+  //       name: "Basic Tables",
+  //       path: "/basic-tables",
+  //       pro: false,
+  //       visible: ["admin", "teacher", "student", "parent"],
+  //     },
+  //     {
+  //       name: "Data Tables",
+  //       path: "/data-tables",
+  //       pro: true,
+  //       visible: ["admin", "teacher", "student", "parent"],
+  //     },
+  //   ],
+  //   visible: ["admin", "teacher", "student", "parent"],
+  // },
+  // {
+  //   name: "Pages",
+  //   icon: <PageIcon />,
+  //   subItems: [
+  //     {
+  //       name: "File Manager",
+  //       path: "/file-manager",
+  //       pro: true,
+  //       visible: ["admin", "teacher", "student", "parent"],
+  //     },
+  //     {
+  //       name: "Pricing Tables",
+  //       path: "/pricing-tables",
+  //       pro: true,
+  //       visible: ["admin", "teacher", "student", "parent"],
+  //     },
+  //     {
+  //       name: "Faqs",
+  //       path: "/faq",
+  //       pro: true,
+  //       visible: ["admin", "teacher", "student", "parent"],
+  //     },
+  //     {
+  //       name: "Blank Page",
+  //       path: "/blank",
+  //       pro: true,
+  //       visible: ["admin", "teacher", "student", "parent"],
+  //     },
+  //     {
+  //       name: "404 Error",
+  //       path: "/error-404",
+  //       pro: true,
+  //       visible: ["admin", "teacher", "student", "parent"],
+  //     },
+  //     {
+  //       name: "500 Error",
+  //       path: "/error-500",
+  //       pro: true,
+  //       visible: ["admin", "teacher", "student", "parent"],
+  //     },
+  //     {
+  //       name: "503 Error",
+  //       path: "/error-503",
+  //       pro: true,
+  //       visible: ["admin", "teacher", "student", "parent"],
+  //     },
+  //     {
+  //       name: "Coming Soon",
+  //       path: "/coming-soon",
+  //       pro: true,
+  //       visible: ["admin", "teacher", "student", "parent"],
+  //     },
+  //     {
+  //       name: "Maintenance",
+  //       path: "/maintenance",
+  //       pro: true,
+  //       visible: ["admin", "teacher", "student", "parent"],
+  //     },
+  //     {
+  //       name: "Success",
+  //       path: "/success",
+  //       pro: true,
+  //       visible: ["admin", "teacher", "student", "parent"],
+  //     },
+  //   ],
+  //   visible: ["admin", "teacher", "student", "parent"],
+  // },
 ];
 
-const othersItems: NavItem[] = [
-  {
-    icon: <PieChartIcon />,
-    name: "Charts",
-    subItems: [
-      {
-        name: "Line Chart",
-        path: "/line-chart",
-        pro: true,
-        visible: ["admin", "teacher", "student", "parent"],
-      },
-      {
-        name: "Bar Chart",
-        path: "/bar-chart",
-        pro: true,
-        visible: ["admin", "teacher", "student", "parent"],
-      },
-      {
-        name: "Pie Chart",
-        path: "/pie-chart",
-        pro: true,
-        visible: ["admin", "teacher", "student", "parent"],
-      },
-    ],
-    visible: ["admin", "teacher", "student", "parent"],
-  },
-  {
-    icon: <BoxCubeIcon />,
-    name: "UI Elements",
-    subItems: [
-      {
-        name: "Alerts",
-        path: "/alerts",
-        pro: true,
-        visible: ["admin", "teacher", "student", "parent"],
-      },
-      {
-        name: "Avatar",
-        path: "/avatars",
-        pro: true,
-        visible: ["admin", "teacher", "student", "parent"],
-      },
-      {
-        name: "Badge",
-        path: "/badge",
-        pro: true,
-        visible: ["admin", "teacher", "student", "parent"],
-      },
-      {
-        name: "Breadcrumb",
-        path: "/breadcrumb",
-        pro: true,
-        visible: ["admin", "teacher", "student", "parent"],
-      },
-      {
-        name: "Buttons",
-        path: "/buttons",
-        pro: true,
-        visible: ["admin", "teacher", "student", "parent"],
-      },
-      {
-        name: "Buttons Group",
-        path: "/buttons-group",
-        pro: true,
-        visible: ["admin", "teacher", "student", "parent"],
-      },
-      {
-        name: "Cards",
-        path: "/cards",
-        pro: true,
-        visible: ["admin", "teacher", "student", "parent"],
-      },
-      {
-        name: "Carousel",
-        path: "/carousel",
-        pro: true,
-        visible: ["admin", "teacher", "student", "parent"],
-      },
-      {
-        name: "Dropdowns",
-        path: "/dropdowns",
-        pro: true,
-        visible: ["admin", "teacher", "student", "parent"],
-      },
-      {
-        name: "Images",
-        path: "/images",
-        pro: true,
-        visible: ["admin", "teacher", "student", "parent"],
-      },
-      {
-        name: "Links",
-        path: "/links",
-        pro: true,
-        visible: ["admin", "teacher", "student", "parent"],
-      },
-      {
-        name: "List",
-        path: "/list",
-        pro: true,
-        visible: ["admin", "teacher", "student", "parent"],
-      },
-      {
-        name: "Modals",
-        path: "/modals",
-        pro: true,
-        visible: ["admin", "teacher", "student", "parent"],
-      },
-      {
-        name: "Notification",
-        path: "/notifications",
-        pro: true,
-        visible: ["admin", "teacher", "student", "parent"],
-      },
-      {
-        name: "Pagination",
-        path: "/pagination",
-        pro: true,
-        visible: ["admin", "teacher", "student", "parent"],
-      },
-      {
-        name: "Popovers",
-        path: "/popovers",
-        pro: true,
-        visible: ["admin", "teacher", "student", "parent"],
-      },
-      {
-        name: "Progressbar",
-        path: "/progress-bar",
-        pro: true,
-        visible: ["admin", "teacher", "student", "parent"],
-      },
-      {
-        name: "Ribbons",
-        path: "/ribbons",
-        pro: true,
-        visible: ["admin", "teacher", "student", "parent"],
-      },
-      {
-        name: "Spinners",
-        path: "/spinners",
-        pro: true,
-        visible: ["admin", "teacher", "student", "parent"],
-      },
-      {
-        name: "Tabs",
-        path: "/tabs",
-        pro: true,
-        visible: ["admin", "teacher", "student", "parent"],
-      },
-      {
-        name: "Tooltips",
-        path: "/tooltips",
-        pro: true,
-        visible: ["admin", "teacher", "student", "parent"],
-      },
-      {
-        name: "Videos",
-        path: "/videos",
-        pro: true,
-        visible: ["admin", "teacher", "student", "parent"],
-      },
-    ],
-    visible: ["admin", "teacher", "student", "parent"],
-  },
-  {
-    icon: <PlugInIcon />,
-    name: "Authentication",
-    subItems: [
-      { name: "Sign In", path: "/signin", pro: false },
-      { name: "Sign Up", path: "/signup", pro: false },
-      { name: "Reset Password", path: "/reset-password", pro: true },
-      {
-        name: "Two Step Verification",
-        path: "/two-step-verification",
-        pro: true,
-      },
-    ],
-    visible: ["admin", "teacher", "student", "parent"],
-  },
-];
+// const othersItems: NavItem[] = [
+//   {
+//     icon: <PieChartIcon />,
+//     name: "Charts",
+//     subItems: [
+//       {
+//         name: "Line Chart",
+//         path: "/line-chart",
+//         pro: true,
+//         visible: ["admin", "teacher", "student", "parent"],
+//       },
+//       {
+//         name: "Bar Chart",
+//         path: "/bar-chart",
+//         pro: true,
+//         visible: ["admin", "teacher", "student", "parent"],
+//       },
+//       {
+//         name: "Pie Chart",
+//         path: "/pie-chart",
+//         pro: true,
+//         visible: ["admin", "teacher", "student", "parent"],
+//       },
+//     ],
+//     visible: ["admin", "teacher", "student", "parent"],
+//   },
+//   {
+//     icon: <BoxCubeIcon />,
+//     name: "UI Elements",
+//     subItems: [
+//       {
+//         name: "Alerts",
+//         path: "/alerts",
+//         pro: true,
+//         visible: ["admin", "teacher", "student", "parent"],
+//       },
+//       {
+//         name: "Avatar",
+//         path: "/avatars",
+//         pro: true,
+//         visible: ["admin", "teacher", "student", "parent"],
+//       },
+//       {
+//         name: "Badge",
+//         path: "/badge",
+//         pro: true,
+//         visible: ["admin", "teacher", "student", "parent"],
+//       },
+//       {
+//         name: "Breadcrumb",
+//         path: "/breadcrumb",
+//         pro: true,
+//         visible: ["admin", "teacher", "student", "parent"],
+//       },
+//       {
+//         name: "Buttons",
+//         path: "/buttons",
+//         pro: true,
+//         visible: ["admin", "teacher", "student", "parent"],
+//       },
+//       {
+//         name: "Buttons Group",
+//         path: "/buttons-group",
+//         pro: true,
+//         visible: ["admin", "teacher", "student", "parent"],
+//       },
+//       {
+//         name: "Cards",
+//         path: "/cards",
+//         pro: true,
+//         visible: ["admin", "teacher", "student", "parent"],
+//       },
+//       {
+//         name: "Carousel",
+//         path: "/carousel",
+//         pro: true,
+//         visible: ["admin", "teacher", "student", "parent"],
+//       },
+//       {
+//         name: "Dropdowns",
+//         path: "/dropdowns",
+//         pro: true,
+//         visible: ["admin", "teacher", "student", "parent"],
+//       },
+//       {
+//         name: "Images",
+//         path: "/images",
+//         pro: true,
+//         visible: ["admin", "teacher", "student", "parent"],
+//       },
+//       {
+//         name: "Links",
+//         path: "/links",
+//         pro: true,
+//         visible: ["admin", "teacher", "student", "parent"],
+//       },
+//       {
+//         name: "List",
+//         path: "/list",
+//         pro: true,
+//         visible: ["admin", "teacher", "student", "parent"],
+//       },
+//       {
+//         name: "Modals",
+//         path: "/modals",
+//         pro: true,
+//         visible: ["admin", "teacher", "student", "parent"],
+//       },
+//       {
+//         name: "Notification",
+//         path: "/notifications",
+//         pro: true,
+//         visible: ["admin", "teacher", "student", "parent"],
+//       },
+//       {
+//         name: "Pagination",
+//         path: "/pagination",
+//         pro: true,
+//         visible: ["admin", "teacher", "student", "parent"],
+//       },
+//       {
+//         name: "Popovers",
+//         path: "/popovers",
+//         pro: true,
+//         visible: ["admin", "teacher", "student", "parent"],
+//       },
+//       {
+//         name: "Progressbar",
+//         path: "/progress-bar",
+//         pro: true,
+//         visible: ["admin", "teacher", "student", "parent"],
+//       },
+//       {
+//         name: "Ribbons",
+//         path: "/ribbons",
+//         pro: true,
+//         visible: ["admin", "teacher", "student", "parent"],
+//       },
+//       {
+//         name: "Spinners",
+//         path: "/spinners",
+//         pro: true,
+//         visible: ["admin", "teacher", "student", "parent"],
+//       },
+//       {
+//         name: "Tabs",
+//         path: "/tabs",
+//         pro: true,
+//         visible: ["admin", "teacher", "student", "parent"],
+//       },
+//       {
+//         name: "Tooltips",
+//         path: "/tooltips",
+//         pro: true,
+//         visible: ["admin", "teacher", "student", "parent"],
+//       },
+//       {
+//         name: "Videos",
+//         path: "/videos",
+//         pro: true,
+//         visible: ["admin", "teacher", "student", "parent"],
+//       },
+//     ],
+//     visible: ["admin", "teacher", "student", "parent"],
+//   },
+//   {
+//     icon: <PlugInIcon />,
+//     name: "Authentication",
+//     subItems: [
+//       { name: "Sign In", path: "/signin", pro: false },
+//       { name: "Sign Up", path: "/signup", pro: false },
+//       { name: "Reset Password", path: "/reset-password", pro: true },
+//       {
+//         name: "Two Step Verification",
+//         path: "/two-step-verification",
+//         pro: true,
+//       },
+//     ],
+//     visible: ["admin", "teacher", "student", "parent"],
+//   },
+// ];
 
-const supportItems: NavItem[] = [
-  {
-    icon: <ChatIcon />,
-    name: "Chat",
-    path: "/chat",
-    visible: ["admin", "teacher", "student", "parent"],
-  },
-  {
-    icon: <MailIcon />,
-    name: "Email",
-    subItems: [
-      {
-        name: "Inbox",
-        path: "/inbox",
-        visible: ["admin", "teacher", "student", "parent"],
-      },
-      {
-        name: "Details",
-        path: "/inbox-details",
-        visible: ["admin", "teacher", "student", "parent"],
-      },
-    ],
-    visible: ["admin", "teacher", "student", "parent"],
-  },
-  {
-    icon: <DocsIcon />,
-    name: "Invoice",
-    path: "/invoice",
-    visible: ["admin", "teacher", "student", "parent"],
-  },
-];
+// const supportItems: NavItem[] = [
+//   {
+//     icon: <ChatIcon />,
+//     name: "Chat",
+//     path: "/chat",
+//     visible: ["admin", "teacher", "student", "parent"],
+//   },
+//   {
+//     icon: <MailIcon />,
+//     name: "Email",
+//     subItems: [
+//       {
+//         name: "Inbox",
+//         path: "/inbox",
+//         visible: ["admin", "teacher", "student", "parent"],
+//       },
+//       {
+//         name: "Details",
+//         path: "/inbox-details",
+//         visible: ["admin", "teacher", "student", "parent"],
+//       },
+//     ],
+//     visible: ["admin", "teacher", "student", "parent"],
+//   },
+//   {
+//     icon: <DocsIcon />,
+//     name: "Invoice",
+//     path: "/invoice",
+//     visible: ["admin", "teacher", "student", "parent"],
+//   },
+// ];
 
 const AppSidebar: React.FC = () => {
   const { isExpanded, isMobileOpen, isHovered, setIsHovered } = useSidebar();
@@ -551,8 +577,22 @@ const AppSidebar: React.FC = () => {
                     {nav.icon}
                   </span>
                   {(isExpanded || isHovered || isMobileOpen) && (
-                    <span className={`menu-item-text`}>{nav.name}</span>
+                    <span className="menu-item-text flex items-center gap-1">
+                      {nav.name}
+                      {nav.new && (
+                        <span
+                          className={`ml-1 ${
+                            isActive(nav.path)
+                              ? "menu-dropdown-badge-active"
+                              : "menu-dropdown-badge-inactive"
+                          } menu-dropdown-badge`}
+                        >
+                          new
+                        </span>
+                      )}
+                    </span>
                   )}
+
                   {(isExpanded || isHovered || isMobileOpen) && (
                     <ChevronDownIcon
                       className={`ml-auto w-5 h-5 transition-transform duration-200  ${
@@ -584,7 +624,20 @@ const AppSidebar: React.FC = () => {
                       {nav.icon}
                     </span>
                     {(isExpanded || isHovered || isMobileOpen) && (
-                      <span className={`menu-item-text`}>{nav.name}</span>
+                      <span className="menu-item-text flex items-center justify-between w-full">
+                        {nav.name}
+                        {nav.new && (
+                          <span
+                            className={`ml-1 ${
+                              isActive(nav.path)
+                                ? "menu-dropdown-badge-active"
+                                : "menu-dropdown-badge-inactive"
+                            } menu-dropdown-badge`}
+                          >
+                            new
+                          </span>
+                        )}
+                      </span>
                     )}
                   </Link>
                 )
@@ -677,8 +730,10 @@ const AppSidebar: React.FC = () => {
         menuType === "main"
           ? navItems
           : menuType === "support"
-          ? supportItems
-          : othersItems;
+          ? // ? supportItems
+            []
+          : // : othersItems;
+            [];
       items.forEach((nav, index) => {
         if (nav.subItems) {
           nav.subItems.forEach((subItem) => {
@@ -754,7 +809,7 @@ const AppSidebar: React.FC = () => {
             <>
               <Image
                 className="dark:hidden"
-                src="/images/logo/logo.svg"
+                src="/images/logo/chermina-logo.png"
                 alt="Logo"
                 width={150}
                 height={40}
@@ -769,7 +824,7 @@ const AppSidebar: React.FC = () => {
             </>
           ) : (
             <Image
-              src="/images/logo/logo-icon.svg"
+              src="/images/logo/chermina-icon.svg"
               alt="Logo"
               width={32}
               height={32}
@@ -796,7 +851,7 @@ const AppSidebar: React.FC = () => {
               </h2>
               {renderMenuItems(navItems, "main")}
             </div>
-            <div>
+            {/* <div>
               <h2
                 className={`mb-4 text-xs uppercase flex leading-[20px] text-gray-400 ${
                   !isExpanded && !isHovered
@@ -811,8 +866,8 @@ const AppSidebar: React.FC = () => {
                 )}
               </h2>
               {renderMenuItems(supportItems, "support")}
-            </div>
-            <div>
+            </div> */}
+            {/* <div>
               <h2
                 className={`mb-4 text-xs uppercase flex leading-[20px] text-gray-400 ${
                   !isExpanded && !isHovered
@@ -827,7 +882,7 @@ const AppSidebar: React.FC = () => {
                 )}
               </h2>
               {renderMenuItems(othersItems, "others")}
-            </div>
+            </div> */}
           </div>
         </nav>
         {isExpanded || isHovered || isMobileOpen ? <SidebarWidget /> : null}

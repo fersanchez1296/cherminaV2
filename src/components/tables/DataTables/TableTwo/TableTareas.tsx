@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo } from "react";
 import {
   Table,
   TableBody,
@@ -15,18 +15,9 @@ import {
   EnvelopeIcon,
   CheckLineIcon,
   DocumentPlusIcon,
-  CheckCircleIcon,
-  ArrowUTurnDownIcon,
-  ArrowUTurnLeftIcon,
-  ClockIcon,
   ArrowsRepeatIcon,
   ArrowsRepeatOneIcon,
   EditIcon,
-  ReceiptRefoundIcon,
-  HandThumbUpIcon,
-  HandThumbDownIcon,
-  ClockArrowIcon,
-  ForwardIcon,
 } from "../../../../icons";
 import PaginationWithButton from "./PaginationWithButton";
 import Badge from "../../../ui/badge/Badge";
@@ -39,47 +30,104 @@ import TextArea from "@/components/form/input/TextArea";
 import Label from "@/components/form/Label";
 import DropzoneComponent from "@/components/form/form-elements/DropZone";
 import FormularioContacto from "@/components/form/example-form/FormularioContacto";
-import FormularioReabrir from "@/components/form/example-form/FormularioReabrirTicket";
 import FormularioAsignar from "@/components/form/example-form/FormularioAsignar";
 import FormularioReasignar from "@/components/form/example-form/FormularioReasignar";
-import FormularioAceptar from "@/components/form/example-form/FormularioAceptarResolucion";
-import FormularioRechazar from "@/components/form/example-form/FormularioRechazarResolucion";
-import FormularioPendiente from "@/components/form/example-form/FormularioPendiente";
 import FormularioEditar from "@/components/form/example-form/FormularioEditarTicket";
-import { getTickets } from "@/services/ticketService";
-interface data {
-  Area: Array<{ _id: string; Area: string }>;
-  Nombre: string;
-  Correo: string;
-  Rol: object;
-  Tickets_resueltos: object;
-  Username: string;
-  _id: string;
-  isActive: boolean;
-}
+const tableRowData = [
+  {
+    resolutor: "Eduardo Antonino Garcia Salazar",
+    Id: 1720,
+    status: "Abierto",
+    fechaCreacion: "26 de marzo de 2025, 12:07 PM",
+    fechaResolucion: "28 de marzo de 2025, 12:07 PM",
+  },
+  {
+    resolutor: "Fernando Sanchez Plascencia",
+    cliente: "Fatima Sanchez Plascencia",
+    Id: 1721,
+    status: "Abierto",
+    fechaCreacion: "26 de marzo de 2025, 12:07 PM",
+    fechaResolucion: "28 de marzo de 2025, 12:07 PM",
+  },
+  {
+    resolutor: "Eduardo Antonino Garcia Salazar",
+    Id: 1722,
+    status: "Abierto",
+    fechaCreacion: "26 de marzo de 2025, 12:07 PM",
+    fechaResolucion: "28 de marzo de 2025, 12:07 PM",
+  },
+  {
+    resolutor: "Eduardo Antonino Garcia Salazar",
+    Id: 1723,
+    status: "Abierto",
+    fechaCreacion: "26 de marzo de 2025, 12:07 PM",
+    fechaResolucion: "28 de marzo de 2025, 12:07 PM",
+  },
+  {
+    resolutor: "Eduardo Antonino Garcia Salazar",
+    Id: 1724,
+    status: "Abierto",
+    fechaCreacion: "26 de marzo de 2025, 12:07 PM",
+    fechaResolucion: "28 de marzo de 2025, 12:07 PM",
+  },
+  {
+    resolutor: "Eduardo Antonino Garcia Salazar",
+    Id: 1725,
+    status: "Abierto",
+    fechaCreacion: "26 de marzo de 2025, 12:07 PM",
+    fechaResolucion: "28 de marzo de 2025, 12:07 PM",
+  },
+  {
+    resolutor: "Eduardo Antonino Garcia Salazar",
+    Id: 1726,
+    status: "Abierto",
+    fechaCreacion: "26 de marzo de 2025, 12:07 PM",
+    fechaResolucion: "28 de marzo de 2025, 12:07 PM",
+  },
+  {
+    resolutor: "Eduardo Antonino Garcia Salazar",
+    Id: 1727,
+    status: "Abierto",
+    fechaCreacion: "26 de marzo de 2025, 12:07 PM",
+    fechaResolucion: "28 de marzo de 2025, 12:07 PM",
+  },
+  {
+    resolutor: "Eduardo Antonino Garcia Salazar",
+    Id: 1728,
+    status: "Abierto",
+    fechaCreacion: "26 de marzo de 2025, 12:07 PM",
+    fechaResolucion: "28 de marzo de 2025, 12:07 PM",
+  },
+  {
+    resolutor: "Eduardo Antonino Garcia Salazar",
+    Id: 1729,
+    status: "Abierto",
+    fechaCreacion: "26 de marzo de 2025, 12:07 PM",
+    fechaResolucion: "28 de marzo de 2025, 12:07 PM",
+  },
+  {
+    resolutor: "Eduardo Antonino Garcia Salazar",
+    Id: 1730,
+    status: "Abierto",
+    fechaCreacion: "26 de marzo de 2025, 12:07 PM",
+    fechaResolucion: "28 de marzo de 2025, 12:07 PM",
+  },
+];
 type SortKey =
   | "resolutor"
-  | "cliente"
   | "Id"
   | "status"
-  | "prioridad"
   | "fechaCreacion"
   | "fechaResolucion"
-  | "fechaCierre"
-  | "Tipo";
 type SortOrder = "asc" | "desc";
 
-export default function DataTableTwo(status: string) {
+export default function TableTareas() {
   const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage, setItemsPerPage] = useState(5);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
   const [sortKey, setSortKey] = useState<SortKey>("resolutor");
   const [sortOrder, setSortOrder] = useState<SortOrder>("asc");
   const [searchTerm, setSearchTerm] = useState("");
   const [message, setMessage] = useState("");
-  const [tableRowData, setTableRowData] = useState<Array<data>>([]);
-  useEffect(() => {
-    getTickets("NUEVOS").then((res) => console.log(res.data));
-  }, [status]);
   const { isOpen, openModal, closeModal } = useModal();
   const {
     isOpen: isOpenNota,
@@ -97,26 +145,6 @@ export default function DataTableTwo(status: string) {
     closeModal: closeModalContactoCliente,
   } = useModal();
   const {
-    isOpen: isOpenCerrarTicket,
-    openModal: openModalCerrarTicket,
-    closeModal: closeModalCerrarTicket,
-  } = useModal();
-  const {
-    isOpen: isOpenReabrirTicket,
-    openModal: openModalReabrirTicket,
-    closeModal: closeModalReabrirTicket,
-  } = useModal();
-  const {
-    isOpen: isOpenRegresarTicket,
-    openModal: openModalRegresarTicket,
-    closeModal: closeModalRegresarTicket,
-  } = useModal();
-  const {
-    isOpen: isOpenRPendienteTicket,
-    openModal: openModalRPendienteTicket,
-    closeModal: closeModalRPendienteTicket,
-  } = useModal();
-  const {
     isOpen: isOpenAsignarTicket,
     openModal: openModalAsignarTicket,
     closeModal: closeModalAsignarTicket,
@@ -125,31 +153,6 @@ export default function DataTableTwo(status: string) {
     isOpen: isOpenReasignarTicket,
     openModal: openModalReasignarTicket,
     closeModal: closeModalReasignarTicket,
-  } = useModal();
-  const {
-    isOpen: isOpenRegresarMesaTicket,
-    openModal: openModalRegresarMesaTicket,
-    closeModal: closeModalRegresarMesaTicket,
-  } = useModal();
-  const {
-    isOpen: isOpenAceptarTicket,
-    openModal: openModalAceptarTicket,
-    closeModal: closeModalAceptarTicket,
-  } = useModal();
-  const {
-    isOpen: isOpenRechazarTicket,
-    openModal: openModalRechazarTicket,
-    closeModal: closeModalRechazarTicket,
-  } = useModal();
-  const {
-    isOpen: isOpenPendienteTicket,
-    openModal: openModalPendienteTicket,
-    closeModal: closeModalPendienteTicket,
-  } = useModal();
-  const {
-    isOpen: isOpenRegresarModeradorTicket,
-    openModal: openModalRegresarModeradorTicket,
-    closeModal: closeModalRegresarModeradorTicket,
   } = useModal();
   const {
     isOpen: isOpenEditarTicket,
@@ -284,14 +287,10 @@ export default function DataTableTwo(status: string) {
                   </TableCell>
                   {[
                     { key: "resolutor", label: "Resolutor" },
-                    { key: "cliente", label: "Cliente" },
                     { key: "id", label: "Id" },
                     { key: "estado", label: "Status" },
-                    { key: "prioridad", label: "Prioridad" },
                     { key: "fcreacion", label: "Fecha de creacion" },
                     { key: "fresolucion", label: "Fecha limite de resolucion" },
-                    { key: "fcierre", label: "Fecha de cierre" },
-                    { key: "tipo", label: "Tipo" },
                   ].map(({ key, label }) => (
                     <TableCell
                       key={key}
@@ -373,54 +372,6 @@ export default function DataTableTwo(status: string) {
                           </button>
                         </Tooltip>
                         <Tooltip
-                          content="Cerrar Ticket"
-                          position="top"
-                          theme="dark"
-                        >
-                          <button
-                            className="text-gray-500 hover:text-gray-800 dark:text-gray-400 dark:hover:text-white/90"
-                            onClick={openModalCerrarTicket}
-                          >
-                            <CheckCircleIcon />
-                          </button>
-                        </Tooltip>
-                        <Tooltip
-                          content="Reabrir Ticket"
-                          position="top"
-                          theme="dark"
-                        >
-                          <button
-                            className="text-gray-500 hover:text-gray-800 dark:text-gray-400 dark:hover:text-white/90"
-                            onClick={openModalReabrirTicket}
-                          >
-                            <ArrowUTurnDownIcon />
-                          </button>
-                        </Tooltip>
-                        <Tooltip
-                          content="Regresar Ticket a Resolutor"
-                          position="top"
-                          theme="dark"
-                        >
-                          <button
-                            className="text-gray-500 hover:text-gray-800 dark:text-gray-400 dark:hover:text-white/90"
-                            onClick={openModalRegresarTicket}
-                          >
-                            <ArrowUTurnLeftIcon />
-                          </button>
-                        </Tooltip>
-                        <Tooltip
-                          content="Agregar Razón Pendiente"
-                          position="top"
-                          theme="dark"
-                        >
-                          <button
-                            className="text-gray-500 hover:text-gray-800 dark:text-gray-400 dark:hover:text-white/90"
-                            onClick={openModalRPendienteTicket}
-                          >
-                            <ClockIcon />
-                          </button>
-                        </Tooltip>
-                        <Tooltip
                           content="Asignar Ticket"
                           position="top"
                           theme="dark"
@@ -456,66 +407,6 @@ export default function DataTableTwo(status: string) {
                             <EditIcon />
                           </button>
                         </Tooltip>
-                        <Tooltip
-                          content="Regresar Ticket a Mesa de Servicio"
-                          position="top"
-                          theme="dark"
-                        >
-                          <button
-                            className="text-gray-500 hover:text-gray-800 dark:text-gray-400 dark:hover:text-white/90"
-                            onClick={openModalRegresarMesaTicket}
-                          >
-                            <ReceiptRefoundIcon />
-                          </button>
-                        </Tooltip>
-                        <Tooltip
-                          content="Aceptar Resolución"
-                          position="top"
-                          theme="dark"
-                        >
-                          <button
-                            className="text-gray-500 hover:text-gray-800 dark:text-gray-400 dark:hover:text-white/90"
-                            onClick={openModalAceptarTicket}
-                          >
-                            <HandThumbUpIcon />
-                          </button>
-                        </Tooltip>
-                        <Tooltip
-                          content="Rechazar Resolución"
-                          position="top"
-                          theme="dark"
-                        >
-                          <button
-                            className="text-gray-500 hover:text-gray-800 dark:text-gray-400 dark:hover:text-white/90"
-                            onClick={openModalRechazarTicket}
-                          >
-                            <HandThumbDownIcon />
-                          </button>
-                        </Tooltip>
-                        <Tooltip
-                          content="Marcar Ticket Como Pendiente"
-                          position="top"
-                          theme="dark"
-                        >
-                          <button
-                            className="text-gray-500 hover:text-gray-800 dark:text-gray-400 dark:hover:text-white/90"
-                            onClick={openModalPendienteTicket}
-                          >
-                            <ClockArrowIcon />
-                          </button>
-                        </Tooltip>
-                        <Tooltip
-                          content="Retornar Ticket a Moderador"
-                          position="top"
-                          theme="dark"
-                        >
-                          <button
-                            className="text-gray-500 hover:text-gray-800 dark:text-gray-400 dark:hover:text-white/90"
-                            onClick={openModalRegresarModeradorTicket}
-                          >
-                            <ForwardIcon />
-                          </button>
-                        </Tooltip>
                       </div>
                     </TableCell>
                     {/* resolutor */}
@@ -524,16 +415,6 @@ export default function DataTableTwo(status: string) {
                         <div>
                           <p className="block font-medium text-gray-800 text-theme-sm dark:text-white/90">
                             {item.resolutor}
-                          </p>
-                        </div>
-                      </div>
-                    </TableCell>
-                    {/* cliente */}
-                    <TableCell className="px-4 py-4 border border-gray-100 dark:border-white/[0.05] dark:text-white/90 whitespace-nowrap">
-                      <div className="flex gap-3">
-                        <div>
-                          <p className="block font-medium text-gray-800 text-theme-sm dark:text-white/90">
-                            {item.cliente}
                           </p>
                         </div>
                       </div>
@@ -557,21 +438,6 @@ export default function DataTableTwo(status: string) {
                         {item.status}
                       </Badge>
                     </TableCell>
-                    {/* prioridad */}
-                    <TableCell className="px-4 py-4 font-normal text-gray-800 border border-gray-100 dark:border-white/[0.05] text-theme-sm dark:text-white/90 whitespace-nowrap">
-                      <Badge
-                        size="sm"
-                        color={
-                          item.status === "Hired"
-                            ? "success"
-                            : item.status === "In Progress"
-                            ? "warning"
-                            : "error"
-                        }
-                      >
-                        {item.prioridad}
-                      </Badge>
-                    </TableCell>
                     {/* fecha creacion */}
                     <TableCell className="px-4 py-4 font-normal text-gray-800 border border-gray-100 dark:border-white/[0.05] text-theme-sm dark:text-gray-400 whitespace-nowrap">
                       <span> {item.fechaCreacion}</span>
@@ -579,14 +445,6 @@ export default function DataTableTwo(status: string) {
                     {/* Fecha limite de resolucion */}
                     <TableCell className="px-4 py-4 font-normal text-gray-800 border border-gray-100 dark:border-white/[0.05] text-theme-sm dark:text-white/90 whitespace-nowrap">
                       {item.fechaResolucion}
-                    </TableCell>
-                    {/* Fecha de cierre */}
-                    <TableCell className="px-4 py-4 font-normal text-gray-800 border border-gray-100 dark:border-white/[0.05] text-theme-sm dark:text-white/90 whitespace-nowrap">
-                      {item.fechaCierre}
-                    </TableCell>
-                    {/* tipo */}
-                    <TableCell className="px-4 py-4 font-normal text-gray-800 border border-gray-100 dark:border-white/[0.05] text-theme-sm dark:text-white/90 whitespace-nowrap">
-                      {item.Tipo}
                     </TableCell>
                   </TableRow>
                 ))}
@@ -707,138 +565,6 @@ export default function DataTableTwo(status: string) {
         </div>
       </Modal>
       <Modal
-        isOpen={isOpenCerrarTicket}
-        onClose={closeModalCerrarTicket}
-        className="max-w-[700px] m-4"
-      >
-        <div className="no-scrollbar relative w-full max-w-[700px] overflow-y-auto rounded-3xl bg-white p-4 dark:bg-gray-900 lg:p-11">
-          <div className="px-2 pr-14">
-            <h4 className="mb-2 text-2xl font-semibold text-gray-800 dark:text-white/90">
-              Cerrar Ticket
-            </h4>
-          </div>
-          <form className="flex flex-col">
-            <div className="custom-scrollbar h-[450px] overflow-y-auto px-2 pb-3">
-              <div className="mt-7">
-                <div className="grid grid-cols-1 gap-x-6 gap-y-5 lg:grid-cols-2">
-                  <div className="col-span-2">
-                    <Label>Descripcion</Label>
-                    <TextArea
-                      value={message}
-                      onChange={(value) => setMessage(value)}
-                      rows={10}
-                    />
-                  </div>
-                  <div className="col-span-2 mt-5">
-                    <DropzoneComponent />
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div className="flex items-center gap-3 px-2 mt-6 lg:justify-end">
-              <Button
-                size="sm"
-                variant="outline"
-                onClick={closeModalCerrarTicket}
-              >
-                Cerrar
-              </Button>
-              <Button size="sm">Guardar Ticket</Button>
-            </div>
-          </form>
-        </div>
-      </Modal>
-      <Modal
-        isOpen={isOpenReabrirTicket}
-        onClose={closeModalReabrirTicket}
-        className="max-w-[700px] m-4"
-      >
-        <div className="no-scrollbar relative w-full max-w-[700px] max-h-[90vh] overflow-y-auto rounded-3xl bg-white p-4 dark:bg-gray-900 lg:p-4">
-          <FormularioReabrir />
-        </div>
-      </Modal>
-      <Modal
-        isOpen={isOpenRegresarTicket}
-        onClose={closeModalRegresarTicket}
-        className="max-w-[700px] m-4"
-      >
-        <div className="no-scrollbar relative w-full max-w-[700px] overflow-y-auto rounded-3xl bg-white p-4 dark:bg-gray-900 lg:p-11">
-          <div className="px-2 pr-14">
-            <h4 className="mb-2 text-2xl font-semibold text-gray-800 dark:text-white/90">
-              Regresar Ticket a Resolutor
-            </h4>
-          </div>
-          <form className="flex flex-col">
-            <div className="custom-scrollbar h-[450px] overflow-y-auto px-2 pb-3">
-              <div className="mt-7">
-                <div className="grid grid-cols-1 gap-x-6 gap-y-5 lg:grid-cols-2">
-                  <div className="col-span-2">
-                    <Label>Descripcion</Label>
-                    <TextArea
-                      value={message}
-                      onChange={(value) => setMessage(value)}
-                      rows={10}
-                    />
-                  </div>
-                  <div className="col-span-2 mt-5">
-                    <DropzoneComponent />
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div className="flex items-center gap-3 px-2 mt-6 lg:justify-end">
-              <Button
-                size="sm"
-                variant="outline"
-                onClick={closeModalRegresarTicket}
-              >
-                Cerrar
-              </Button>
-              <Button size="sm">Guardar Ticket</Button>
-            </div>
-          </form>
-        </div>
-      </Modal>
-      <Modal
-        isOpen={isOpenRPendienteTicket}
-        onClose={closeModalRPendienteTicket}
-        className="max-w-[700px] m-4"
-      >
-        <div className="no-scrollbar relative w-full max-w-[700px] overflow-y-auto rounded-3xl bg-white p-4 dark:bg-gray-900 lg:p-11">
-          <div className="px-2 pr-14">
-            <h4 className="mb-2 text-2xl font-semibold text-gray-800 dark:text-white/90">
-              Agregar Razón Pendiente
-            </h4>
-          </div>
-          <form className="flex flex-col">
-            <div className="custom-scrollbar h-[450px] overflow-y-auto px-2 pb-3">
-              <div className="mt-7">
-                <div className="grid grid-cols-1 gap-x-6 gap-y-5 lg:grid-cols-2">
-                  <div className="col-span-2">
-                    <Label>Descripcion</Label>
-                    <TextArea
-                      value={message}
-                      onChange={(value) => setMessage(value)}
-                      rows={10}
-                    />
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div className="flex items-center gap-3 px-2 mt-6 lg:justify-end">
-              <Button
-                size="sm"
-                variant="outline"
-                onClick={closeModalRPendienteTicket}
-              >
-                Cerrar
-              </Button>
-              <Button size="sm">Guardar Ticket</Button>
-            </div>
-          </form>
-        </div>
-      </Modal>
-      <Modal
         isOpen={isOpenAsignarTicket}
         onClose={closeModalAsignarTicket}
         className="max-w-[700px] m-4"
@@ -854,117 +580,6 @@ export default function DataTableTwo(status: string) {
       >
         <div className="no-scrollbar relative w-full max-w-[700px] max-h-[90vh] overflow-y-auto rounded-3xl bg-white p-4 dark:bg-gray-900 lg:p-4">
           <FormularioReasignar />
-        </div>
-      </Modal>
-      <Modal
-        isOpen={isOpenRegresarMesaTicket}
-        onClose={closeModalRegresarMesaTicket}
-        className="max-w-[700px] m-4"
-      >
-        <div className="no-scrollbar relative w-full max-w-[700px] overflow-y-auto rounded-3xl bg-white p-4 dark:bg-gray-900 lg:p-11">
-          <div className="px-2 pr-14">
-            <h4 className="mb-2 text-2xl font-semibold text-gray-800 dark:text-white/90">
-              Retornar Ticket a mesa de servicio
-            </h4>
-          </div>
-          <form className="flex flex-col">
-            <div className="custom-scrollbar h-[450px] overflow-y-auto px-2 pb-3">
-              <div className="mt-7">
-                <div className="grid grid-cols-1 gap-x-6 gap-y-5 lg:grid-cols-2">
-                  <div className="col-span-2">
-                    <Label>Descripcion</Label>
-                    <TextArea
-                      value={message}
-                      onChange={(value) => setMessage(value)}
-                      rows={10}
-                    />
-                  </div>
-                  <div className="col-span-2 mt-5">
-                    <DropzoneComponent />
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div className="flex items-center gap-3 px-2 mt-6 lg:justify-end">
-              <Button
-                size="sm"
-                variant="outline"
-                onClick={closeModalRegresarMesaTicket}
-              >
-                Cerrar
-              </Button>
-              <Button size="sm">Guardar Ticket</Button>
-            </div>
-          </form>
-        </div>
-      </Modal>
-      <Modal
-        isOpen={isOpenAceptarTicket}
-        onClose={closeModalAceptarTicket}
-        className="max-w-[700px] m-4"
-      >
-        <div className="no-scrollbar relative w-full max-w-[700px] max-h-[90vh] overflow-y-auto rounded-3xl bg-white p-4 dark:bg-gray-900 lg:p-4">
-          <FormularioAceptar />
-        </div>
-      </Modal>
-      <Modal
-        isOpen={isOpenRechazarTicket}
-        onClose={closeModalRechazarTicket}
-        className="max-w-[700px] m-4"
-      >
-        <div className="no-scrollbar relative w-full max-w-[700px] max-h-[90vh] overflow-y-auto rounded-3xl bg-white p-4 dark:bg-gray-900 lg:p-4">
-          <FormularioRechazar />
-        </div>
-      </Modal>
-      <Modal
-        isOpen={isOpenPendienteTicket}
-        onClose={closeModalPendienteTicket}
-        className="max-w-[700px] m-4"
-      >
-        <div className="no-scrollbar relative w-full max-w-[700px] max-h-[90vh] overflow-y-auto rounded-3xl bg-white p-4 dark:bg-gray-900 lg:p-4">
-          <FormularioPendiente />
-        </div>
-      </Modal>
-      <Modal
-        isOpen={isOpenRegresarModeradorTicket}
-        onClose={closeModalRegresarModeradorTicket}
-        className="max-w-[700px] m-4"
-      >
-        <div className="no-scrollbar relative w-full max-w-[700px] overflow-y-auto rounded-3xl bg-white p-4 dark:bg-gray-900 lg:p-11">
-          <div className="px-2 pr-14">
-            <h4 className="mb-2 text-2xl font-semibold text-gray-800 dark:text-white/90">
-              Regresar Ticket a Moderador
-            </h4>
-          </div>
-          <form className="flex flex-col">
-            <div className="custom-scrollbar h-[450px] overflow-y-auto px-2 pb-3">
-              <div className="mt-7">
-                <div className="grid grid-cols-1 gap-x-6 gap-y-5 lg:grid-cols-2">
-                  <div className="col-span-2">
-                    <Label>Descripcion</Label>
-                    <TextArea
-                      value={message}
-                      onChange={(value) => setMessage(value)}
-                      rows={10}
-                    />
-                  </div>
-                  <div className="col-span-2 mt-5">
-                    <DropzoneComponent />
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div className="flex items-center gap-3 px-2 mt-6 lg:justify-end">
-              <Button
-                size="sm"
-                variant="outline"
-                onClick={closeModalRegresarModeradorTicket}
-              >
-                Cerrar
-              </Button>
-              <Button size="sm">Guardar Ticket</Button>
-            </div>
-          </form>
         </div>
       </Modal>
       <Modal

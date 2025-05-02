@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo } from "react";
 import {
   Table,
   TableBody,
@@ -12,54 +12,174 @@ import {
   AngleDownIcon,
   AngleUpIcon,
   EyeIcon,
-  EditIcon,
+  EnvelopeIcon,
+  DocumentPlusIcon,
 } from "../../../../icons";
 import PaginationWithButton from "./PaginationWithButton";
+import Badge from "../../../ui/badge/Badge";
 import { useModal } from "@/hooks/useModal";
 import { Modal } from "@/components/ui/modal/index";
+import Invoice from "@/components/invoice/Invoice";
 import { Tooltip } from "@/components/ui/tooltip/Tooltip";
 import Button from "@/components/ui/button/Button";
-import FormularioCrearCliente from "@/components/form/example-form/FormularioCrearCliente";
-import { getClients } from "@/services/clientService";
-interface data {
-  _id: string;
-  Nombre: string;
-  Correo: string;
-  Extension: string;
-  Telefono: string;
-  Ubicacion: string;
-  Direccion_General: { _id: string; Direccion_General: string };
-  Dependencia: { _id: string; Dependencia: string };
-  direccion_area: { _id: string; direccion_area: string };
-}
-
+import TextArea from "@/components/form/input/TextArea";
+import Label from "@/components/form/Label";
+import DropzoneComponent from "@/components/form/form-elements/DropZone";
+import FormularioContacto from "@/components/form/example-form/FormularioContacto";
+import PhoneInput from "@/components/form/group-input/PhoneInput";
+const tableRowData = [
+  {
+    resolutor: "Eduardo Antonino Garcia Salazar",
+    cliente: "Josué Yahir Pérez Gómez",
+    Id: 1720,
+    status: "Abierto",
+    prioridad: "Baja",
+    fechaCreacion: "26 de marzo de 2025, 12:07 PM",
+    fechaResolucion: "28 de marzo de 2025, 12:07 PM",
+    fechaCierre: "Ticket en curso",
+    Tipo: "Procesos de Negocio",
+  },
+  {
+    resolutor: "Fernando Sanchez Plascencia",
+    cliente: "Fatima Sanchez Plascencia",
+    Id: 1721,
+    status: "Abierto",
+    prioridad: "Baja",
+    fechaCreacion: "26 de marzo de 2025, 12:07 PM",
+    fechaResolucion: "28 de marzo de 2025, 12:07 PM",
+    fechaCierre: "Ticket en curso",
+    Tipo: "Procesos de Negocio",
+  },
+  {
+    resolutor: "Eduardo Antonino Garcia Salazar",
+    cliente: "Josué Yahir Pérez Gómez",
+    Id: 1722,
+    status: "Abierto",
+    prioridad: "Baja",
+    fechaCreacion: "26 de marzo de 2025, 12:07 PM",
+    fechaResolucion: "28 de marzo de 2025, 12:07 PM",
+    fechaCierre: "Ticket en curso",
+    Tipo: "Procesos de Negocio",
+  },
+  {
+    resolutor: "Eduardo Antonino Garcia Salazar",
+    cliente: "Josué Yahir Pérez Gómez",
+    Id: 1723,
+    status: "Abierto",
+    prioridad: "Baja",
+    fechaCreacion: "26 de marzo de 2025, 12:07 PM",
+    fechaResolucion: "28 de marzo de 2025, 12:07 PM",
+    fechaCierre: "Ticket en curso",
+    Tipo: "Procesos de Negocio",
+  },
+  {
+    resolutor: "Eduardo Antonino Garcia Salazar",
+    cliente: "Josué Yahir Pérez Gómez",
+    Id: 1724,
+    status: "Abierto",
+    prioridad: "Baja",
+    fechaCreacion: "26 de marzo de 2025, 12:07 PM",
+    fechaResolucion: "28 de marzo de 2025, 12:07 PM",
+    fechaCierre: "Ticket en curso",
+    Tipo: "Procesos de Negocio",
+  },
+  {
+    resolutor: "Eduardo Antonino Garcia Salazar",
+    cliente: "Josué Yahir Pérez Gómez",
+    Id: 1725,
+    status: "Abierto",
+    prioridad: "Baja",
+    fechaCreacion: "26 de marzo de 2025, 12:07 PM",
+    fechaResolucion: "28 de marzo de 2025, 12:07 PM",
+    fechaCierre: "Ticket en curso",
+    Tipo: "Procesos de Negocio",
+  },
+  {
+    resolutor: "Eduardo Antonino Garcia Salazar",
+    cliente: "Josué Yahir Pérez Gómez",
+    Id: 1726,
+    status: "Abierto",
+    prioridad: "Baja",
+    fechaCreacion: "26 de marzo de 2025, 12:07 PM",
+    fechaResolucion: "28 de marzo de 2025, 12:07 PM",
+    fechaCierre: "Ticket en curso",
+    Tipo: "Procesos de Negocio",
+  },
+  {
+    resolutor: "Eduardo Antonino Garcia Salazar",
+    cliente: "Josué Yahir Pérez Gómez",
+    Id: 1727,
+    status: "Abierto",
+    prioridad: "Baja",
+    fechaCreacion: "26 de marzo de 2025, 12:07 PM",
+    fechaResolucion: "28 de marzo de 2025, 12:07 PM",
+    fechaCierre: "Ticket en curso",
+    Tipo: "Procesos de Negocio",
+  },
+  {
+    resolutor: "Eduardo Antonino Garcia Salazar",
+    cliente: "Josué Yahir Pérez Gómez",
+    Id: 1728,
+    status: "Abierto",
+    prioridad: "Baja",
+    fechaCreacion: "26 de marzo de 2025, 12:07 PM",
+    fechaResolucion: "28 de marzo de 2025, 12:07 PM",
+    fechaCierre: "Ticket en curso",
+    Tipo: "Procesos de Negocio",
+  },
+  {
+    resolutor: "Eduardo Antonino Garcia Salazar",
+    cliente: "Josué Yahir Pérez Gómez",
+    Id: 1729,
+    status: "Abierto",
+    prioridad: "Baja",
+    fechaCreacion: "26 de marzo de 2025, 12:07 PM",
+    fechaResolucion: "28 de marzo de 2025, 12:07 PM",
+    fechaCierre: "Ticket en curso",
+    Tipo: "Procesos de Negocio",
+  },
+  {
+    resolutor: "Eduardo Antonino Garcia Salazar",
+    cliente: "Josué Yahir Pérez Gómez",
+    Id: 1730,
+    status: "Abierto",
+    prioridad: "Baja",
+    fechaCreacion: "26 de marzo de 2025, 12:07 PM",
+    fechaResolucion: "28 de marzo de 2025, 12:07 PM",
+    fechaCierre: "Ticket en curso",
+    Tipo: "Procesos de Negocio",
+  },
+];
 type SortKey =
-  | "Nombre"
-  | "Correo"
-  | "Telefono"
-  | "Extension"
-  | "Direccion_General"
-  | "direccion_area"
-  | "Dependencia";
+  | "resolutor"
+  | "cliente"
+  | "Id"
+  | "status"
+  | "prioridad"
+  | "fechaCreacion"
+  | "fechaResolucion"
+  | "fechaCierre"
+  | "Tipo";
 type SortOrder = "asc" | "desc";
 
-export default function TableClientes() {
+export default function TableBusqueda() {
   const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage, setItemsPerPage] = useState(5);
-  const [sortKey, setSortKey] = useState<SortKey>("Nombre");
+  const [itemsPerPage, setItemsPerPage] = useState(10);
+  const [sortKey, setSortKey] = useState<SortKey>("resolutor");
   const [sortOrder, setSortOrder] = useState<SortOrder>("asc");
   const [searchTerm, setSearchTerm] = useState("");
+  const [message, setMessage] = useState("");
   const { isOpen, openModal, closeModal } = useModal();
-  const [tableRowData, setTableRowData] = useState<Array<data>>([]);
   const {
-    isOpen: isOpenEditarTicket,
-    openModal: openModalEditarTicket,
-    closeModal: closeModalEditarTicket,
+    isOpen: isOpenNota,
+    openModal: openModalNota,
+    closeModal: closeModalNota,
   } = useModal();
-
-  useEffect(() => {
-    getClients().then((res) => setTableRowData(res.data));
-  }, []);
+  const {
+    isOpen: isOpenContactoCliente,
+    openModal: openModalContactoCliente,
+    closeModal: closeModalContactoCliente,
+  } = useModal();
 
   const filteredAndSortedData = useMemo(() => {
     return tableRowData
@@ -73,7 +193,7 @@ export default function TableClientes() {
           ? String(a[sortKey]).localeCompare(String(b[sortKey]))
           : String(b[sortKey]).localeCompare(String(a[sortKey]));
       });
-  }, [sortKey, sortOrder, searchTerm, tableRowData]);
+  }, [sortKey, sortOrder, searchTerm]);
 
   const totalItems = filteredAndSortedData.length;
   const totalPages = Math.ceil(totalItems / itemsPerPage);
@@ -90,6 +210,13 @@ export default function TableClientes() {
       setSortOrder("asc");
     }
   };
+  const countries = [
+    { code: "IPEJAL", label: "333-208-0340" },
+    { code: "Otro", label: "" },
+  ];
+  const handlePhoneNumberChange = (phoneNumber: string) => {
+    console.log("Updated phone number:", phoneNumber);
+  };
 
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = Math.min(startIndex + itemsPerPage, totalItems);
@@ -97,12 +224,23 @@ export default function TableClientes() {
 
   return (
     <>
-      <div className="flex gap-3 my-3">
-        <Button size="sm" onClick={openModal}>
-          Registrar Cliente
-        </Button>
-        <Button size="sm" variant="outline">
-          Actualizar
+      <div className="col-span-2">
+        <h4 className="pb-4 text-base font-medium text-gray-800 border-b border-gray-200 dark:border-gray-800 dark:text-white/90">
+          Busqueda Avanzada
+        </h4>
+      </div>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-end min-w-max">
+        <div className="flex flex-col">
+          <Label htmlFor="firstName">Criterios de Busqueda</Label>
+          <PhoneInput
+            selectPosition="start"
+            countries={countries}
+            placeholder="555-000-0000"
+            onChange={handlePhoneNumberChange}
+          />
+        </div>
+        <Button size="sm" className="w-full self-end">
+          Buscar
         </Button>
       </div>
       <div className="overflow-hidden rounded-xl bg-white dark:bg-white/[0.03]">
@@ -188,15 +326,22 @@ export default function TableClientes() {
                       <p className="font-medium text-gray-700 text-theme-xs dark:text-gray-400">
                         Acciones
                       </p>
+                      <button className="flex flex-col gap-0.5">
+                        <AngleUpIcon className="text-gray-300 dark:text-gray-700" />
+                        <AngleDownIcon className="text-gray-300 dark:text-gray-700" />
+                      </button>
                     </div>
                   </TableCell>
                   {[
-                    { key: "Nombre", label: "Nombre" },
-                    { key: "Correo", label: "Correo" },
-                    { key: "Telefono", label: "Teléfono" },
-                    { key: "Extension", label: "Extensión" },
-                    { key: "Direccion_General", label: "Dirección General" },
-                    { key: "direccion_area", label: "Dirección de Área" },
+                    { key: "resolutor", label: "Resolutor" },
+                    { key: "cliente", label: "Cliente" },
+                    { key: "id", label: "Id" },
+                    { key: "estado", label: "Status" },
+                    { key: "prioridad", label: "Prioridad" },
+                    { key: "fcreacion", label: "Fecha de creacion" },
+                    { key: "fresolucion", label: "Fecha limite de resolucion" },
+                    { key: "fcierre", label: "Fecha de cierre" },
+                    { key: "tipo", label: "Tipo" },
                   ].map(({ key, label }) => (
                     <TableCell
                       key={key}
@@ -246,17 +391,39 @@ export default function TableClientes() {
                           </button>
                         </Tooltip>
                         <Tooltip
-                          content="Editar Ticket"
+                          content="Agregar nota"
                           position="top"
                           theme="dark"
                         >
                           <button
                             className="text-gray-500 hover:text-gray-800 dark:text-gray-400 dark:hover:text-white/90"
-                            onClick={openModalEditarTicket}
+                            onClick={openModalNota}
                           >
-                            <EditIcon />
+                            <DocumentPlusIcon />
                           </button>
                         </Tooltip>
+                        <Tooltip
+                          content="Contactar Cliente"
+                          position="top"
+                          theme="dark"
+                        >
+                          <button
+                            className="text-gray-500 hover:text-gray-800 dark:text-gray-400 dark:hover:text-white/90"
+                            onClick={openModalContactoCliente}
+                          >
+                            <EnvelopeIcon />
+                          </button>
+                        </Tooltip>
+                      </div>
+                    </TableCell>
+                    {/* resolutor */}
+                    <TableCell className="px-4 py-4 border border-gray-100 dark:border-white/[0.05] dark:text-white/90 whitespace-nowrap">
+                      <div className="flex gap-3">
+                        <div>
+                          <p className="block font-medium text-gray-800 text-theme-sm dark:text-white/90">
+                            {item.resolutor}
+                          </p>
+                        </div>
                       </div>
                     </TableCell>
                     {/* cliente */}
@@ -264,52 +431,60 @@ export default function TableClientes() {
                       <div className="flex gap-3">
                         <div>
                           <p className="block font-medium text-gray-800 text-theme-sm dark:text-white/90">
-                            {item.Nombre}
+                            {item.cliente}
                           </p>
                         </div>
                       </div>
                     </TableCell>
                     {/* id */}
                     <TableCell className="px-4 py-4 font-normal text-gray-800 border border-gray-100 dark:border-white/[0.05] text-theme-sm dark:text-white/90 whitespace-nowrap">
-                      {item.Correo}
+                      {item.Id}
                     </TableCell>
                     {/* estado */}
                     <TableCell className="px-4 py-4 font-normal text-gray-800 border border-gray-100 dark:border-white/[0.05] text-theme-sm dark:text-white/90 whitespace-nowrap">
-                      <div className="flex gap-3">
-                        <div>
-                          <p className="block font-medium text-gray-800 text-theme-sm dark:text-white/90">
-                            {item.Telefono}
-                          </p>
-                        </div>
-                      </div>
+                      <Badge
+                        size="sm"
+                        color={
+                          item.status === "Hired"
+                            ? "success"
+                            : item.status === "In Progress"
+                            ? "warning"
+                            : "error"
+                        }
+                      >
+                        {item.status}
+                      </Badge>
                     </TableCell>
                     {/* prioridad */}
                     <TableCell className="px-4 py-4 font-normal text-gray-800 border border-gray-100 dark:border-white/[0.05] text-theme-sm dark:text-white/90 whitespace-nowrap">
-                      <div className="flex gap-3">
-                        <div>
-                          <p className="block font-medium text-gray-800 text-theme-sm dark:text-white/90">
-                            {item.Extension}
-                          </p>
-                        </div>
-                      </div>
+                      <Badge
+                        size="sm"
+                        color={
+                          item.status === "Hired"
+                            ? "success"
+                            : item.status === "In Progress"
+                            ? "warning"
+                            : "error"
+                        }
+                      >
+                        {item.prioridad}
+                      </Badge>
                     </TableCell>
-                    <TableCell className="px-4 py-4 font-normal text-gray-800 border border-gray-100 dark:border-white/[0.05] text-theme-sm dark:text-white/90 whitespace-nowrap">
-                      <div className="flex gap-3">
-                        <div>
-                          <p className="block font-medium text-gray-800 text-theme-sm dark:text-white/90">
-                            {item.Direccion_General.Direccion_General}
-                          </p>
-                        </div>
-                      </div>
+                    {/* fecha creacion */}
+                    <TableCell className="px-4 py-4 font-normal text-gray-800 border border-gray-100 dark:border-white/[0.05] text-theme-sm dark:text-gray-400 whitespace-nowrap">
+                      <span> {item.fechaCreacion}</span>
                     </TableCell>
+                    {/* Fecha limite de resolucion */}
                     <TableCell className="px-4 py-4 font-normal text-gray-800 border border-gray-100 dark:border-white/[0.05] text-theme-sm dark:text-white/90 whitespace-nowrap">
-                      <div className="flex gap-3">
-                        <div>
-                          <p className="block font-medium text-gray-800 text-theme-sm dark:text-white/90">
-                            {item.direccion_area.direccion_area}
-                          </p>
-                        </div>
-                      </div>
+                      {item.fechaResolucion}
+                    </TableCell>
+                    {/* Fecha de cierre */}
+                    <TableCell className="px-4 py-4 font-normal text-gray-800 border border-gray-100 dark:border-white/[0.05] text-theme-sm dark:text-white/90 whitespace-nowrap">
+                      {item.fechaCierre}
+                    </TableCell>
+                    {/* tipo */}
+                    <TableCell className="px-4 py-4 font-normal text-gray-800 border border-gray-100 dark:border-white/[0.05] text-theme-sm dark:text-white/90 whitespace-nowrap">
+                      {item.Tipo}
                     </TableCell>
                   </TableRow>
                 ))}
@@ -336,18 +511,59 @@ export default function TableClientes() {
         </div>
       </div>
 
-      <Modal isOpen={isOpen} onClose={closeModal} className="max-w-[700px] m-4">
-        <div className="no-scrollbar relative w-full max-w-[700px] max-h-[90vh] overflow-y-auto rounded-3xl bg-white p-4 dark:bg-gray-900 lg:p-4">
-          <FormularioCrearCliente />
+      <Modal
+        isOpen={isOpen}
+        onClose={closeModal}
+        isFullscreen
+        className="fixed top-0 left-0 flex flex-col justify-between w-full h-screen p-6 overflow-x-hidden overflow-y-auto bg-white dark:bg-gray-900 lg:p-15"
+      >
+        <Invoice />
+      </Modal>
+      <Modal
+        isOpen={isOpenNota}
+        onClose={closeModalNota}
+        className="max-w-[700px] m-4"
+      >
+        <div className="no-scrollbar relative w-full max-w-[700px] overflow-y-auto rounded-3xl bg-white p-4 dark:bg-gray-900 lg:p-11">
+          <div className="px-2 pr-14">
+            <h4 className="mb-2 text-2xl font-semibold text-gray-800 dark:text-white/90">
+              Agregar nota
+            </h4>
+          </div>
+          <form className="flex flex-col">
+            <div className="custom-scrollbar h-[450px] overflow-y-auto px-2 pb-3">
+              <div className="mt-7">
+                <div className="grid grid-cols-1 gap-x-6 gap-y-5 lg:grid-cols-2">
+                  <div className="col-span-2">
+                    <Label>Descripcion</Label>
+                    <TextArea
+                      value={message}
+                      onChange={(value) => setMessage(value)}
+                      rows={10}
+                    />
+                  </div>
+                  <div className="col-span-2 mt-5">
+                    <DropzoneComponent />
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div className="flex items-center gap-3 px-2 mt-6 lg:justify-end">
+              <Button size="sm" variant="outline" onClick={closeModalNota}>
+                Cerrar
+              </Button>
+              <Button size="sm">Guardar nota</Button>
+            </div>
+          </form>
         </div>
       </Modal>
       <Modal
-        isOpen={isOpenEditarTicket}
-        onClose={closeModalEditarTicket}
+        isOpen={isOpenContactoCliente}
+        onClose={closeModalContactoCliente}
         className="max-w-[700px] m-4"
       >
         <div className="no-scrollbar relative w-full max-w-[700px] max-h-[90vh] overflow-y-auto rounded-3xl bg-white p-4 dark:bg-gray-900 lg:p-4">
-          <FormularioCrearCliente />
+          <FormularioContacto />
         </div>
       </Modal>
     </>

@@ -46,7 +46,7 @@ export default function FormularioCrearTicket() {
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-end min-w-max">
             <div className="flex flex-col">
-              <Label htmlFor="firstName">Cliente</Label>
+              <Label htmlFor="firstName">Nombre o Correo del Cliente</Label>
               <Input
                 type="text"
                 id="firstName"

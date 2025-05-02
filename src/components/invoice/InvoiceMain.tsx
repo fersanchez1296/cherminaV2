@@ -1,5 +1,4 @@
 import React from "react";
-import InvoiceTable from "./InvoiceTable";
 import InvoiceFechas from "./InvoiceFechas";
 import InvoiceUsuarios from "./InvoiceUsuarios";
 import InvoiceOficio from "./InvoiceOficio";
@@ -7,9 +6,6 @@ import InvoiceCategoria from "./InvoiceCategoria";
 import InvoiceHistoria from "./InvoiceHistoria";
 import Image from "next/image";
 import {
-  AngleDownIcon,
-  AngleUpIcon,
-  EyeIcon,
   EnvelopeIcon,
   CheckLineIcon,
   DocumentPlusIcon,
