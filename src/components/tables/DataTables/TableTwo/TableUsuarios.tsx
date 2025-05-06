@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect, use } from "react";
 import {
   Table,
   TableBody,
@@ -44,6 +44,7 @@ export default function TableUsuarios() {
   const [searchTerm, setSearchTerm] = useState("");
   const { isOpen, openModal, closeModal } = useModal();
   const [tableRowData, setTableRowData] = useState<Array<data>>([]);
+  const [singleItem, setSingleItem] = useState<data>();
   useEffect(() => {
     getUsers().then((res) => setTableRowData(res.data));
   }, []);
@@ -81,6 +82,10 @@ export default function TableUsuarios() {
       setSortKey(key);
       setSortOrder("asc");
     }
+  };
+
+  const handleVerDetalle = (item: object) => {
+    console.log(item);
   };
 
   const startIndex = (currentPage - 1) * itemsPerPage;
@@ -240,7 +245,11 @@ export default function TableUsuarios() {
                         <Tooltip content="Ver" position="top" theme="dark">
                           <button
                             className="text-gray-500 hover:text-gray-800 dark:text-gray-400 dark:hover:text-white/90"
-                            onClick={openModal}
+                            onClick={() => {
+                              openModal();
+                              setSingleItem(item);
+                              //handleVerDetalle(item);
+                            }}
                           >
                             <EyeIcon />
                           </button>
@@ -325,7 +334,7 @@ export default function TableUsuarios() {
 
       <Modal isOpen={isOpen} onClose={closeModal} className="max-w-[700px] m-4">
         <div className="no-scrollbar relative w-full max-w-[700px] max-h-[90vh] overflow-y-auto rounded-3xl bg-white p-4 dark:bg-gray-900 lg:p-4">
-          <FormularioUsuarios />
+          <FormularioUsuarios singleItem={singleItem} />
         </div>
       </Modal>
       <Modal
@@ -334,7 +343,7 @@ export default function TableUsuarios() {
         className="max-w-[700px] m-4"
       >
         <div className="no-scrollbar relative w-full max-w-[700px] max-h-[90vh] overflow-y-auto rounded-3xl bg-white p-4 dark:bg-gray-900 lg:p-4">
-          <FormularioUsuarios />
+          <FormularioUsuarios singleItem={singleItem} />
         </div>
       </Modal>
     </>

@@ -10,7 +10,18 @@ import Button from "../../ui/button/Button";
 import PhoneInput from "../group-input/PhoneInput";
 import Switch from "../switch/Switch";
 
-export default function FormularioUsuarios() {
+interface data {
+  Area: Array<{ _id: string; Area: string }>;
+  Nombre: string;
+  Correo: string;
+  Rol: object;
+  Tickets_resueltos: object;
+  Username: string;
+  _id: string;
+  isActive: boolean;
+}
+
+export default function FormularioUsuarios({singleItem} : data) {
   const [message, setMessage] = useState<string>("");
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -50,6 +61,7 @@ export default function FormularioUsuarios() {
               type="text"
               placeholder="Ingresa el nombre completo del cliente"
               id="firstName"
+              defaultValue={singleItem?.Nombre || ""}
             />
           </div>
           <div className="col-span-1">
