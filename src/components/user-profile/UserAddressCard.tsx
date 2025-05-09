@@ -5,9 +5,10 @@ import { Modal } from "../ui/modal";
 import Button from "../ui/button/Button";
 import Input from "../form/input/InputField";
 import Label from "../form/Label";
-
+import { useSession } from "next-auth/react";
 export default function UserAddressCard() {
   const { isOpen, openModal, closeModal } = useModal();
+  const { data: session } = useSession();
   const handleSave = () => {
     // Handle save logic here
     console.log("Saving changes...");
@@ -25,10 +26,10 @@ export default function UserAddressCard() {
             <div className="grid grid-cols-1 gap-4 lg:grid-cols-2 lg:gap-7 2xl:gap-x-32">
               <div>
                 <p className="mb-2 text-xs leading-normal text-gray-500 dark:text-gray-400">
-                  Pais
+                  País
                 </p>
                 <p className="text-sm font-medium text-gray-800 dark:text-white/90">
-                  Mexico
+                  {session?.user?.Direccion?.Pais}
                 </p>
               </div>
 
@@ -37,7 +38,7 @@ export default function UserAddressCard() {
                   Ciudad/Estado
                 </p>
                 <p className="text-sm font-medium text-gray-800 dark:text-white/90">
-                  Guadalajara, Jalisco.
+                {session?.user?.Direccion?.Ciudad}
                 </p>
               </div>
 
@@ -46,7 +47,7 @@ export default function UserAddressCard() {
                   Codigo Postal
                 </p>
                 <p className="text-sm font-medium text-gray-800 dark:text-white/90">
-                  44330
+                {session?.user?.Direccion?.codigoPostal}
                 </p>
               </div>
             </div>
@@ -79,7 +80,7 @@ export default function UserAddressCard() {
         <div className="relative w-full p-4 overflow-y-auto bg-white no-scrollbar rounded-3xl dark:bg-gray-900 lg:p-11">
           <div className="px-2 pr-14">
             <h4 className="mb-2 text-2xl font-semibold text-gray-800 dark:text-white/90">
-              Edit Direccion
+              Editar Direccion
             </h4>
             <p className="mb-6 text-sm text-gray-500 dark:text-gray-400 lg:mb-7">
               Actualiza tus datos para mantener tu perfil actualizado

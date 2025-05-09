@@ -6,8 +6,19 @@ import {
   TableHeader,
   TableRow,
 } from "../ui/table";
-
-export default function InvoiceTable() {
+interface data {
+  Medio?: { Medio: string; _id: string };
+  Subcategoria?: {
+    Servicio: string;
+    Categoría: string;
+    Subcategoria: string;
+    Tipo: string;
+    Prioridad: number;
+    Equipo: { _id: string; Area: string };
+    Descripcion_prioridad: string;
+  };
+}
+export default function InvoiceTable({ Subcategoria, Medio }: data) {
   return (
     <div className="overflow-hidden rounded-2xl border border-gray-100 bg-white dark:border-white/[0.05] dark:bg-white/[0.03] w-full">
       <div className="max-w-full overflow-x-auto">
@@ -70,25 +81,25 @@ export default function InvoiceTable() {
                 Desarrollo
               </TableCell>
               <TableCell className="px-5 py-3.5 text-left dark:border-white/[0.05] text-gray-500 text-theme-sm dark:text-gray-400">
-                Planeada
+                {Subcategoria?.Descripcion_prioridad}
               </TableCell>
               <TableCell className="px-5 py-3.5 text-left dark:border-white/[0.05] text-gray-500 text-theme-sm dark:text-gray-400">
-                Correo
+                {Medio?.Medio}
               </TableCell>
               <TableCell className="px-5 py-3.5 text-left dark:border-white/[0.05] text-gray-500 text-theme-sm dark:text-gray-400">
-                Peticion de servicio
+                {Subcategoria?.Tipo}
               </TableCell>
               <TableCell className="px-5 py-3.5 text-left dark:border-white/[0.05] text-gray-500 text-theme-sm dark:text-gray-400">
-                Desarrollo
+                {Subcategoria?.Equipo?.Area}
               </TableCell>
               <TableCell className="px-5 py-3.5 text-left dark:border-white/[0.05] text-gray-500 text-theme-sm dark:text-gray-400">
-                SIIF
+                {Subcategoria?.Servicio}
               </TableCell>
               <TableCell className="px-5 py-3.5 text-left dark:border-white/[0.05] text-gray-500 text-theme-sm dark:text-gray-400">
-                Procesos de negocio
+                {Subcategoria?.Categoría}
               </TableCell>
               <TableCell className="px-5 py-3.5 text-left dark:border-white/[0.05] text-gray-500 text-theme-sm dark:text-gray-400">
-                Funcionalidades-SIIF
+                {Subcategoria?.Subcategoria}
               </TableCell>
             </TableRow>
           </TableBody>

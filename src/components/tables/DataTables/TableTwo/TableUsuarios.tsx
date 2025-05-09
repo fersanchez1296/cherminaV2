@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo, useEffect, use } from "react";
+import { useState, useMemo, useEffect } from "react";
 import {
   Table,
   TableBody,
@@ -21,7 +21,7 @@ import { Tooltip } from "@/components/ui/tooltip/Tooltip";
 import Switch from "@/components/form/switch/Switch";
 import FormularioUsuarios from "@/components/form/example-form/FormularioUsuarios";
 import Button from "@/components/ui/button/Button";
-import { getUsers } from "@/services/userService";
+import { getUsers, updateEstadoUsuario } from "@/services/userService";
 type SortKey = "Nombre" | "Correo" | "Username" | "Area";
 type SortOrder = "asc" | "desc";
 
@@ -45,14 +45,17 @@ export default function TableUsuarios() {
   const { isOpen, openModal, closeModal } = useModal();
   const [tableRowData, setTableRowData] = useState<Array<data>>([]);
   const [singleItem, setSingleItem] = useState<data>();
-  useEffect(() => {
+  const [isEdit, setIsEdit] = useState<boolean>(false);
+  const [isCreate, setIsCreate] = useState<boolean>(false);
+  const [disabled, setDisabled] = useState<boolean>(false);
+
+  const fetchClients = () => {
     getUsers().then((res) => setTableRowData(res.data));
+  };
+
+  useEffect(() => {
+    fetchClients();
   }, []);
-  const {
-    isOpen: isOpenEditarTicket,
-    openModal: openModalEditarTicket,
-    closeModal: closeModalEditarTicket,
-  } = useModal();
 
   const filteredAndSortedData = useMemo(() => {
     return tableRowData
@@ -84,18 +87,25 @@ export default function TableUsuarios() {
     }
   };
 
-  const handleVerDetalle = (item: object) => {
-    console.log(item);
-  };
-
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = Math.min(startIndex + itemsPerPage, totalItems);
   const currentData = filteredAndSortedData.slice(startIndex, endIndex);
-  console.log(currentData);
+  const handleChangeEstadoUsuario = async (estado: boolean, userId: string) => {
+    await updateEstadoUsuario(estado, userId);
+  };
   return (
     <>
       <div className="flex gap-3 my-3">
-        <Button size="sm" onClick={openModal}>
+        <Button
+          size="sm"
+          onClick={() => {
+            openModal();
+            setIsEdit(false);
+            setDisabled(false);
+            setIsCreate(true);
+            setSingleItem(undefined);
+          }}
+        >
           Registrar Usuario
         </Button>
         <Button size="sm" variant="outline">
@@ -105,7 +115,7 @@ export default function TableUsuarios() {
       <div className="overflow-hidden rounded-xl bg-white dark:bg-white/[0.03]">
         <div className="flex flex-col gap-2 px-4 py-4 border border-b-0 border-gray-100 dark:border-white/[0.05] rounded-t-xl sm:flex-row sm:items-center sm:justify-between">
           <div className="flex items-center gap-3">
-            <span className="text-gray-500 dark:text-gray-400"> Show </span>
+            <span className="text-gray-500 dark:text-gray-400"> Mostrar </span>
             <div className="relative z-20 bg-transparent">
               <select
                 className="w-full py-2 pl-3 pr-8 text-sm text-gray-800 bg-transparent border border-gray-300 rounded-lg appearance-none dark:bg-dark-900 h-9 bg-none shadow-theme-xs placeholder:text-gray-400 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 dark:focus:border-brand-800"
@@ -141,7 +151,7 @@ export default function TableUsuarios() {
                 </svg>
               </span>
             </div>
-            <span className="text-gray-500 dark:text-gray-400"> entries </span>
+            <span className="text-gray-500 dark:text-gray-400"> resultados </span>
           </div>
 
           <div className="relative">
@@ -166,7 +176,7 @@ export default function TableUsuarios() {
               type="text"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              placeholder="Search..."
+              placeholder="Filtrar resultados..."
               className="dark:bg-dark-900 h-11 w-full rounded-lg border border-gray-300 bg-transparent py-2.5 pl-11 pr-4 text-sm text-gray-800 shadow-theme-xs placeholder:text-gray-400 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 dark:focus:border-brand-800 xl:w-[300px]"
             />
           </div>
@@ -247,8 +257,10 @@ export default function TableUsuarios() {
                             className="text-gray-500 hover:text-gray-800 dark:text-gray-400 dark:hover:text-white/90"
                             onClick={() => {
                               openModal();
+                              setIsEdit(false);
+                              setDisabled(true);
+                              setIsCreate(false);
                               setSingleItem(item);
-                              //handleVerDetalle(item);
                             }}
                           >
                             <EyeIcon />
@@ -261,7 +273,13 @@ export default function TableUsuarios() {
                         >
                           <button
                             className="text-gray-500 hover:text-gray-800 dark:text-gray-400 dark:hover:text-white/90"
-                            onClick={openModalEditarTicket}
+                            onClick={() => {
+                              openModal();
+                              setIsEdit(!false);
+                              setDisabled(!true);
+                              setIsCreate(false);
+                              setSingleItem(item);
+                            }}
                           >
                             <EditIcon />
                           </button>
@@ -270,7 +288,13 @@ export default function TableUsuarios() {
                     </TableCell>
                     <TableCell className="px-4 py-4 font-normal text-gray-800 border border-gray-100 dark:border-white/[0.05] text-theme-sm dark:text-white/90 whitespace-nowrap">
                       <div className="flex items-center w-full gap-2">
-                        <Switch label="Activo" defaultChecked={false} />
+                        <Switch
+                          label="Activo"
+                          defaultChecked={item.isActive}
+                          onChange={() =>
+                            handleChangeEstadoUsuario(!item.isActive, item._id)
+                          }
+                        />
                       </div>
                     </TableCell>
                     {/* cliente */}
@@ -325,7 +349,7 @@ export default function TableUsuarios() {
             />
             <div className="pt-3 xl:pt-0">
               <p className="pt-3 text-sm font-medium text-center text-gray-500 border-t border-gray-100 dark:border-gray-800 dark:text-gray-400 xl:border-t-0 xl:pt-0 xl:text-left">
-                Showing {startIndex + 1} to {endIndex} of {totalItems} entries
+                Mostrando {startIndex + 1} a {endIndex} de {totalItems} resultados
               </p>
             </div>
           </div>
@@ -334,16 +358,14 @@ export default function TableUsuarios() {
 
       <Modal isOpen={isOpen} onClose={closeModal} className="max-w-[700px] m-4">
         <div className="no-scrollbar relative w-full max-w-[700px] max-h-[90vh] overflow-y-auto rounded-3xl bg-white p-4 dark:bg-gray-900 lg:p-4">
-          <FormularioUsuarios singleItem={singleItem} />
-        </div>
-      </Modal>
-      <Modal
-        isOpen={isOpenEditarTicket}
-        onClose={closeModalEditarTicket}
-        className="max-w-[700px] m-4"
-      >
-        <div className="no-scrollbar relative w-full max-w-[700px] max-h-[90vh] overflow-y-auto rounded-3xl bg-white p-4 dark:bg-gray-900 lg:p-4">
-          <FormularioUsuarios singleItem={singleItem} />
+          <FormularioUsuarios
+            singleItem={singleItem}
+            disabled={disabled}
+            isEdit={isEdit}
+            isCreate={isCreate}
+            onSuccess={fetchClients}
+            closeModal={closeModal}
+          />
         </div>
       </Modal>
     </>

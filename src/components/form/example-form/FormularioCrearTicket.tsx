@@ -11,7 +11,7 @@ import TextArea from "../input/TextArea";
 import { useState } from "react";
 import { Modal } from "@/components/ui/modal";
 import { useModal } from "@/hooks/useModal";
-import FormularioCrearCliente from "./FormularioCrearCliente";
+import FormularioCrearCliente from "./FormularioClientes";
 
 export default function FormularioCrearTicket() {
   const [message, setMessage] = useState<string>("");

@@ -19,7 +19,7 @@ import { useModal } from "@/hooks/useModal";
 import { Modal } from "@/components/ui/modal/index";
 import { Tooltip } from "@/components/ui/tooltip/Tooltip";
 import Button from "@/components/ui/button/Button";
-import FormularioCrearCliente from "@/components/form/example-form/FormularioCrearCliente";
+import FormularioCrearCliente from "@/components/form/example-form/FormularioClientes";
 import { getClients } from "@/services/clientService";
 interface data {
   _id: string;
@@ -51,14 +51,17 @@ export default function TableClientes() {
   const [searchTerm, setSearchTerm] = useState("");
   const { isOpen, openModal, closeModal } = useModal();
   const [tableRowData, setTableRowData] = useState<Array<data>>([]);
-  const {
-    isOpen: isOpenEditarTicket,
-    openModal: openModalEditarTicket,
-    closeModal: closeModalEditarTicket,
-  } = useModal();
+  const [singleItem, setSingleItem] = useState<data>();
+  const [isEdit, setIsEdit] = useState<boolean>(false);
+  const [isCreate, setIsCreate] = useState<boolean>(false);
+  const [disabled, setDisabled] = useState<boolean>(false);
+
+  const fetchClients = () => {
+    getClients().then((res) => setTableRowData(res.data));
+  };
 
   useEffect(() => {
-    getClients().then((res) => setTableRowData(res.data));
+    fetchClients();
   }, []);
 
   const filteredAndSortedData = useMemo(() => {
@@ -98,7 +101,16 @@ export default function TableClientes() {
   return (
     <>
       <div className="flex gap-3 my-3">
-        <Button size="sm" onClick={openModal}>
+        <Button
+          size="sm"
+          onClick={() => {
+            openModal();
+            setIsEdit(false);
+            setIsCreate(true);
+            setDisabled(false);
+            setSingleItem(undefined);
+          }}
+        >
           Registrar Cliente
         </Button>
         <Button size="sm" variant="outline">
@@ -240,7 +252,13 @@ export default function TableClientes() {
                         <Tooltip content="Ver" position="top" theme="dark">
                           <button
                             className="text-gray-500 hover:text-gray-800 dark:text-gray-400 dark:hover:text-white/90"
-                            onClick={openModal}
+                            onClick={() => {
+                              openModal();
+                              setIsEdit(false);
+                              setIsCreate(false);
+                              setDisabled(true);
+                              setSingleItem(item);
+                            }}
                           >
                             <EyeIcon />
                           </button>
@@ -252,7 +270,13 @@ export default function TableClientes() {
                         >
                           <button
                             className="text-gray-500 hover:text-gray-800 dark:text-gray-400 dark:hover:text-white/90"
-                            onClick={openModalEditarTicket}
+                            onClick={() => {
+                              openModal();
+                              setIsEdit(true);
+                              setIsCreate(false);
+                              setDisabled(false);
+                              setSingleItem(item);
+                            }}
                           >
                             <EditIcon />
                           </button>
@@ -338,16 +362,14 @@ export default function TableClientes() {
 
       <Modal isOpen={isOpen} onClose={closeModal} className="max-w-[700px] m-4">
         <div className="no-scrollbar relative w-full max-w-[700px] max-h-[90vh] overflow-y-auto rounded-3xl bg-white p-4 dark:bg-gray-900 lg:p-4">
-          <FormularioCrearCliente />
-        </div>
-      </Modal>
-      <Modal
-        isOpen={isOpenEditarTicket}
-        onClose={closeModalEditarTicket}
-        className="max-w-[700px] m-4"
-      >
-        <div className="no-scrollbar relative w-full max-w-[700px] max-h-[90vh] overflow-y-auto rounded-3xl bg-white p-4 dark:bg-gray-900 lg:p-4">
-          <FormularioCrearCliente />
+          <FormularioCrearCliente
+            singleItem={singleItem}
+            disabled={disabled}
+            isEdit={isEdit}
+            isCreate={isCreate}
+            onSuccess={fetchClients}
+            closeModal={closeModal}
+          />
         </div>
       </Modal>
     </>

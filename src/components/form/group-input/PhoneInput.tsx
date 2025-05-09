@@ -9,19 +9,29 @@ interface CountryCode {
 interface PhoneInputProps {
   countries: CountryCode[];
   placeholder?: string;
+  defaultValue?: string;
+  disabled?: boolean;
   id?: string;
   onChange?: (phoneNumber: string) => void;
   selectPosition?: "start" | "end"; // New prop for dropdown position
+  success?: boolean;
+  error?: boolean;
+  hint?: string;
 }
 
 const PhoneInput: React.FC<PhoneInputProps> = ({
   countries,
   placeholder = "555-000-0000",
+  defaultValue = "",
+  disabled = false,
   onChange,
   selectPosition = "start", // Default position is 'start'
+  success = false,
+  error = false,
+  hint,
 }) => {
   const [selectedCountry, setSelectedCountry] = useState<string>("IPEJAL");
-  const [phoneNumber, setPhoneNumber] = useState<string>("333-208-0340");
+  const [phoneNumber, setPhoneNumber] = useState<string>("");
 
   const countryCodes: Record<string, string> = countries.reduce(
     (acc, { code, label }) => ({ ...acc, [code]: label }),
@@ -45,6 +55,16 @@ const PhoneInput: React.FC<PhoneInputProps> = ({
     }
   };
 
+  let phoneInputClassess = `appearance-none bg-none rounded-l-lg border-0 border-r border-gray-200 bg-transparent py-3 pl-3.5 pr-8 leading-tight text-gray-700 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-800 dark:text-gray-400`;
+
+  if (disabled) {
+    phoneInputClassess += ` text-gray-500 border-gray-300 opacity-40 bg-gray-100 cursor-not-allowed dark:bg-gray-800 dark:text-gray-400 dark:border-gray-700 opacity-40`;
+  } else if (error) {
+    phoneInputClassess += `  border-error-500 focus:border-error-300 focus:ring-error-500/20 dark:text-error-400 dark:border-error-500 dark:focus:border-error-800`;
+  } else if (success) {
+    phoneInputClassess += `  border-success-500 focus:border-success-300 focus:ring-success-500/20 dark:text-success-400 dark:border-success-500 dark:focus:border-success-800`;
+  }
+
   return (
     <div className="relative flex">
       {/* Dropdown position: Start */}
@@ -52,8 +72,9 @@ const PhoneInput: React.FC<PhoneInputProps> = ({
         <div className="absolute">
           <select
             value={selectedCountry}
+            disabled={disabled}
             onChange={handleCountryChange}
-            className="appearance-none bg-none rounded-l-lg border-0 border-r border-gray-200 bg-transparent py-3 pl-3.5 pr-8 leading-tight text-gray-700 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-800 dark:text-gray-400"
+            className={phoneInputClassess}
           >
             {countries.map((country) => (
               <option
@@ -89,8 +110,9 @@ const PhoneInput: React.FC<PhoneInputProps> = ({
       {/* Input field */}
       <input
         type="tel"
-        value={phoneNumber}
+        value={defaultValue ? defaultValue : phoneNumber}
         onChange={handlePhoneNumberChange}
+        disabled={disabled}
         placeholder={placeholder}
         className={`dark:bg-dark-900 h-11 w-full ${
           selectPosition === "start" ? "pl-[104px]" : "pr-[104px]"
@@ -134,6 +156,19 @@ const PhoneInput: React.FC<PhoneInputProps> = ({
             </svg>
           </div>
         </div>
+      )}
+      {hint && (
+        <p
+          className={`mt-1.5 text-xs ${
+            error
+              ? "text-error-500"
+              : success
+              ? "text-success-500"
+              : "text-gray-500"
+          }`}
+        >
+          {hint}
+        </p>
       )}
     </div>
   );

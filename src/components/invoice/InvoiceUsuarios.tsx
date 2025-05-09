@@ -7,7 +7,13 @@ import {
   TableRow,
 } from "../ui/table";
 
-export default function InvoiceTable() {
+interface data {
+  usuario1?: string;
+  usuario2?: string;
+  usuario3?: string;
+}
+
+export default function InvoiceTable({ usuario1, usuario2, usuario3 }: data) {
   return (
     <div className="overflow-hidden rounded-2xl border border-gray-100 bg-white dark:border-white/[0.05] dark:bg-white/[0.03]  w-full">
       <div className="max-w-full overflow-x-auto">
@@ -37,13 +43,13 @@ export default function InvoiceTable() {
           <TableBody className="divide-y divide-gray-100 dark:divide-white/[0.05]">
             <TableRow>
               <TableCell className="px-5 py-3.5 text-left dark:border-white/[0.05] text-gray-500 text-theme-sm dark:text-gray-400">
-                Liliana Orozco García
+                {usuario1 || "Ticket en curso"}
               </TableCell>
               <TableCell className="px-5 py-3.5 text-left dark:border-white/[0.05] text-gray-500 text-theme-sm dark:text-gray-400">
-                Eduardo Antonino Garcia Salazar
+                {usuario2 || "Ticket en curso"}
               </TableCell>
               <TableCell className="px-5 py-3.5 text-left dark:border-white/[0.05] text-gray-500 text-theme-sm dark:text-gray-400">
-                Liliana Orozco García
+                {usuario3 || "Ticket en curso"}
               </TableCell>
             </TableRow>
           </TableBody>

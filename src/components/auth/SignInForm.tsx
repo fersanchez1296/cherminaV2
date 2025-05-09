@@ -4,14 +4,13 @@ import Label from "@/components/form/Label";
 import Button from "@/components/ui/button/Button";
 import Notification from "../ui/notification/Notification";
 import { EyeCloseIcon, EyeIcon } from "@/icons";
-import Link from "next/link";
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import { signIn } from "next-auth/react";
 export default function SignInForm() {
   const router = useRouter();
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [Username, setUsername] = useState("");
+  const [Password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
@@ -22,14 +21,14 @@ export default function SignInForm() {
     try {
       const result = await signIn("credentials", {
         redirect: false,
-        email,
-        password,
+        Username,
+        Password,
       });
 
       if (result?.ok) {
         setTimeout(() => {
           router.push("/dashboard");
-        }, 3000);
+        }, 1000);
         return setSuccessMessage("Bienvenido a Chermina");
       } else {
         return setErrorMessage("Credenciales inválidas");
@@ -61,9 +60,9 @@ export default function SignInForm() {
                     Usuario <span className="text-error-500">*</span>{" "}
                   </Label>
                   <Input
-                    defaultValue={email}
-                    placeholder="info@gmail.com"
-                    onChange={(e) => setEmail(e.target.value)}
+                    defaultValue={Username}
+                    placeholder="USuario123$"
+                    onChange={(e) => setUsername(e.target.value)}
                   />
                 </div>
                 <div>
@@ -72,7 +71,7 @@ export default function SignInForm() {
                   </Label>
                   <div className="relative">
                     <Input
-                      defaultValue={password}
+                      defaultValue={Password}
                       type={showPassword ? "text" : "password"}
                       placeholder="Enter your password"
                       onChange={(e) => setPassword(e.target.value)}
@@ -92,12 +91,12 @@ export default function SignInForm() {
                 <div>
                   {login ? (
                     <>
-                      <Button className="w-full" size="sm">
+                      <Button className="w-full" size="sm" type="submit">
                         Iniciar Sesión
                       </Button>
                     </>
                   ) : (
-                    <Button className="w-full" size="sm">
+                    <Button className="w-full" size="sm" type="submit">
                       Iniciar Sesión
                     </Button>
                   )}

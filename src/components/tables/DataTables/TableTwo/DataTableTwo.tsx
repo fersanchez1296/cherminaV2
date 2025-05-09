@@ -48,37 +48,109 @@ import FormularioPendiente from "@/components/form/example-form/FormularioPendie
 import FormularioEditar from "@/components/form/example-form/FormularioEditarTicket";
 import { getTickets } from "@/services/ticketService";
 interface data {
-  Area: Array<{ _id: string; Area: string }>;
-  Nombre: string;
-  Correo: string;
-  Rol: object;
-  Tickets_resueltos: object;
-  Username: string;
+  Area: object;
+  Asignado_a: Array<{
+    _id: string;
+    Nombre: string;
+    Correo: string;
+    Area: Array<{ _id: string; Area: string }>;
+  }>;
+  Resuelto_por: {
+    _id: string;
+    Nombre: string;
+    Correo: string;
+    Area: Array<{ _id: string; Area: string }>;
+  };
+  Cerrado_por: {
+    _id: string;
+    Nombre: string;
+    Correo: string;
+    Area: Array<{ _id: string; Area: string }>;
+  };
+  Cliente: {
+    Nombre: string;
+    Correo: string;
+    Telefono: string;
+    Extension: string;
+    Ubicacion: string;
+    Direccion_General: { Direccion_General: string; _id: string };
+    direccion_area: { direccion_area: string; _id: string };
+    Dependencia: { Dependencia: string; _id: string };
+  };
+  Creado_por: {
+    _id: string;
+    Nombre: string;
+    Correo: string;
+    Area: Array<{ _id: string; Area: string }>;
+  };
+  Descripcion: string;
+  Estado: { Estado: string; _id: string };
+  Fecha_hora_cierre: string;
+  Fecha_hora_creacion: string;
+  Fecha_hora_resolucion: string;
+  Fecha_hora_ultima_modificacion: string;
+  Fecha_limite_resolucion_SLA: string;
+  Fecha_limite_respuesta_SLA: string;
+  Files: Array<{ _id: string; name: string; url: string }>;
+  Historia_ticket: Array<{
+    _id: string;
+    Fecha: string;
+    Mensaje: string;
+    Titulo: string;
+    Nombre: { Nombre: string };
+  }>;
+  Id: string;
+  Medio: { Medio: string; _id: string };
+  NumeroRec_Oficio: string;
+  Numero_Oficio: string;
+  Reasignado_a?: Array<{
+    _id: string;
+    Nombre: string;
+    Correo: string;
+    Area: Array<{ _id: string; Area: string }>;
+  }>;
+  Subcategoria: {
+    Servicio: string;
+    Categoría: string;
+    Subcategoria: string;
+    Tipo: string;
+    Prioridad: number;
+    Equipo: { _id: string; Area: string };
+    Descripcion_prioridad: string;
+  };
   _id: string;
-  isActive: boolean;
+  createdAt: string;
+  standby: boolean;
+  updatedAt: string;
+  vistoBueno: boolean;
+  Descripcion_cierre: string;
+  PendingReason: string;
 }
-type SortKey =
-  | "resolutor"
-  | "cliente"
-  | "Id"
-  | "status"
-  | "prioridad"
-  | "fechaCreacion"
-  | "fechaResolucion"
-  | "fechaCierre"
-  | "Tipo";
+type SortKey = "Asignado_a" | "Cliente" | "Id";
+// | "status"
+// | "prioridad"
+// | "fechaCreacion"
+// | "fechaResolucion"
+// | "fechaCierre"
+// | "Tipo";
 type SortOrder = "asc" | "desc";
 
-export default function DataTableTwo(status: string) {
+interface props {
+  status: string;
+}
+
+export default function DataTableTwo({ status }: props) {
+  console.log(status);
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(5);
-  const [sortKey, setSortKey] = useState<SortKey>("resolutor");
+  const [sortKey, setSortKey] = useState<SortKey>("Id");
   const [sortOrder, setSortOrder] = useState<SortOrder>("asc");
   const [searchTerm, setSearchTerm] = useState("");
   const [message, setMessage] = useState("");
   const [tableRowData, setTableRowData] = useState<Array<data>>([]);
+  const [singleItem, setSingleItem] = useState<object>({});
   useEffect(() => {
-    getTickets("NUEVOS").then((res) => console.log(res.data));
+    getTickets(status).then((res) => setTableRowData(res.data));
   }, [status]);
   const { isOpen, openModal, closeModal } = useModal();
   const {
@@ -157,6 +229,15 @@ export default function DataTableTwo(status: string) {
     closeModal: closeModalEditarTicket,
   } = useModal();
 
+  const getNestedValue = (obj: any, path: string): any => {
+    return path.split(".").reduce((acc, part) => {
+      if (acc === null || acc === undefined) return undefined;
+      if (Array.isArray(acc)) acc = acc[0]; // tomar el primer elemento
+      if (typeof acc !== "object") return undefined; // evitar acceder propiedades de strings, numbers, etc.
+      return acc[part];
+    }, obj);
+  };
+
   const filteredAndSortedData = useMemo(() => {
     return tableRowData
       .filter((item) =>
@@ -165,11 +246,17 @@ export default function DataTableTwo(status: string) {
         )
       )
       .sort((a, b) => {
+        const aValue = getNestedValue(a, sortKey);
+        const bValue = getNestedValue(b, sortKey);
+
+        if (aValue === undefined) return 1;
+        if (bValue === undefined) return -1;
+
         return sortOrder === "asc"
-          ? String(a[sortKey]).localeCompare(String(b[sortKey]))
-          : String(b[sortKey]).localeCompare(String(a[sortKey]));
+          ? String(aValue).localeCompare(String(bValue))
+          : String(bValue).localeCompare(String(aValue));
       });
-  }, [sortKey, sortOrder, searchTerm]);
+  }, [sortKey, sortOrder, searchTerm, tableRowData]);
 
   const totalItems = filteredAndSortedData.length;
   const totalPages = Math.ceil(totalItems / itemsPerPage);
@@ -190,6 +277,23 @@ export default function DataTableTwo(status: string) {
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = Math.min(startIndex + itemsPerPage, totalItems);
   const currentData = filteredAndSortedData.slice(startIndex, endIndex);
+
+  const getBadgeColor: { [key: string]: string } = {
+    CERRADOS: "error",
+    ABIERTOS: "success",
+    NUEVOS: "primary",
+    REABIERTOS: "primary",
+    PENDIENTES: "warning",
+    REVISION: "warning",
+    STANDY: "warning",
+    RESUELTOS: "info",
+    CERRADO: "error",
+    Baja: "success",
+    Planeada: "primary",
+    Media: "warning",
+    Alta: "error",
+    default: "primary",
+  };
 
   return (
     <>
@@ -335,7 +439,10 @@ export default function DataTableTwo(status: string) {
                         <Tooltip content="Ver" position="top" theme="dark">
                           <button
                             className="text-gray-500 hover:text-gray-800 dark:text-gray-400 dark:hover:text-white/90"
-                            onClick={openModal}
+                            onClick={() => {
+                              openModal();
+                              setSingleItem(item);
+                            }}
                           >
                             <EyeIcon />
                           </button>
@@ -523,7 +630,8 @@ export default function DataTableTwo(status: string) {
                       <div className="flex gap-3">
                         <div>
                           <p className="block font-medium text-gray-800 text-theme-sm dark:text-white/90">
-                            {item.resolutor}
+                            {item.Reasignado_a?.[0]?.Nombre ??
+                              item.Asignado_a?.[0]?.Nombre}
                           </p>
                         </div>
                       </div>
@@ -533,7 +641,7 @@ export default function DataTableTwo(status: string) {
                       <div className="flex gap-3">
                         <div>
                           <p className="block font-medium text-gray-800 text-theme-sm dark:text-white/90">
-                            {item.cliente}
+                            {item.Cliente.Nombre}
                           </p>
                         </div>
                       </div>
@@ -547,14 +655,10 @@ export default function DataTableTwo(status: string) {
                       <Badge
                         size="sm"
                         color={
-                          item.status === "Hired"
-                            ? "success"
-                            : item.status === "In Progress"
-                            ? "warning"
-                            : "error"
+                          getBadgeColor[item?.Estado?.Estado ?? ""] ?? "default"
                         }
                       >
-                        {item.status}
+                        {item.Estado.Estado ?? "Sin estado"}
                       </Badge>
                     </TableCell>
                     {/* prioridad */}
@@ -562,31 +666,32 @@ export default function DataTableTwo(status: string) {
                       <Badge
                         size="sm"
                         color={
-                          item.status === "Hired"
-                            ? "success"
-                            : item.status === "In Progress"
-                            ? "warning"
-                            : "error"
+                          getBadgeColor[
+                            item?.Subcategoria?.Descripcion_prioridad ?? ""
+                          ] ?? "default"
                         }
                       >
-                        {item.prioridad}
+                        {item?.Subcategoria?.Descripcion_prioridad ??
+                          "Sin prioridad"}
                       </Badge>
                     </TableCell>
                     {/* fecha creacion */}
                     <TableCell className="px-4 py-4 font-normal text-gray-800 border border-gray-100 dark:border-white/[0.05] text-theme-sm dark:text-gray-400 whitespace-nowrap">
-                      <span> {item.fechaCreacion}</span>
+                      <span> {item.Fecha_hora_creacion}</span>
                     </TableCell>
                     {/* Fecha limite de resolucion */}
                     <TableCell className="px-4 py-4 font-normal text-gray-800 border border-gray-100 dark:border-white/[0.05] text-theme-sm dark:text-white/90 whitespace-nowrap">
-                      {item.fechaResolucion}
+                      {item.Fecha_limite_resolucion_SLA}
                     </TableCell>
                     {/* Fecha de cierre */}
                     <TableCell className="px-4 py-4 font-normal text-gray-800 border border-gray-100 dark:border-white/[0.05] text-theme-sm dark:text-white/90 whitespace-nowrap">
-                      {item.fechaCierre}
+                      {item.Fecha_hora_cierre != ""
+                        ? item.Fecha_hora_cierre
+                        : "Ticket en curso"}
                     </TableCell>
                     {/* tipo */}
                     <TableCell className="px-4 py-4 font-normal text-gray-800 border border-gray-100 dark:border-white/[0.05] text-theme-sm dark:text-white/90 whitespace-nowrap">
-                      {item.Tipo}
+                      {item.Subcategoria.Tipo}
                     </TableCell>
                   </TableRow>
                 ))}
@@ -619,7 +724,7 @@ export default function DataTableTwo(status: string) {
         isFullscreen
         className="fixed top-0 left-0 flex flex-col justify-between w-full h-screen p-6 overflow-x-hidden overflow-y-auto bg-white dark:bg-gray-900 lg:p-15"
       >
-        <Invoice />
+        <Invoice singleItem={singleItem} />
       </Modal>
       <Modal
         isOpen={isOpenNota}

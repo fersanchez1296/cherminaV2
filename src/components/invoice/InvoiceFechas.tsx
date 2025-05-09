@@ -7,7 +7,14 @@ import {
   TableRow,
 } from "../ui/table";
 
-export default function InvoiceTable() {
+interface data {
+  fecha1?: string;
+  fecha2?: string;
+  fecha3?: string;
+  fecha4?: string;
+}
+
+export default function InvoiceTable({ fecha1, fecha2, fecha3, fecha4 }: data) {
   return (
     <div className="overflow-hidden rounded-2xl border border-gray-100 bg-white dark:border-white/[0.05] dark:bg-white/[0.03] w-full">
       <div className="max-w-full overflow-x-auto">
@@ -43,16 +50,16 @@ export default function InvoiceTable() {
           <TableBody className="divide-y divide-gray-100 dark:divide-white/[0.05]">
             <TableRow>
               <TableCell className="px-5 py-3.5 text-left dark:border-white/[0.05] text-gray-500 text-theme-sm dark:text-gray-400">
-                26 de marzo de 2025, 12:07 PM
+                {fecha1 || "Ticket en curso"}
               </TableCell>
               <TableCell className="px-5 py-3.5 text-left dark:border-white/[0.05] text-gray-500 text-theme-sm dark:text-gray-400">
-                28 de marzo de 2025, 12:07 PM
+                {fecha2 || "Ticket en curso"}
               </TableCell>
               <TableCell className="px-5 py-3.5 text-left dark:border-white/[0.05] text-gray-500 text-theme-sm dark:text-gray-400">
-                Ticket en curso
+                {fecha3 || "Ticket en curso"}
               </TableCell>
               <TableCell className="px-5 py-3.5 text-left dark:border-white/[0.05] text-gray-500 text-theme-sm dark:text-gray-400">
-                Ticket en curso
+                {fecha4 || "Ticket en curso"}
               </TableCell>
             </TableRow>
           </TableBody>

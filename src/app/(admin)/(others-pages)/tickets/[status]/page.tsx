@@ -22,13 +22,13 @@ export default async function DataTables({
     [key: string]: string | string[] | undefined;
   }>;
 }) {
-  const {status} = await params;
+  const { status } = await params;
   return (
     <div>
       <PageBreadcrumb pageTitle="Tickets" />
       <div className="space-y-5 sm:space-y-6">
         <ComponentCard title={`Tickets - ${status}`}>
-          <DataTableTwo status/>
+          <DataTableTwo status={status} />
         </ComponentCard>
       </div>
     </div>
