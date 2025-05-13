@@ -6,19 +6,29 @@ import timeGridPlugin from "@fullcalendar/timegrid";
 import esLocale from "@fullcalendar/core/locales/es";
 import interactionPlugin from "@fullcalendar/interaction";
 import { EventInput, EventContentArg } from "@fullcalendar/core";
-import { data } from "./data";
 import { useModal } from "@/hooks/useModal";
 import { Modal } from "@/components/ui/modal/index";
+import { getCalendarEvents } from "@/services/calendarService";
 interface CalendarEvent extends EventInput {
   extendedProps?: {
     calendar: string;
   };
 }
 
+interface data {
+  _id: string;
+  Subcategoria: {
+    Descripcion_prioridad: string;
+  };
+  Fecha_limite_resolucion_SLA: string;
+  Id: number;
+}
+
 const Calendar: React.FC = () => {
   const { isOpen, openModal, closeModal } = useModal();
   const [events, setEvents] = useState<CalendarEvent[]>([]);
-  const [eventData, setEvenetData] = useState<object>();
+  const [eventData, setEvenetData] = useState<data>();
+  const [calendarEvents, setCalendarEvents] = useState<Array<data>>([]);
   const calendarRef = useRef<FullCalendar>(null);
 
   const calendarsEvents: { [key: string]: string } = {
@@ -30,19 +40,24 @@ const Calendar: React.FC = () => {
   };
 
   useEffect(() => {
-    const eventsFetched: CalendarEvent[] = data.map((item) => ({
+    getCalendarEvents().then((ce) => setCalendarEvents(ce.data));
+  }, []);
+
+  useEffect(() => {
+    const eventsFetched: CalendarEvent[] = calendarEvents.map((item) => ({
       id: JSON.stringify(item.Id),
       title: `Ticket ${item.Id}`,
-      start: item.Fecha_limite_resolucion_SLA,
+      start: item?.Fecha_limite_resolucion_SLA,
       allDay: false,
       extendedProps: {
         calendar:
-          calendarsEvents[item?.Descripcion_prioridad ?? ""] ?? "default",
+          calendarsEvents[item?.Subcategoria?.Descripcion_prioridad ?? ""] ??
+          "default",
       },
     }));
 
     setEvents(eventsFetched);
-  }, []);
+  }, [calendarEvents]);
 
   function handleEventClick(clickInfo) {
     console.log(clickInfo.event.title);

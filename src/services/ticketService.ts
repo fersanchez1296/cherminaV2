@@ -1,7 +1,6 @@
 import api from "@/lib/axios";
 
 export const getTickets = async (estado: string) => {
-  console.log(estado);
   let estadoTicket = "";
   switch (estado) {
     case "curso":

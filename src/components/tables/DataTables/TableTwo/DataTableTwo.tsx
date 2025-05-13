@@ -717,7 +717,7 @@ export default function DataTableTwo({ status }: props) {
           </div>
         </div>
       </div>
-
+      {/* ver ticket */}
       <Modal
         isOpen={isOpen}
         onClose={closeModal}
@@ -726,6 +726,7 @@ export default function DataTableTwo({ status }: props) {
       >
         <Invoice singleItem={singleItem} />
       </Modal>
+      {/* nota */}
       <Modal
         isOpen={isOpenNota}
         onClose={closeModalNota}

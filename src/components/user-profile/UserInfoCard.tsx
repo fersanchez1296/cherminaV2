@@ -5,9 +5,8 @@ import { Modal } from "../ui/modal";
 import Button from "../ui/button/Button";
 import Input from "../form/input/InputField";
 import Label from "../form/Label";
-import { useSession } from "next-auth/react";
-export default function UserInfoCard() {
-  const { data: session } = useSession();
+import { data } from "./intrface";
+export default function UserInfoCard({profile}: data) {
   const { isOpen, openModal, closeModal } = useModal();
   const handleSave = () => {
     // Handle save logic here
@@ -28,7 +27,7 @@ export default function UserInfoCard() {
                 Nombre(s)
               </p>
               <p className="text-sm font-medium text-gray-800 dark:text-white/90">
-                {session?.user?.Nombre}
+                {profile?.Nombre}
               </p>
             </div>
 
@@ -37,7 +36,7 @@ export default function UserInfoCard() {
                 Direccion de correo
               </p>
               <p className="text-sm font-medium text-gray-800 dark:text-white/90">
-                {session?.user?.Correo}
+                {profile?.Correo}
               </p>
             </div>
 
@@ -46,7 +45,7 @@ export default function UserInfoCard() {
                 Telefono
               </p>
               <p className="text-sm font-medium text-gray-800 dark:text-white/90">
-                {session?.user?.Telefono}
+                {profile?.Telefono}
               </p>
             </div>
 
@@ -55,7 +54,7 @@ export default function UserInfoCard() {
                 Puesto
               </p>
               <p className="text-sm font-medium text-gray-800 dark:text-white/90">
-                {session?.user?.Puesto}
+                {profile?.Puesto}
               </p>
             </div>
           </div>

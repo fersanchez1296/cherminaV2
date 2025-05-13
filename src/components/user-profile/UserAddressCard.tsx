@@ -5,10 +5,9 @@ import { Modal } from "../ui/modal";
 import Button from "../ui/button/Button";
 import Input from "../form/input/InputField";
 import Label from "../form/Label";
-import { useSession } from "next-auth/react";
-export default function UserAddressCard() {
+import { data } from "./intrface";
+export default function UserAddressCard({profile}: data) {
   const { isOpen, openModal, closeModal } = useModal();
-  const { data: session } = useSession();
   const handleSave = () => {
     // Handle save logic here
     console.log("Saving changes...");
@@ -29,7 +28,7 @@ export default function UserAddressCard() {
                   País
                 </p>
                 <p className="text-sm font-medium text-gray-800 dark:text-white/90">
-                  {session?.user?.Direccion?.Pais}
+                  {profile.Direccion?.Pais}
                 </p>
               </div>
 
@@ -38,7 +37,7 @@ export default function UserAddressCard() {
                   Ciudad/Estado
                 </p>
                 <p className="text-sm font-medium text-gray-800 dark:text-white/90">
-                {session?.user?.Direccion?.Ciudad}
+                {profile.Direccion?.Ciudad}
                 </p>
               </div>
 
@@ -47,7 +46,7 @@ export default function UserAddressCard() {
                   Codigo Postal
                 </p>
                 <p className="text-sm font-medium text-gray-800 dark:text-white/90">
-                {session?.user?.Direccion?.codigoPostal}
+                {profile.Direccion?.codigoPostal}
                 </p>
               </div>
             </div>
