@@ -28,7 +28,7 @@ export default async function DataTables({
       <PageBreadcrumb pageTitle="Tareas" />
       <div className="space-y-5 sm:space-y-6">
         <ComponentCard title={`Tarea - ${status}`}>
-          <TableTareas />
+          <TableTareas status={status} />
         </ComponentCard>
       </div>
     </div>

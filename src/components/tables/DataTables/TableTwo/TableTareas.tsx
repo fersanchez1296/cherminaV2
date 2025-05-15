@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import {
   Table,
   TableBody,
@@ -19,6 +19,7 @@ import {
   ArrowsRepeatOneIcon,
   EditIcon,
 } from "../../../../icons";
+import { getTareas } from "@/services/tareasService";
 import PaginationWithButton from "./PaginationWithButton";
 import Badge from "../../../ui/badge/Badge";
 import { useModal } from "@/hooks/useModal";
@@ -33,101 +34,51 @@ import FormularioContacto from "@/components/form/example-form/FormularioContact
 import FormularioAsignar from "@/components/form/example-form/FormularioAsignar";
 import FormularioReasignar from "@/components/form/example-form/FormularioReasignar";
 import FormularioEditar from "@/components/form/example-form/FormularioEditarTicket";
-const tableRowData = [
-  {
-    resolutor: "Eduardo Antonino Garcia Salazar",
-    Id: 1720,
-    status: "Abierto",
-    fechaCreacion: "26 de marzo de 2025, 12:07 PM",
-    fechaResolucion: "28 de marzo de 2025, 12:07 PM",
-  },
-  {
-    resolutor: "Fernando Sanchez Plascencia",
-    cliente: "Fatima Sanchez Plascencia",
-    Id: 1721,
-    status: "Abierto",
-    fechaCreacion: "26 de marzo de 2025, 12:07 PM",
-    fechaResolucion: "28 de marzo de 2025, 12:07 PM",
-  },
-  {
-    resolutor: "Eduardo Antonino Garcia Salazar",
-    Id: 1722,
-    status: "Abierto",
-    fechaCreacion: "26 de marzo de 2025, 12:07 PM",
-    fechaResolucion: "28 de marzo de 2025, 12:07 PM",
-  },
-  {
-    resolutor: "Eduardo Antonino Garcia Salazar",
-    Id: 1723,
-    status: "Abierto",
-    fechaCreacion: "26 de marzo de 2025, 12:07 PM",
-    fechaResolucion: "28 de marzo de 2025, 12:07 PM",
-  },
-  {
-    resolutor: "Eduardo Antonino Garcia Salazar",
-    Id: 1724,
-    status: "Abierto",
-    fechaCreacion: "26 de marzo de 2025, 12:07 PM",
-    fechaResolucion: "28 de marzo de 2025, 12:07 PM",
-  },
-  {
-    resolutor: "Eduardo Antonino Garcia Salazar",
-    Id: 1725,
-    status: "Abierto",
-    fechaCreacion: "26 de marzo de 2025, 12:07 PM",
-    fechaResolucion: "28 de marzo de 2025, 12:07 PM",
-  },
-  {
-    resolutor: "Eduardo Antonino Garcia Salazar",
-    Id: 1726,
-    status: "Abierto",
-    fechaCreacion: "26 de marzo de 2025, 12:07 PM",
-    fechaResolucion: "28 de marzo de 2025, 12:07 PM",
-  },
-  {
-    resolutor: "Eduardo Antonino Garcia Salazar",
-    Id: 1727,
-    status: "Abierto",
-    fechaCreacion: "26 de marzo de 2025, 12:07 PM",
-    fechaResolucion: "28 de marzo de 2025, 12:07 PM",
-  },
-  {
-    resolutor: "Eduardo Antonino Garcia Salazar",
-    Id: 1728,
-    status: "Abierto",
-    fechaCreacion: "26 de marzo de 2025, 12:07 PM",
-    fechaResolucion: "28 de marzo de 2025, 12:07 PM",
-  },
-  {
-    resolutor: "Eduardo Antonino Garcia Salazar",
-    Id: 1729,
-    status: "Abierto",
-    fechaCreacion: "26 de marzo de 2025, 12:07 PM",
-    fechaResolucion: "28 de marzo de 2025, 12:07 PM",
-  },
-  {
-    resolutor: "Eduardo Antonino Garcia Salazar",
-    Id: 1730,
-    status: "Abierto",
-    fechaCreacion: "26 de marzo de 2025, 12:07 PM",
-    fechaResolucion: "28 de marzo de 2025, 12:07 PM",
-  },
-];
+interface data {
+  _id: string;
+  Estado: { Estado: string; _id: string };
+  Area: object;
+  Creado_por: {
+    _id: string;
+    Nombre: string;
+    Correo: string;
+    Area: Array<{ _id: string; Area: string }>;
+  };
+  Descripcion: string;
+  Fecha_hora_resolucion: string;
+  Asignado_a: Array<{
+    Nombre: string;
+    Correo: string;
+    Area: Array<{ _id: string; Area: string }>;
+  }>;
+  Files: Array<{ _id: string; name: string; url: string }>;
+  IdTicket: object;
+  Id: string;
+}
 type SortKey =
   | "resolutor"
   | "Id"
   | "status"
   | "fechaCreacion"
-  | "fechaResolucion"
+  | "fechaResolucion";
 type SortOrder = "asc" | "desc";
 
-export default function TableTareas() {
+interface props {
+  status: string;
+}
+
+export default function TableTareas({ status }: props) {
+  console.log(status);
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [sortKey, setSortKey] = useState<SortKey>("resolutor");
   const [sortOrder, setSortOrder] = useState<SortOrder>("asc");
+  const [tableRowData, setTableRowData] = useState<Array<data>>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [message, setMessage] = useState("");
+  useEffect(() => {
+    getTareas(status).then((res) => setTableRowData(res.data));
+  }, [status]);
   const { isOpen, openModal, closeModal } = useModal();
   const {
     isOpen: isOpenNota,
@@ -235,7 +186,10 @@ export default function TableTareas() {
                 </svg>
               </span>
             </div>
-            <span className="text-gray-500 dark:text-gray-400"> resultados </span>
+            <span className="text-gray-500 dark:text-gray-400">
+              {" "}
+              resultados{" "}
+            </span>
           </div>
 
           <div className="relative">
@@ -464,7 +418,8 @@ export default function TableTareas() {
             />
             <div className="pt-3 xl:pt-0">
               <p className="pt-3 text-sm font-medium text-center text-gray-500 border-t border-gray-100 dark:border-gray-800 dark:text-gray-400 xl:border-t-0 xl:pt-0 xl:text-left">
-                Mostrando {startIndex + 1} a {endIndex} de {totalItems} resultados
+                Mostrando {startIndex + 1} a {endIndex} de {totalItems}{" "}
+                resultados
               </p>
             </div>
           </div>
