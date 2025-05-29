@@ -61,13 +61,12 @@ export default function FormularioUsuarios({
   ];
 
   const onSubmit = async (data: any) => {
-    // if (isCreate) {
-    //   const result = await postCrearCliente(data);
-    //   onSuccess?.();
-    //   closeModal?.();
-    //   console.log("Resultado del query:", result);
-    // }
-    console.log(data);
+    if (isCreate) {
+      const result = await postCrearCliente(data);
+      onSuccess?.();
+      closeModal?.();
+      console.log("Resultado del query:", result);
+    }
     if (isEdit) {
       const result = await updateUsuario(userId, data);
       onSuccess?.();

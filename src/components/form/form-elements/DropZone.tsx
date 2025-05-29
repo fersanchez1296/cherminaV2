@@ -1,14 +1,20 @@
 "use client";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import ComponentCard from "../../common/ComponentCard";
 import { useDropzone } from "react-dropzone";
+import Image from "next/image";
+import { UseFormReturn, FieldValues } from "react-hook-form";
+interface DropzoneProps {
+  form: UseFormReturn<FieldValues>;
+}
 
-const DropzoneComponent: React.FC = () => {
+const DropzoneComponent: React.FC<DropzoneProps> = ({ form }) => {
+  const [files, setFiles] = useState<File[]>([]);
   const onDrop = (acceptedFiles: File[]) => {
-    console.log("Files dropped:", acceptedFiles);
-    // Handle file uploads here
+    const updatedFiles = [...files, ...acceptedFiles];
+    setFiles(updatedFiles);
+    form.setValue("Files", updatedFiles, { shouldValidate: true });
   };
-
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
     accept: {
@@ -18,6 +24,33 @@ const DropzoneComponent: React.FC = () => {
       "image/svg+xml": [],
     },
   });
+  const getFileExtension = (filename: string) => {
+    return filename.split(".").pop()?.toLowerCase() || "";
+  };
+  const removeFile = (index: number) => {
+    const newFiles = files.filter((_, i) => i !== index);
+    setFiles(newFiles);
+    form.setValue("Files", newFiles, { shouldValidate: true });
+  };
+
+  useEffect(() => {
+    form.register("Files", { required: false });
+  }, [form]);
+
+  const iconMap: { [key: string]: string } = {
+    pdf: "/images/task/pdf.svg",
+    doc: "/images/task/doc.svg",
+    docx: "/images/task/docx.svg",
+    xls: "/images/task/xls.svg",
+    xlsx: "/images/task/xlsx.svg",
+    jpg: "/images/task/jpg.svg",
+    jpeg: "/images/task/jpg.svg",
+    png: "/images/task/png.svg",
+    gif: "/images/task/gif.svg",
+    txt: "/images/task/txt.svg",
+    zip: "/images/task/zip.svg",
+    default: "/images/task/default.svg",
+  };
   return (
     <ComponentCard title="Archivos">
       <div className="transition border border-gray-300 border-dashed cursor-pointer dark:hover:border-brand-500 dark:border-gray-700 rounded-xl hover:border-brand-500">
@@ -57,17 +90,60 @@ const DropzoneComponent: React.FC = () => {
 
             {/* Text Content */}
             <h4 className="mb-3 font-semibold text-gray-800 text-theme-xl dark:text-white/90">
-              {isDragActive ? "Suelta tus archivos aquí" : "Arrastra y suelta tus archivos aquí"}
+              {isDragActive
+                ? "Suelta tus archivos aquí"
+                : "Arrastra y suelta tus archivos aquí"}
             </h4>
 
             <span className=" text-center mb-5 block w-full max-w-[290px] text-sm text-gray-700 dark:text-gray-400">
-             Límite de 10 archivos con un peso máximo de 15Mb
+              Límite de 10 archivos con un peso máximo de 15Mb
             </span>
 
             <span className="font-medium underline text-theme-sm text-brand-500">
               Buscar archivos
             </span>
           </div>
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 m-2">
+          {files.length > 0 &&
+            files.map((f, index) => {
+              const ext = getFileExtension(f.name);
+              const iconSrc = iconMap[ext] || iconMap["default"];
+              return (
+                <div
+                  key={f.name + new Date()}
+                  className="relative hover:border-gray-300 dark:hover:border-white/[0.05] flex w-full cursor-pointer items-center gap-3 rounded-xl border border-gray-200 bg-white py-2.5 pl-3 pr-5 dark:border-gray-800 dark:bg-white/5 sm:w-auto"
+                >
+                  <div className="w-full h-10 max-w-10">
+                    <Image
+                      src={iconSrc}
+                      width={40}
+                      height={40}
+                      className="w-full"
+                      alt="icon"
+                    />
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium text-gray-800 dark:text-white/90">
+                      {f.name}
+                    </p>
+                    <span className="flex items-center gap-1.5">
+                      <span className="text-gray-500 text-theme-xs dark:text-gray-400">
+                        {ext.toUpperCase()}
+                      </span>
+                      <span className="inline-block w-1 h-1 bg-gray-400 rounded-full"></span>
+                      <button
+                        type="button"
+                        onClick={() => removeFile(index)}
+                        className="text-red-500 text-theme-xs dark:text-gray-400 underline"
+                      >
+                        Eliminar
+                      </button>
+                    </span>
+                  </div>
+                </div>
+              );
+            })}
         </div>
       </div>
     </ComponentCard>

@@ -3,41 +3,144 @@
 import ComponentCard from "../../common/ComponentCard";
 import Label from "../Label";
 import Input from "../input/InputField";
-import Select from "../Select";
+import Select from "react-select";
 import Form from "../Form";
 import Button from "../../ui/button/Button";
 import DropzoneComponent from "../form-elements/DropZone";
 import TextArea from "../input/TextArea";
-import { useState } from "react";
+import { useState, CSSProperties, useEffect } from "react";
 import { Modal } from "@/components/ui/modal";
 import { useModal } from "@/hooks/useModal";
 import FormularioCrearCliente from "./FormularioClientes";
+import { useForm, Controller } from "react-hook-form";
+import { calcularFechaLimite } from "@/app/utils/calcular-fecha-limite";
+import { format } from "date-fns";
+import { es } from "date-fns/locale";
+import {
+  getSelectsCrearTicket,
+  postCrearTicket,
+} from "@/services/ticketService";
+import { getBuscarCliente } from "@/services/clientService";
+
+// Interfaces para React Select
+interface Option {
+  value: string;
+  label: string;
+}
+
+interface GroupedOption {
+  label: string;
+  options: Option[];
+}
+
+const groupStyles = {
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "space-between",
+};
+
+const groupBadgeStyles: CSSProperties = {
+  backgroundColor: "#EBECF0",
+  borderRadius: "2em",
+  color: "#172B4D",
+  display: "inline-block",
+  fontSize: 12,
+  fontWeight: "normal",
+  lineHeight: "1",
+  minWidth: 1,
+  padding: "0.16666666666667em 0.5em",
+  textAlign: "center",
+};
+
+const formatGroupLabel = (data: GroupedOption) => (
+  <div style={groupStyles}>
+    <span>{data.label}</span>
+    <span style={groupBadgeStyles}>{data.options.length}</span>
+  </div>
+);
 
 export default function FormularioCrearTicket() {
-  const [message, setMessage] = useState<string>("");
   const { isOpen, openModal, closeModal } = useModal();
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    console.log("Form submitted:");
+  const [Tipo_incidencia, setTipo_incidencia] = useState("");
+  const [area, setArea] = useState("");
+  const [servicio, setServicio] = useState("");
+  const [categoria, setCategoria] = useState("");
+  const [descripcion, setDescripcion] = useState("");
+  const [tiempo, setTiempo] = useState("");
+  const form = useForm();
+  const { handleSubmit, control, setValue } = form;
+  const [resolutores, setResolutores] = useState<GroupedOption[]>([]);
+  const [medios, setMedios] = useState<Option[]>([]);
+  const [subcategoria, setSubcategoria] = useState([]);
+  const [clienteId, setClienteId] = useState();
+  const [cliente, setCliente] = useState("");
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const options = await getSelectsCrearTicket();
+      setResolutores(options.resolutores);
+      setMedios(options.medios);
+      setSubcategoria(options.subcategorias);
+    };
+    fetchData();
+  }, []);
+
+  const handleSubcategoriaChange = (selectedOption: string) => {
+    if (!selectedOption) return; // por si se limpia el select
+
+    const selectedSubcategoria = selectedOption._id;
+    const catalogo = subcategoria.find((s) =>
+      s._id.includes(selectedSubcategoria)
+    );
+
+    if (!catalogo) return;
+
+    const tiempo = catalogo.Prioridad;
+    setValue("tiempo", tiempo);
+    setValue("Area", catalogo.Equipo._id);
+    setDescripcion(catalogo.Descripcion_prioridad);
+    setCategoria(catalogo["Categoría"]);
+    setServicio(catalogo.Servicio);
+    setTipo_incidencia(catalogo.Tipo);
+    setArea(catalogo.Equipo.Area);
+
+    if (tiempo) {
+      const fechaLimite = calcularFechaLimite(tiempo);
+      const fechaFormateada = format(
+        fechaLimite,
+        "d 'de' MMMM 'de' yyyy, h:mm a",
+        {
+          locale: es,
+        }
+      );
+      setTiempo(fechaFormateada);
+    }
   };
 
-  const optionsGender = [
-    { value: "male", label: "Male" },
-    { value: "female", label: "Female" },
-    { value: "other", label: "Others" },
-  ];
-  const handleSelectGender = (value: string) => {
-    console.log("Selected value:", value);
+  const handleSave = async (data: any) => {
+    await postCrearTicket(data);
+    // clearFiles();
   };
 
-  const handleTextareaChange = (value: string) => {
-    setMessage(value);
-    console.log("Message:", value);
+  const handleBuscarCliente = async () => {
+    try {
+      const result = await getBuscarCliente(cliente);
+
+      if (result?.status === 200 && result.data) {
+        setValue("Cliente", result.data._id);
+      } else {
+        console.warn("Cliente no encontrado o respuesta inesperada:", result);
+      }
+    } catch (error) {
+      console.error("Error al buscar cliente:", error);
+    } finally {
+      setCliente("");
+    }
   };
 
   return (
     <ComponentCard title="Crear Ticket">
-      <Form onSubmit={handleSubmit}>
+      <Form onSubmit={handleSubmit(handleSave)}>
         <div className="grid gap-6 sm:grid-cols-2">
           <div className="col-span-2">
             <h4 className="pb-4 text-base font-medium text-gray-800 border-b border-gray-200 dark:border-gray-800 dark:text-white/90">
@@ -52,9 +155,16 @@ export default function FormularioCrearTicket() {
                 id="firstName"
                 placeholder="Ingresa el nombre completo o correo del cliente"
                 className="w-full"
+                value={cliente}
+                onChange={(e) => setCliente(e.target.value)}
               />
             </div>
-            <Button size="sm" className="w-full self-end">
+            <Button
+              size="sm"
+              disabled={!cliente ? true : false}
+              className="w-full self-end"
+              onClick={handleBuscarCliente}
+            >
               Buscar Cliente
             </Button>
             <Button
@@ -72,62 +182,108 @@ export default function FormularioCrearTicket() {
               Ticket
             </h4>
           </div>
+          {/* medio de contacto */}
           <div className="col-span-1">
             <Label htmlFor="email">Medio de Contacto</Label>
-            <Select
-              options={optionsGender}
-              placeholder="Select an option"
-              onChange={handleSelectGender}
-              defaultValue=""
-              className="bg-gray-50 dark:bg-gray-800"
+            <Controller
+              name="Medio"
+              control={control}
+              render={({ field }) => (
+                <Select<Option, false, GroupedOption>
+                  placeholder="Selecciona un medio de contacto"
+                  {...field}
+                  options={medios}
+                  formatGroupLabel={formatGroupLabel}
+                  onChange={(selectedOption) => {
+                    field.onChange(selectedOption);
+                  }}
+                  value={field.value}
+                />
+              )}
             />
           </div>
+          {/* subcategoria */}
           <div className="col-span-1">
             <Label htmlFor="email">Subcategoría</Label>
-            <Select
-              options={optionsGender}
-              placeholder="Select an option"
-              onChange={handleSelectGender}
-              defaultValue=""
-              className="bg-gray-50 dark:bg-gray-800"
+            <Controller
+              name="Subcategoria"
+              control={control}
+              render={({ field }) => (
+                <Select<Option, false, GroupedOption>
+                  placeholder="Selecciona la subcategoría"
+                  {...field}
+                  options={subcategoria}
+                  formatGroupLabel={formatGroupLabel}
+                  onChange={(selectedOption) => {
+                    field.onChange(selectedOption);
+                    handleSubcategoriaChange(selectedOption);
+                  }}
+                  value={field.value}
+                />
+              )}
             />
           </div>
+          {/* categoria */}
           <div>
             <Label htmlFor="firstName">Categoría</Label>
-            <Input type="text" id="firstName" disabled />
+            <Input type="text" id="firstName" disabled value={categoria} />
           </div>
+          {/* servicio */}
           <div>
             <Label htmlFor="firstName">Servicio</Label>
-            <Input type="text" id="firstName" disabled />
+            <Input type="text" id="firstName" disabled value={servicio} />
           </div>
+          {/* Tipo de incidente */}
           <div>
             <Label htmlFor="firstName">Tipo de Incidente</Label>
-            <Input type="text" id="firstName" disabled />
+            <Input
+              type="text"
+              id="firstName"
+              disabled
+              value={Tipo_incidencia}
+            />
           </div>
+          {/* area */}
           <div>
             <Label htmlFor="firstName">Área</Label>
-            <Input type="text" id="firstName" disabled />
+            <Input type="text" id="firstName" disabled value={area} />
           </div>
+          {/* fecha de resolucion */}
           <div>
             <Label htmlFor="firstName">Fecha de Resolución</Label>
-            <Input type="text" id="firstName" disabled />
+            <Input type="text" id="firstName" disabled value={tiempo} />
           </div>
+          {/* prioridad */}
           <div>
             <Label htmlFor="firstName">Prioridad</Label>
-            <Input type="text" id="firstName" disabled />
+            <Input type="text" id="firstName" disabled value={descripcion} />
           </div>
+          {/* oficio de recepcion */}
           <div className="col-span-2">
             <Label htmlFor="firstName">Oficio de Recepción</Label>
-            <Input type="text" id="firstName" />
+            <Controller
+              name="NumeroRec_Oficio"
+              control={control}
+              defaultValue={""}
+              render={({ field }) => (
+                <Input type="text" id="firstName" {...field} />
+              )}
+            />
           </div>
+          {/* descripcion del ticket */}
           <div className="col-span-2">
-            <Label htmlFor="email">Descripción</Label>
-            <TextArea
-              placeholder="Escribe la descripción del ticket..."
-              rows={6}
-              value={message}
-              onChange={handleTextareaChange}
-              className=" bg-gray-50 dark:bg-gray-800"
+            <Label htmlFor="descripcion">Descripción</Label>
+            <Controller
+              name="Descripcion"
+              control={control}
+              render={({ field }) => (
+                <TextArea
+                  className=" bg-gray-50 dark:bg-gray-800"
+                  placeholder="Escribe la descripción del ticket..."
+                  rows={6}
+                  {...field}
+                />
+              )}
             />
           </div>
 
@@ -136,14 +292,24 @@ export default function FormularioCrearTicket() {
               Resolutor o Moderador
             </h4>
           </div>
+          {/* resolutor */}
           <div className="col-span-2">
             <Label htmlFor="email">Resolutor</Label>
-            <Select
-              options={optionsGender}
-              placeholder="Select an option"
-              onChange={handleSelectGender}
-              defaultValue=""
-              className="bg-gray-50 dark:bg-gray-800"
+            <Controller
+              name="Asignado_a"
+              control={control}
+              render={({ field }) => (
+                <Select<Option, false, GroupedOption>
+                  placeholder="Selecciona un resolutor"
+                  {...field}
+                  options={resolutores}
+                  formatGroupLabel={formatGroupLabel}
+                  onChange={(selectedOption) => {
+                    field.onChange(selectedOption);
+                  }}
+                  value={field.value}
+                />
+              )}
             />
           </div>
 
@@ -153,20 +319,26 @@ export default function FormularioCrearTicket() {
             </h4>
           </div>
           <div className="col-span-2">
-            <DropzoneComponent />
+            <DropzoneComponent form={form} />
           </div>
 
           <div className="flex gap-3">
             <Button size="sm" variant="outline">
               Borrar Formulario
             </Button>
-            <Button size="sm">Guardar Ticket</Button>
+            <Button size="sm" type="submit">
+              Guardar Ticket
+            </Button>
           </div>
         </div>
       </Form>
       <Modal isOpen={isOpen} onClose={closeModal} className="max-w-[700px] m-4">
         <div className="no-scrollbar relative w-full max-w-[700px] max-h-[90vh] overflow-y-auto rounded-3xl bg-white p-4 dark:bg-gray-900 lg:p-4">
-          <FormularioCrearCliente />
+          <FormularioCrearCliente
+            disabled={false}
+            isCreate={true}
+            isEdit={false}
+          />
         </div>
       </Modal>
     </ComponentCard>

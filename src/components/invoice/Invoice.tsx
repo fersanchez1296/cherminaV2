@@ -1,6 +1,4 @@
 import React from "react";
-import InvoiceFechas from "./InvoiceFechas";
-import InvoiceUsuarios from "./InvoiceUsuarios";
 import InvoiceOficio from "./InvoiceOficio";
 import InvoiceCategoria from "./InvoiceCategoria";
 import InvoiceHistoria from "./InvoiceHistoria";
@@ -16,18 +14,27 @@ interface singleItem {
       Nombre: string;
       Correo: string;
       Area: Array<{ _id: string; Area: string }>;
+      Direccion_General: { _id: string; Direccion_General: string };
+      Dependencia: { _id: string; Dependencia: string };
+      Ubicacion: string;
     }>;
     Resuelto_por: {
       _id: string;
       Nombre: string;
       Correo: string;
       Area: Array<{ _id: string; Area: string }>;
+      Direccion_General: { _id: string; Direccion_General: string };
+      Dependencia: { _id: string; Dependencia: string };
+      Ubicacion: string;
     };
     Cerrado_por: {
       _id: string;
       Nombre: string;
       Correo: string;
       Area: Array<{ _id: string; Area: string }>;
+      Direccion_General: { _id: string; Direccion_General: string };
+      Dependencia: { _id: string; Dependencia: string };
+      Ubicacion: string;
     };
     Cliente: {
       Nombre: string;
@@ -44,6 +51,9 @@ interface singleItem {
       Nombre: string;
       Correo: string;
       Area: Array<{ _id: string; Area: string }>;
+      Direccion_General: { _id: string; Direccion_General: string };
+      Dependencia: { _id: string; Dependencia: string };
+      Ubicacion: string;
     };
     Descripcion: string;
     Estado: { Estado: string; _id: string };
@@ -87,6 +97,7 @@ interface singleItem {
     vistoBueno: boolean;
     Descripcion_cierre: string;
     PendingReason: string;
+    Respuesta_cierre_reasignado: string;
   };
 }
 
@@ -110,7 +121,6 @@ const iconMap: { [key: string]: string } = {
 };
 
 export default function Invoice({ singleItem }: singleItem) {
-  console.log(singleItem);
   return (
     <div className="flex flex-col h-full gap-6 sm:gap-5 xl:flex-row">
       <div className="rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03] xl:w-5/5">
@@ -147,10 +157,22 @@ export default function Invoice({ singleItem }: singleItem) {
             </Tooltip>
           </div>
         </div>
+        {singleItem?.PendingReason && (
+          <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200 dark:border-gray-800">
+            <h3 className="font-medium text-orange-500 text-theme-xl dark:text-white/90">
+              Ticket Pendiente:{" "}
+              <span className="text-base text-gray-800">
+                {singleItem?.PendingReason}
+              </span>
+            </h3>
+          </div>
+        )}
 
         <div className="p-5 xl:p-8">
-          <div className="flex flex-col gap-6 mb-9 sm:flex-row sm:items-center sm:justify-between">
-            <div className="sm:text-left">
+          {/* cliente */}
+          <div className="grid grid-cols-1 gap-6 mb-9 mt-4 sm:grid-cols-3 sm:divide-x sm:divide-gray-300 dark:sm:divide-gray-700">
+            {/* Columna 1: Cliente */}
+            <div className="px-4">
               <span className="block mb-1 text-sm font-medium text-gray-700 dark:text-gray-400">
                 Cliente
               </span>
@@ -181,102 +203,191 @@ export default function Invoice({ singleItem }: singleItem) {
                 )}
                 <br />
                 {singleItem?.Cliente?.Correo}
-                <br /> {singleItem?.Cliente?.Ubicacion}
+                <br />
+                {singleItem?.Cliente?.Ubicacion}
               </span>
             </div>
 
-            <div className="h-px w-full bg-gray-200 dark:bg-gray-800 sm:h-[250px] sm:w-px"></div>
-
-            <div className="sm:text-left">
-              <span className="block mb-1 text-sm font-medium text-gray-700 dark:text-gray-400">
-                Moderador
-              </span>
-
-              <h5 className="mb-2 text-base font-semibold text-gray-800 dark:text-white/90">
-                {singleItem?.Asignado_a[0]?.Nombre}
-              </h5>
-
-              <p className="mb-4 text-sm text-gray-500 dark:text-gray-400">
-                Instituto de Pensiones del Estado de Jalisco
-                <br />
-                Dirección de Informatica
-                <br />
-                {singleItem?.Asignado_a[0]?.Area.map((a) => a.Area).join(", ")}
-              </p>
-
-              <span className="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
-                Contacto:
-              </span>
-
-              <span className="block text-sm text-gray-500 dark:text-gray-400">
-                3332080340 <span className="text-gray-700">Ext:</span>1364
-                <br />
-                {singleItem?.Asignado_a[0]?.Correo}
-                <br /> Piso 3- Unidad de Estudios Económicos, Actuariales y
-                Presupuesto
-              </span>
-            </div>
-            <div className="h-px w-full bg-gray-200 dark:bg-gray-800 sm:h-[250px] sm:w-px"></div>
-            <div className="sm:text-left">
-              {(singleItem?.Reasignado_a ?? []).length > 0 && (
-                <>
-                  <span className="block mb-1 text-sm font-medium text-gray-700 dark:text-gray-400">
-                    Resolutor
-                  </span>
-                  <h5 className="mb-2 text-base font-semibold text-gray-800 dark:text-white/90">
-                    {(singleItem?.Reasignado_a ?? [])[0]?.Nombre || ""}
-                  </h5>
-
-                  <p className="mb-4 text-sm text-gray-500 dark:text-gray-400">
-                    Instituto de Pensiones del Estado de Jalisco
-                    <br />
-                    Dirección de Informatica
-                    <br />
-                    {(singleItem?.Reasignado_a ?? [])[0]?.Area.map(
-                      (a) => a.Area
-                    ).join(", ")}
-                  </p>
-
-                  <span className="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
-                    Contacto:
-                  </span>
-
-                  <span className="block text-sm text-gray-500 dark:text-gray-400">
-                    3332080340 <span className="text-gray-700">Ext:</span>1364
-                    <br />
-                    {(singleItem?.Reasignado_a ?? [])[0]?.Correo || ""}
-                    <br /> Piso 3- Unidad de Estudios Económicos, Actuariales y
-                    Presupuesto
-                  </span>
-                </>
-              )}
-            </div>
-          </div>
-          <div className="h-px w-full bg-gray-200 dark:bg-gray-800 sm:w-[100%]"></div>
-          <div className="flex flex-col gap-6 mb-9 mt-4 sm:flex-row sm:items-center sm:justify-between">
-            <div className="sm:text-left">
+            {/* Columna 2: Descripción */}
+            <div className="px-4">
               <span className="block mb-1 text-lg font-medium text-gray-900 dark:text-gray-400">
-                Descripcion
+                Descripción
               </span>
-              <span className="block mb-1 text-sm font-medium text-gray-500 dark:text-gray-400">
+              <span className="block text-sm font-medium text-gray-500 dark:text-gray-400">
                 {singleItem?.Descripcion}
               </span>
             </div>
-          </div>
-          {singleItem?.Descripcion_cierre && (
-            <>
-              <div className="flex flex-col gap-6 mb-9 mt-4 sm:flex-row sm:items-center sm:justify-between">
-                <div className="sm:text-left">
-                  <span className="block mb-1 text-lg font-medium text-gray-900 dark:text-gray-400">
-                    Descripcion de cierre
-                  </span>
-                  <span className="block mb-1 text-sm font-medium text-gray-500 dark:text-gray-400">
-                    {singleItem?.Descripcion_cierre || ""}
-                  </span>
-                </div>
+
+            {/* Columna 3: Fechas */}
+            <div className="px-4 flex flex-col gap-2">
+              <div className="text-sm text-gray-700 dark:text-gray-400">
+                <strong>Creado Por:</strong>{" "}
+                <span className="text-gray-800 dark:text-white/90">
+                  {singleItem?.Creado_por?.Nombre}
+                </span>
               </div>
-            </>
-          )}
+
+              <div className="text-sm text-gray-700 dark:text-gray-400">
+                <strong>Fecha de Creación:</strong>{" "}
+                <span className="text-gray-800 dark:text-white/90">
+                  {singleItem?.Fecha_hora_creacion}
+                </span>
+              </div>
+
+              <div className="text-sm text-gray-700 dark:text-gray-400">
+                <strong>Fecha Límite de Resolución:</strong>{" "}
+                <span className="text-gray-800 dark:text-white/90">
+                  {singleItem?.Fecha_limite_resolucion_SLA}
+                </span>
+              </div>
+
+              <div className="text-sm text-gray-700 dark:text-gray-400">
+                <strong>Prioridad:</strong>{" "}
+                <span className="text-gray-800 dark:text-white/90">
+                  {singleItem?.Subcategoria?.Descripcion_prioridad}
+                </span>
+              </div>
+
+              <div className="text-sm text-gray-700 dark:text-gray-400">
+                <strong>Servicio:</strong>{" "}
+                <span className="text-gray-800 dark:text-white/90">
+                  {singleItem?.Subcategoria?.Servicio}
+                </span>
+              </div>
+
+              <div className="text-sm text-gray-700 dark:text-gray-400">
+                <strong>Cerrado Por:</strong>{" "}
+                <span className="text-gray-800 dark:text-white/90">
+                  {singleItem?.Fecha_hora_resolucion}
+                </span>
+              </div>
+
+              <div className="text-sm text-gray-700 dark:text-gray-400">
+                <strong>Fecha de Cierre:</strong>{" "}
+                <span className="text-gray-800 dark:text-white/90">
+                  {singleItem?.Cerrado_por?.Nombre}
+                </span>
+              </div>
+            </div>
+          </div>
+          {/* divisor */}
+          <div className="h-px w-full bg-gray-200 dark:bg-gray-800 sm:w-[100%]"></div>
+          {/* aqui va el moderador y resolutor */}
+          <div className="grid grid-cols-1 gap-6 mb-9 mt-4 sm:grid-cols-3 sm:divide-x sm:divide-gray-300 dark:sm:divide-gray-700">
+            {/* Columna 1: Moderador */}
+            {singleItem?.Asignado_a && (
+              <div className="sm:text-left">
+                <span className="block mb-1 text-sm font-medium text-gray-700 dark:text-gray-400">
+                  Moderador
+                </span>
+
+                <h5 className="mb-2 text-base font-semibold text-gray-800 dark:text-white/90">
+                  {singleItem?.Asignado_a[0]?.Nombre}
+                </h5>
+
+                <p className="mb-4 text-sm text-gray-500 dark:text-gray-400">
+                  {singleItem?.Asignado_a[0]?.Dependencia.Dependencia}
+                  <br />
+                  {
+                    singleItem?.Asignado_a[0]?.Direccion_General
+                      .Direccion_General
+                  }
+                  <br />
+                  {singleItem?.Asignado_a[0]?.Area.map((a) => a.Area).join(
+                    ", "
+                  )}
+                </p>
+
+                <span className="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
+                  Contacto:
+                </span>
+
+                <span className="block text-sm text-gray-500 dark:text-gray-400">
+                  3332080340 <span className="text-gray-700">Ext:</span>1364
+                  <br />
+                  {singleItem?.Asignado_a[0]?.Correo}
+                  <br /> {singleItem.Asignado_a[0]?.Ubicacion}
+                </span>
+              </div>
+            )}
+
+            {/* Columna 2: Resolutor */}
+            {singleItem?.Reasignado_a && (
+              <div className="sm:text-left">
+                {(singleItem?.Reasignado_a ?? []).length > 0 && (
+                  <>
+                    <span className="block mb-1 text-sm font-medium text-gray-700 dark:text-gray-400">
+                      Resolutor
+                    </span>
+                    <h5 className="mb-2 text-base font-semibold text-gray-800 dark:text-white/90">
+                      {(singleItem?.Reasignado_a ?? [])[0]?.Nombre || ""}
+                    </h5>
+
+                    <p className="mb-4 text-sm text-gray-500 dark:text-gray-400">
+                      Instituto de Pensiones del Estado de Jalisco
+                      <br />
+                      Dirección de Informatica
+                      <br />
+                      {(singleItem?.Reasignado_a ?? [])[0]?.Area.map(
+                        (a) => a.Area
+                      ).join(", ")}
+                    </p>
+
+                    <span className="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
+                      Contacto:
+                    </span>
+
+                    <span className="block text-sm text-gray-500 dark:text-gray-400">
+                      3332080340 <span className="text-gray-700">Ext:</span>1364
+                      <br />
+                      {(singleItem?.Reasignado_a ?? [])[0]?.Correo || ""}
+                      <br /> {singleItem.Asignado_a[0]?.Ubicacion}
+                    </span>
+                  </>
+                )}
+              </div>
+            )}
+
+            {/* Columna 3: Descripcion de cierre */}
+            <div className="px-4 flex flex-col gap-2">
+              <div className="text-sm text-gray-700 dark:text-gray-400">
+                <strong>Resuelto Por:</strong>{" "}
+                <span className="text-gray-800 dark:text-white/90">
+                  {singleItem?.Resuelto_por?.Nombre}
+                </span>
+              </div>
+
+              <div className="text-sm text-gray-700 dark:text-gray-400">
+                <strong>Fecha de Resolución:</strong>{" "}
+                <span className="text-gray-800 dark:text-white/90">
+                  {singleItem?.Fecha_hora_resolucion}
+                </span>
+              </div>
+
+              <div className="text-sm text-gray-700 dark:text-gray-400">
+                <span className="text-gray-800 dark:text-white/90">
+                  {(singleItem?.Descripcion_cierre ||
+                    singleItem?.Respuesta_cierre_reasignado) && (
+                    <>
+                      <div className="flex flex-col gap-6 mb-9 mt-4 sm:flex-row sm:items-center sm:justify-between">
+                        <div className="sm:text-left">
+                          <span className="block mb-1 text-lg font-medium text-gray-900 dark:text-gray-400">
+                            Descripcion de Resolución
+                          </span>
+                          <span className="block mb-1 text-sm font-medium text-gray-500 dark:text-gray-400">
+                            {singleItem?.Respuesta_cierre_reasignado ||
+                              singleItem?.Descripcion_cierre ||
+                              ""}
+                          </span>
+                        </div>
+                      </div>
+                    </>
+                  )}
+                </span>
+              </div>
+            </div>
+          </div>
+          <div className="h-px w-full bg-gray-200 dark:bg-gray-800 sm:w-[100%]"></div>
 
           {singleItem?.PendingReason && (
             <>
@@ -293,16 +404,6 @@ export default function Invoice({ singleItem }: singleItem) {
             </>
           )}
           <div className="h-px w-full bg-gray-200 dark:bg-gray-800 sm:w-[100%]"></div>
-          {/* <!-- Invoice Table Fechas Start --> */}
-          <div className="flex flex-col gap-6 mb-9 mt-4 sm:flex-row sm:items-center sm:justify-between">
-            <InvoiceFechas
-              fecha1={singleItem?.Fecha_hora_creacion}
-              fecha2={singleItem?.Fecha_limite_resolucion_SLA}
-              fecha3={singleItem?.Fecha_hora_resolucion}
-              fecha4={singleItem?.Fecha_hora_cierre}
-            />
-          </div>
-          {/* <!-- Invoice Table Fechas End --> */}
           {/* <!-- Invoice Table categoria Start --> */}
           <div className="flex flex-col gap-6 mb-9 mt-4 sm:flex-row sm:items-center sm:justify-between">
             <InvoiceCategoria
@@ -311,15 +412,6 @@ export default function Invoice({ singleItem }: singleItem) {
             />
           </div>
           {/* <!-- Invoice Table categoria End --> */}
-          {/* <!-- Invoice Table Usuarios Start --> */}
-          <div className="flex flex-col gap-6 mb-9 mt-4 sm:flex-row sm:items-center sm:justify-between">
-            <InvoiceUsuarios
-              usuario1={singleItem?.Creado_por?.Nombre}
-              usuario2={singleItem?.Resuelto_por?.Nombre}
-              usuario3={singleItem?.Cerrado_por?.Nombre}
-            />
-          </div>
-          {/* <!-- Invoice Table Usuarios End --> */}
           {/* <!-- Invoice Table oficio Start --> */}
           <div className="flex flex-col gap-6 mb-9 mt-4 sm:flex-row sm:items-center sm:justify-between">
             <InvoiceOficio

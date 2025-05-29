@@ -4,6 +4,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { useSidebar } from "../context/SidebarContext";
+import { useSession } from "next-auth/react";
 import {
   // BoxCubeIcon,
   CalenderIcon,
@@ -26,7 +27,6 @@ import {
   SearchIcon,
 } from "../icons/index";
 import SidebarWidget from "./SidebarWidget";
-const role = "student";
 type NavItem = {
   name: string;
   icon: React.ReactNode;
@@ -42,289 +42,6 @@ type NavItem = {
   }[];
 };
 
-const navItems: NavItem[] = [
-  {
-    icon: <UserCircleIcon />,
-    name: "Perfil",
-    path: "/profile",
-    new: true,
-    visible: ["admin", "teacher", "student", "parent"],
-  },
-  {
-    icon: <CalenderIcon />,
-    name: "Calendario",
-    path: "/calendar",
-    new: true,
-    visible: ["admin", "teacher", "student", "parent"],
-  },
-  {
-    icon: <SearchIcon />,
-    name: "Búsqueda avanzada",
-    path: "/busqueda-avanzada",
-    visible: ["admin", "teacher", "student", "parent"],
-  },
-  {
-    icon: <GridIcon />,
-    name: "Dashboard",
-    subItems: [
-      {
-        name: "Dashboard",
-        path: "/dashboard",
-        pro: false,
-        visible: ["admin", "teacher", "student", "parent"],
-      },
-      {
-        name: "Analytics",
-        path: "/analytics",
-        pro: true,
-        visible: ["admin", "teacher", "student", "parent"],
-      },
-      {
-        name: "Marketing",
-        path: "/marketing",
-        pro: true,
-        visible: ["admin", "teacher", "student", "parent"],
-      },
-      {
-        name: "CRM",
-        path: "/crm",
-        pro: true,
-        visible: ["admin", "teacher", "student", "parent"],
-      },
-      {
-        name: "Stocks",
-        path: "/stocks",
-        new: true,
-        pro: true,
-        visible: ["admin", "teacher", "student", "parent"],
-      },
-      {
-        name: "SaaS",
-        path: "/saas",
-        new: true,
-        pro: true,
-        visible: ["admin", "teacher", "student", "parent"],
-      },
-    ],
-    visible: ["admin", "teacher", "student", "parent"],
-  },
-  {
-    icon: <FileCirclePlusIcon />,
-    name: "Crear Ticket",
-    path: "/crear-ticket",
-    visible: ["admin", "teacher", "student", "parent"],
-  },
-  {
-    name: "Tickets",
-    icon: <DocsIcon />,
-    subItems: [
-      {
-        name: "Nuevos",
-        path: "/tickets/nuevo",
-        visible: ["admin", "teacher", "parent"],
-      },
-      {
-        name: "En curso",
-        path: "/tickets/curso",
-        visible: ["admin", "teacher", "student", "parent"],
-      },
-      {
-        name: "Reabiertos",
-        path: "/tickets/reabierto",
-        visible: ["admin", "teacher", "student", "parent"],
-      },
-      {
-        name: "Pendientes",
-        path: "/tickets/pendiente",
-        visible: ["admin", "teacher", "student", "parent"],
-      },
-      {
-        name: "Revisión",
-        path: "/tickets/revision",
-        visible: ["admin", "teacher", "student", "parent"],
-      },
-      {
-        name: "Mesa de servicio",
-        path: "/tickets/mesaServicio",
-        visible: ["admin", "teacher", "student", "parent"],
-      },
-      {
-        name: "Resueltos",
-        path: "/tickets/resuelto",
-        visible: ["admin", "teacher", "student", "parent"],
-      },
-      {
-        name: "Cerrados",
-        path: "/tickets/cerrado",
-        visible: ["admin", "teacher", "student", "parent"],
-      },
-      // {
-      //   name: "List",
-      //   path: "/task-list",
-      //   visible: ["admin", "teacher", "student", "parent"],
-      // },
-      // {
-      //   name: "Kanban",
-      //   path: "/task-kanban",
-      //   visible: ["admin", "teacher", "student", "parent"],
-      // },
-    ],
-    visible: ["admin", "teacher", "student", "parent"],
-  },
-  {
-    name: "Tareas",
-    icon: <TaskIcon />,
-    subItems: [
-      {
-        name: "Nuevas",
-        path: "/tareas/nuevo",
-        new: true,
-        visible: ["admin", "teacher", "student", "parent"],
-      },
-      {
-        name: "En curso",
-        path: "/tareas/curso",
-        new: true,
-        visible: ["admin", "teacher", "student", "parent"],
-      },
-      {
-        name: "Resueltas",
-        path: "/tareas/resuelto",
-        new: true,
-        visible: ["admin", "teacher", "student", "parent"],
-      },
-      // {
-      //   name: "List",
-      //   path: "/task-list",
-      //   visible: ["admin", "teacher", "student", "parent"],
-      // },
-      // {
-      //   name: "Kanban",
-      //   path: "/task-kanban",
-      //   visible: ["admin", "teacher", "student", "parent"],
-      // },
-    ],
-    visible: ["admin", "teacher", "student", "parent"],
-  },
-  {
-    icon: <UsersGroupIcon />,
-    name: "Usuarios",
-    path: "/usuarios",
-    visible: ["admin", "teacher", "student", "parent"],
-  },
-  {
-    icon: <UsersIcon />,
-    name: "Clientes",
-    path: "/clientes",
-    visible: ["admin", "teacher", "student", "parent"],
-  },
-  // {
-  //   name: "Forms",
-  //   icon: <ListIcon />,
-  //   subItems: [
-  //     {
-  //       name: "Form Elements",
-  //       path: "/form-elements",
-  //       pro: false,
-  //       visible: ["admin", "teacher", "student", "parent"],
-  //     },
-  //     {
-  //       name: "Form Layout",
-  //       path: "/form-layout",
-  //       pro: true,
-  //       visible: ["admin", "teacher", "student", "parent"],
-  //     },
-  //   ],
-  //   visible: ["admin", "teacher", "student", "parent"],
-  // },
-  // {
-  //   name: "Tables",
-  //   icon: <TableIcon />,
-  //   subItems: [
-  //     {
-  //       name: "Basic Tables",
-  //       path: "/basic-tables",
-  //       pro: false,
-  //       visible: ["admin", "teacher", "student", "parent"],
-  //     },
-  //     {
-  //       name: "Data Tables",
-  //       path: "/data-tables",
-  //       pro: true,
-  //       visible: ["admin", "teacher", "student", "parent"],
-  //     },
-  //   ],
-  //   visible: ["admin", "teacher", "student", "parent"],
-  // },
-  // {
-  //   name: "Pages",
-  //   icon: <PageIcon />,
-  //   subItems: [
-  //     {
-  //       name: "File Manager",
-  //       path: "/file-manager",
-  //       pro: true,
-  //       visible: ["admin", "teacher", "student", "parent"],
-  //     },
-  //     {
-  //       name: "Pricing Tables",
-  //       path: "/pricing-tables",
-  //       pro: true,
-  //       visible: ["admin", "teacher", "student", "parent"],
-  //     },
-  //     {
-  //       name: "Faqs",
-  //       path: "/faq",
-  //       pro: true,
-  //       visible: ["admin", "teacher", "student", "parent"],
-  //     },
-  //     {
-  //       name: "Blank Page",
-  //       path: "/blank",
-  //       pro: true,
-  //       visible: ["admin", "teacher", "student", "parent"],
-  //     },
-  //     {
-  //       name: "404 Error",
-  //       path: "/error-404",
-  //       pro: true,
-  //       visible: ["admin", "teacher", "student", "parent"],
-  //     },
-  //     {
-  //       name: "500 Error",
-  //       path: "/error-500",
-  //       pro: true,
-  //       visible: ["admin", "teacher", "student", "parent"],
-  //     },
-  //     {
-  //       name: "503 Error",
-  //       path: "/error-503",
-  //       pro: true,
-  //       visible: ["admin", "teacher", "student", "parent"],
-  //     },
-  //     {
-  //       name: "Coming Soon",
-  //       path: "/coming-soon",
-  //       pro: true,
-  //       visible: ["admin", "teacher", "student", "parent"],
-  //     },
-  //     {
-  //       name: "Maintenance",
-  //       path: "/maintenance",
-  //       pro: true,
-  //       visible: ["admin", "teacher", "student", "parent"],
-  //     },
-  //     {
-  //       name: "Success",
-  //       path: "/success",
-  //       pro: true,
-  //       visible: ["admin", "teacher", "student", "parent"],
-  //     },
-  //   ],
-  //   visible: ["admin", "teacher", "student", "parent"],
-  // },
-];
-
 // const othersItems: NavItem[] = [
 //   {
 //     icon: <PieChartIcon />,
@@ -334,22 +51,22 @@ const navItems: NavItem[] = [
 //         name: "Line Chart",
 //         path: "/line-chart",
 //         pro: true,
-//         visible: ["admin", "teacher", "student", "parent"],
+//         visible: ["Administrador", "Usuario", "Root", "Moderador", "Auditor"],
 //       },
 //       {
 //         name: "Bar Chart",
 //         path: "/bar-chart",
 //         pro: true,
-//         visible: ["admin", "teacher", "student", "parent"],
+//         visible: ["Administrador", "Usuario", "Root", "Moderador", "Auditor"],
 //       },
 //       {
 //         name: "Pie Chart",
 //         path: "/pie-chart",
 //         pro: true,
-//         visible: ["admin", "teacher", "student", "parent"],
+//         visible: ["Administrador", "Usuario", "Root", "Moderador", "Auditor"],
 //       },
 //     ],
-//     visible: ["admin", "teacher", "student", "parent"],
+//     visible: ["Administrador", "Usuario", "Root", "Moderador", "Auditor"],
 //   },
 //   {
 //     icon: <BoxCubeIcon />,
@@ -359,136 +76,136 @@ const navItems: NavItem[] = [
 //         name: "Alerts",
 //         path: "/alerts",
 //         pro: true,
-//         visible: ["admin", "teacher", "student", "parent"],
+//         visible: ["Administrador", "Usuario", "Root", "Moderador", "Auditor"],
 //       },
 //       {
 //         name: "Avatar",
 //         path: "/avatars",
 //         pro: true,
-//         visible: ["admin", "teacher", "student", "parent"],
+//         visible: ["Administrador", "Usuario", "Root", "Moderador", "Auditor"],
 //       },
 //       {
 //         name: "Badge",
 //         path: "/badge",
 //         pro: true,
-//         visible: ["admin", "teacher", "student", "parent"],
+//         visible: ["Administrador", "Usuario", "Root", "Moderador", "Auditor"],
 //       },
 //       {
 //         name: "Breadcrumb",
 //         path: "/breadcrumb",
 //         pro: true,
-//         visible: ["admin", "teacher", "student", "parent"],
+//         visible: ["Administrador", "Usuario", "Root", "Moderador", "Auditor"],
 //       },
 //       {
 //         name: "Buttons",
 //         path: "/buttons",
 //         pro: true,
-//         visible: ["admin", "teacher", "student", "parent"],
+//         visible: ["Administrador", "Usuario", "Root", "Moderador", "Auditor"],
 //       },
 //       {
 //         name: "Buttons Group",
 //         path: "/buttons-group",
 //         pro: true,
-//         visible: ["admin", "teacher", "student", "parent"],
+//         visible: ["Administrador", "Usuario", "Root", "Moderador", "Auditor"],
 //       },
 //       {
 //         name: "Cards",
 //         path: "/cards",
 //         pro: true,
-//         visible: ["admin", "teacher", "student", "parent"],
+//         visible: ["Administrador", "Usuario", "Root", "Moderador", "Auditor"],
 //       },
 //       {
 //         name: "Carousel",
 //         path: "/carousel",
 //         pro: true,
-//         visible: ["admin", "teacher", "student", "parent"],
+//         visible: ["Administrador", "Usuario", "Root", "Moderador", "Auditor"],
 //       },
 //       {
 //         name: "Dropdowns",
 //         path: "/dropdowns",
 //         pro: true,
-//         visible: ["admin", "teacher", "student", "parent"],
+//         visible: ["Administrador", "Usuario", "Root", "Moderador", "Auditor"],
 //       },
 //       {
 //         name: "Images",
 //         path: "/images",
 //         pro: true,
-//         visible: ["admin", "teacher", "student", "parent"],
+//         visible: ["Administrador", "Usuario", "Root", "Moderador", "Auditor"],
 //       },
 //       {
 //         name: "Links",
 //         path: "/links",
 //         pro: true,
-//         visible: ["admin", "teacher", "student", "parent"],
+//         visible: ["Administrador", "Usuario", "Root", "Moderador", "Auditor"],
 //       },
 //       {
 //         name: "List",
 //         path: "/list",
 //         pro: true,
-//         visible: ["admin", "teacher", "student", "parent"],
+//         visible: ["Administrador", "Usuario", "Root", "Moderador", "Auditor"],
 //       },
 //       {
 //         name: "Modals",
 //         path: "/modals",
 //         pro: true,
-//         visible: ["admin", "teacher", "student", "parent"],
+//         visible: ["Administrador", "Usuario", "Root", "Moderador", "Auditor"],
 //       },
 //       {
 //         name: "Notification",
 //         path: "/notifications",
 //         pro: true,
-//         visible: ["admin", "teacher", "student", "parent"],
+//         visible: ["Administrador", "Usuario", "Root", "Moderador", "Auditor"],
 //       },
 //       {
 //         name: "Pagination",
 //         path: "/pagination",
 //         pro: true,
-//         visible: ["admin", "teacher", "student", "parent"],
+//         visible: ["Administrador", "Usuario", "Root", "Moderador", "Auditor"],
 //       },
 //       {
 //         name: "Popovers",
 //         path: "/popovers",
 //         pro: true,
-//         visible: ["admin", "teacher", "student", "parent"],
+//         visible: ["Administrador", "Usuario", "Root", "Moderador", "Auditor"],
 //       },
 //       {
 //         name: "Progressbar",
 //         path: "/progress-bar",
 //         pro: true,
-//         visible: ["admin", "teacher", "student", "parent"],
+//         visible: ["Administrador", "Usuario", "Root", "Moderador", "Auditor"],
 //       },
 //       {
 //         name: "Ribbons",
 //         path: "/ribbons",
 //         pro: true,
-//         visible: ["admin", "teacher", "student", "parent"],
+//         visible: ["Administrador", "Usuario", "Root", "Moderador", "Auditor"],
 //       },
 //       {
 //         name: "Spinners",
 //         path: "/spinners",
 //         pro: true,
-//         visible: ["admin", "teacher", "student", "parent"],
+//         visible: ["Administrador", "Usuario", "Root", "Moderador", "Auditor"],
 //       },
 //       {
 //         name: "Tabs",
 //         path: "/tabs",
 //         pro: true,
-//         visible: ["admin", "teacher", "student", "parent"],
+//         visible: ["Administrador", "Usuario", "Root", "Moderador", "Auditor"],
 //       },
 //       {
 //         name: "Tooltips",
 //         path: "/tooltips",
 //         pro: true,
-//         visible: ["admin", "teacher", "student", "parent"],
+//         visible: ["admin", "Usuario", "Root", "Moderador", "Auditor"],
 //       },
 //       {
 //         name: "Videos",
 //         path: "/videos",
 //         pro: true,
-//         visible: ["admin", "teacher", "student", "parent"],
+//         visible: ["admin", "Usuario", "Root", "Moderador", "Auditor"],
 //       },
 //     ],
-//     visible: ["admin", "teacher", "student", "parent"],
+//     visible: ["admin", "Usuario", "Root", "Moderador", "Auditor"],
 //   },
 //   {
 //     icon: <PlugInIcon />,
@@ -503,7 +220,7 @@ const navItems: NavItem[] = [
 //         pro: true,
 //       },
 //     ],
-//     visible: ["admin", "teacher", "student", "parent"],
+//     visible: ["admin", "Usuario", "Root", "Moderador", "Auditor"],
 //   },
 // ];
 
@@ -512,7 +229,7 @@ const navItems: NavItem[] = [
 //     icon: <ChatIcon />,
 //     name: "Chat",
 //     path: "/chat",
-//     visible: ["admin", "teacher", "student", "parent"],
+//     visible: ["admin", "Usuario", "Root", "Moderador", "Auditor"],
 //   },
 //   {
 //     icon: <MailIcon />,
@@ -521,28 +238,311 @@ const navItems: NavItem[] = [
 //       {
 //         name: "Inbox",
 //         path: "/inbox",
-//         visible: ["admin", "teacher", "student", "parent"],
+//         visible: ["admin", "Usuario", "Root", "Moderador", "Auditor"],
 //       },
 //       {
 //         name: "Details",
 //         path: "/inbox-details",
-//         visible: ["admin", "teacher", "student", "parent"],
+//         visible: ["admin", "Usuario", "Root", "Moderador", "Auditor"],
 //       },
 //     ],
-//     visible: ["admin", "teacher", "student", "parent"],
+//     visible: ["admin", "Usuario", "Root", "Moderador", "Auditor"],
 //   },
 //   {
 //     icon: <DocsIcon />,
 //     name: "Invoice",
 //     path: "/invoice",
-//     visible: ["admin", "teacher", "student", "parent"],
+//     visible: ["admin", "Usuario", "Root", "Moderador", "Auditor"],
 //   },
 // ];
 
 const AppSidebar: React.FC = () => {
+  const { data: session } = useSession();
+  const role = session?.user?.Rol?.Rol;
   const { isExpanded, isMobileOpen, isHovered, setIsHovered } = useSidebar();
   const pathname = usePathname();
-
+  const navItems: NavItem[] = [
+    {
+      icon: <UserCircleIcon />,
+      name: "Perfil",
+      path: "/profile",
+      new: true,
+      visible: ["Administrador", "Usuario", "Root", "Moderador", "Auditor"],
+    },
+    {
+      icon: <CalenderIcon />,
+      name: "Calendario",
+      path: "/calendar",
+      new: true,
+      visible: ["Administrador", "Usuario", "Root", "Moderador", "Auditor"],
+    },
+    {
+      icon: <SearchIcon />,
+      name: "Búsqueda avanzada",
+      path: "/busqueda-avanzada",
+      visible: ["Administrador", "Root", "Moderador", "Auditor"],
+    },
+    {
+      icon: <GridIcon />,
+      name: "Dashboard",
+      subItems: [
+        {
+          name: "Dashboard",
+          path: "/dashboard",
+          pro: false,
+          visible: ["Administrador", "Usuario", "Root", "Moderador", "Auditor"],
+        },
+        {
+          name: "Analytics",
+          path: "/analytics",
+          pro: true,
+          visible: ["Administrador", "Usuario", "Root", "Moderador", "Auditor"],
+        },
+        {
+          name: "Marketing",
+          path: "/marketing",
+          pro: true,
+          visible: ["Administrador", "Usuario", "Root", "Moderador", "Auditor"],
+        },
+        {
+          name: "CRM",
+          path: "/crm",
+          pro: true,
+          visible: ["Administrador", "Usuario", "Root", "Moderador", "Auditor"],
+        },
+        {
+          name: "Stocks",
+          path: "/stocks",
+          new: true,
+          pro: true,
+          visible: ["Administrador", "Usuario", "Root", "Moderador", "Auditor"],
+        },
+        {
+          name: "SaaS",
+          path: "/saas",
+          new: true,
+          pro: true,
+          visible: ["Administrador", "Usuario", "Root", "Moderador", "Auditor"],
+        },
+      ],
+      visible: ["Administrador", "Usuario", "Root", "Moderador", "Auditor"],
+    },
+    {
+      icon: <FileCirclePlusIcon />,
+      name: "Crear Ticket",
+      path: "/crear-ticket",
+      visible: ["Administrador", "Root"],
+    },
+    {
+      name: "Tickets",
+      icon: <DocsIcon />,
+      subItems: [
+        {
+          name: "Nuevos",
+          path: "/tickets/nuevo",
+          visible: ["Administrador", "Root", "Moderador"],
+        },
+        {
+          name: "En curso",
+          path: "/tickets/curso",
+          visible: ["Administrador", "Usuario", "Root", "Moderador"],
+        },
+        {
+          name: "Reabiertos",
+          path: "/tickets/reabierto",
+          visible: ["Administrador", "Usuario", "Root", "Moderador"],
+        },
+        {
+          name: "Pendientes",
+          path: "/tickets/pendiente",
+          visible: ["Administrador", "Usuario", "Root", "Moderador"],
+        },
+        {
+          name: "Revisión",
+          path: "/tickets/revision",
+          visible: ["Administrador", "Usuario", "Root", "Moderador"],
+        },
+        {
+          name: "Mesa de servicio",
+          path: "/tickets/mesaServicio",
+          visible: ["Administrador", "Root"],
+        },
+        {
+          name: "Resueltos",
+          path: "/tickets/resuelto",
+          visible: ["Administrador", "Usuario", "Root", "Moderador"],
+        },
+        {
+          name: "Cerrados",
+          path: "/tickets/cerrado",
+          visible: ["Administrador", "Usuario", "Root", "Moderador"],
+        },
+        // {
+        //   name: "List",
+        //   path: "/task-list",
+        //   visible: ["Administrador", "Usuario", "Root", "Moderador", "Auditor"],
+        // },
+        // {
+        //   name: "Kanban",
+        //   path: "/task-kanban",
+        //   visible: ["Administrador", "Usuario", "Root", "Moderador", "Auditor"],
+        // },
+      ],
+      visible: ["Administrador", "Usuario", "Root", "Moderador"],
+    },
+    {
+      name: "Tareas",
+      icon: <TaskIcon />,
+      subItems: [
+        {
+          name: "Nuevas",
+          path: "/tareas/nuevo",
+          new: true,
+          visible: ["Administrador", "Usuario", "Root", "Moderador", "Auditor"],
+        },
+        {
+          name: "En curso",
+          path: "/tareas/curso",
+          new: true,
+          visible: ["Administrador", "Usuario", "Root", "Moderador", "Auditor"],
+        },
+        {
+          name: "Resueltas",
+          path: "/tareas/resuelto",
+          new: true,
+          visible: ["Administrador", "Usuario", "Root", "Moderador", "Auditor"],
+        },
+        // {
+        //   name: "List",
+        //   path: "/task-list",
+        //   visible: ["Administrador", "Usuario", "Root", "Moderador", "Auditor"],
+        // },
+        // {
+        //   name: "Kanban",
+        //   path: "/task-kanban",
+        //   visible: ["Administrador", "Usuario", "Root", "Moderador", "Auditor"],
+        // },
+      ],
+      visible: ["Administrador", "Usuario", "Root", "Moderador", "Auditor"],
+    },
+    {
+      icon: <UsersGroupIcon />,
+      name: "Usuarios",
+      path: "/usuarios",
+      visible: ["Administrador", "Root"],
+    },
+    {
+      icon: <UsersIcon />,
+      name: "Clientes",
+      path: "/clientes",
+      visible: ["Administrador", "Root"],
+    },
+    // {
+    //   name: "Forms",
+    //   icon: <ListIcon />,
+    //   subItems: [
+    //     {
+    //       name: "Form Elements",
+    //       path: "/form-elements",
+    //       pro: false,
+    //       visible: ["Administrador", "Usuario", "Root", "Moderador", "Auditor"],
+    //     },
+    //     {
+    //       name: "Form Layout",
+    //       path: "/form-layout",
+    //       pro: true,
+    //       visible: ["Administrador", "Usuario", "Root", "Moderador", "Auditor"],
+    //     },
+    //   ],
+    //   visible: ["Administrador", "Usuario", "Root", "Moderador", "Auditor"],
+    // },
+    // {
+    //   name: "Tables",
+    //   icon: <TableIcon />,
+    //   subItems: [
+    //     {
+    //       name: "Basic Tables",
+    //       path: "/basic-tables",
+    //       pro: false,
+    //       visible: ["Administrador", "Usuario", "Root", "Moderador", "Auditor"],
+    //     },
+    //     {
+    //       name: "Data Tables",
+    //       path: "/data-tables",
+    //       pro: true,
+    //       visible: ["Administrador", "Usuario", "Root", "Moderador", "Auditor"],
+    //     },
+    //   ],
+    //   visible: ["Administrador", "Usuario", "Root", "Moderador", "Auditor"],
+    // },
+    // {
+    //   name: "Pages",
+    //   icon: <PageIcon />,
+    //   subItems: [
+    //     {
+    //       name: "File Manager",
+    //       path: "/file-manager",
+    //       pro: true,
+    //       visible: ["Administrador", "Usuario", "Root", "Moderador", "Auditor"],
+    //     },
+    //     {
+    //       name: "Pricing Tables",
+    //       path: "/pricing-tables",
+    //       pro: true,
+    //       visible: ["Administrador", "Usuario", "Root", "Moderador", "Auditor"],
+    //     },
+    //     {
+    //       name: "Faqs",
+    //       path: "/faq",
+    //       pro: true,
+    //       visible: ["Administrador", "Usuario", "Root", "Moderador", "Auditor"],
+    //     },
+    //     {
+    //       name: "Blank Page",
+    //       path: "/blank",
+    //       pro: true,
+    //       visible: ["Administrador", "Usuario", "Root", "Moderador", "Auditor"],
+    //     },
+    //     {
+    //       name: "404 Error",
+    //       path: "/error-404",
+    //       pro: true,
+    //       visible: ["Administrador", "Usuario", "Root", "Moderador", "Auditor"],
+    //     },
+    //     {
+    //       name: "500 Error",
+    //       path: "/error-500",
+    //       pro: true,
+    //       visible: ["Administrador", "Usuario", "Root", "Moderador", "Auditor"],
+    //     },
+    //     {
+    //       name: "503 Error",
+    //       path: "/error-503",
+    //       pro: true,
+    //       visible: ["Administrador", "Usuario", "Root", "Moderador", "Auditor"],
+    //     },
+    //     {
+    //       name: "Coming Soon",
+    //       path: "/coming-soon",
+    //       pro: true,
+    //       visible: ["Administrador", "Usuario", "Root", "Moderador", "Auditor"],
+    //     },
+    //     {
+    //       name: "Maintenance",
+    //       path: "/maintenance",
+    //       pro: true,
+    //       visible: ["Administrador", "Usuario", "Root", "Moderador", "Auditor"],
+    //     },
+    //     {
+    //       name: "Success",
+    //       path: "/success",
+    //       pro: true,
+    //       visible: ["Administrador", "Usuario", "Root", "Moderador", "Auditor"],
+    //     },
+    //   ],
+    //   visible: ["Administrador", "Usuario", "Root", "Moderador", "Auditor"],
+    // },
+  ];
   const renderMenuItems = (
     navItems: NavItem[],
     menuType: "main" | "support" | "others"

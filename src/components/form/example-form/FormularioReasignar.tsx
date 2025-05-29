@@ -6,7 +6,7 @@ import Label from "../Label";
 import Select from "../Select";
 import TextArea from "../input/TextArea";
 import Button from "../../ui/button/Button";
-import Switch from "../switch/Switch";
+import Switch from "@/components/form/switch/Switch";
 
 export default function FormularioReasignar() {
   const [message, setMessage] = useState<string>("");

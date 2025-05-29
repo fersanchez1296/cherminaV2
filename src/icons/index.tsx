@@ -69,7 +69,9 @@ import UsersGroupIcon from "./users-group.svg";
 import UsersIcon from "./users.svg";
 import BookOpenIcon from "./book-open.svg";
 import SearchIcon from "./search.svg";
+import AnnotationIcon from "./annotation.svg";
 export {
+  AnnotationIcon,
   SearchIcon,
   BookOpenIcon,
   UsersIcon,

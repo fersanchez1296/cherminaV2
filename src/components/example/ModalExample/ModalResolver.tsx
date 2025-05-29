@@ -7,28 +7,28 @@ import Label from "@/components/form/Label";
 import DropzoneComponent from "@/components/form/form-elements/DropZone";
 import Button from "@/components/ui/button/Button";
 import { useForm, Controller } from "react-hook-form";
-import { putNota } from "@/services/ticketService";
+import { putResolverTicket } from "@/services/ticketService";
 interface Open {
   open: boolean;
   handleToggleModalState: (modal: string, boolState: boolean) => void;
   id?: string;
 }
 
-const ModalNota = ({ open, handleToggleModalState, id }: Open) => {
+const ModalResolver = ({ open, handleToggleModalState, id }: Open) => {
   const { isOpen, closeModal, setOpen } = useModal();
   const form = useForm();
   const { handleSubmit, control, reset } = form;
   const callbackClose = () => {
     closeModal();
-    handleToggleModalState("nota", false);
+    handleToggleModalState("resolver", false);
   };
 
   const clearFiles = () => {
     reset();
   };
 
-  const handlePutNota = async (data) => {
-    const result = await putNota(data, id);
+  const handleResolverTicket = async (data) => {
+    const result = await putResolverTicket(data, id);
     // result.status = 201
     clearFiles();
   };
@@ -46,7 +46,7 @@ const ModalNota = ({ open, handleToggleModalState, id }: Open) => {
         <div className="no-scrollbar relative w-full max-w-[700px] overflow-y-auto rounded-3xl bg-white p-4 dark:bg-gray-900 lg:p-11">
           <div className="px-2 pr-14">
             <h4 className="mb-2 text-2xl font-semibold text-gray-800 dark:text-white/90">
-              Agregar nota
+              Resolver Ticket
             </h4>
           </div>
           <form className="flex flex-col">
@@ -54,9 +54,9 @@ const ModalNota = ({ open, handleToggleModalState, id }: Open) => {
               <div className="mt-7">
                 <div className="grid grid-cols-1 gap-x-6 gap-y-5 lg:grid-cols-2">
                   <div className="col-span-2">
-                    <Label>Descripcion</Label>
+                    <Label>Descripcion de resolución</Label>
                     <Controller
-                      name="Descripcion"
+                      name="Respuesta_cierre_reasignado"
                       control={control}
                       rules={{ required: "Este campo es obligatorio" }}
                       render={({ field, fieldState }) => (
@@ -79,7 +79,7 @@ const ModalNota = ({ open, handleToggleModalState, id }: Open) => {
               <Button size="sm" variant="outline" onClick={callbackClose}>
                 Cerrar
               </Button>
-              <Button size="sm" onClick={handleSubmit(handlePutNota)}>
+              <Button size="sm" onClick={handleSubmit(handleResolverTicket)}>
                 Guardar nota
               </Button>
             </div>
@@ -90,4 +90,4 @@ const ModalNota = ({ open, handleToggleModalState, id }: Open) => {
   );
 };
 
-export default ModalNota;
+export default ModalResolver;

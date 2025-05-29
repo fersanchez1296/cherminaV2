@@ -5,6 +5,7 @@ import "simplebar-react/dist/simplebar.min.css";
 import { SidebarProvider } from "@/context/SidebarContext";
 import { ThemeProvider } from "@/context/ThemeContext";
 import SessionAuthProvider from "../context/SessionAuthProvider";
+import { ModalProvider } from "@/context/ModalManager";
 const outfit = Outfit({
   subsets: ["latin"],
 });
@@ -19,7 +20,9 @@ export default function RootLayout({
       <body className={`${outfit.className} dark:bg-gray-900`}>
         <SessionAuthProvider>
           <ThemeProvider>
-            <SidebarProvider>{children}</SidebarProvider>
+            <ModalProvider>
+              <SidebarProvider>{children}</SidebarProvider>
+            </ModalProvider>
           </ThemeProvider>
         </SessionAuthProvider>
       </body>

@@ -1,0 +1,16 @@
+export const badgeColors: { [key: string]: string } = {
+    CERRADOS: "error",
+    ABIERTOS: "success",
+    NUEVOS: "primary",
+    REABIERTOS: "primary",
+    PENDIENTES: "warning",
+    REVISION: "warning",
+    STANDY: "warning",
+    RESUELTOS: "info",
+    CERRADO: "error",
+    Baja: "success",
+    Planeada: "primary",
+    Media: "warning",
+    Alta: "error",
+    default: "primary",
+  };

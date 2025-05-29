@@ -1,34 +1,35 @@
-'use client'
+"use client";
 import React, { useEffect } from "react";
 import { useModal } from "@/hooks/useModal";
 import { Modal } from "@/components/ui/modal/index";
-import TextArea from "@/components/form/input/TextArea";
 import Label from "@/components/form/Label";
 import DropzoneComponent from "@/components/form/form-elements/DropZone";
 import Button from "@/components/ui/button/Button";
 import { useForm, Controller } from "react-hook-form";
 import { putNota } from "@/services/ticketService";
+import Input from "@/components/form/input/InputField";
 interface Open {
   open: boolean;
   handleToggleModalState: (modal: string, boolState: boolean) => void;
+  uuid?: string;
   id?: string;
 }
 
-const ModalNota = ({ open, handleToggleModalState, id }: Open) => {
+const ModalOficio = ({ open, handleToggleModalState, uuid }: Open) => {
   const { isOpen, closeModal, setOpen } = useModal();
   const form = useForm();
   const { handleSubmit, control, reset } = form;
   const callbackClose = () => {
     closeModal();
-    handleToggleModalState("nota", false);
+    handleToggleModalState("oficio", false);
   };
 
   const clearFiles = () => {
     reset();
   };
 
-  const handlePutNota = async (data) => {
-    const result = await putNota(data, id);
+  const handleSave = async (data) => {
+    const result = await putNota(data, uuid);
     // result.status = 201
     clearFiles();
   };
@@ -46,7 +47,7 @@ const ModalNota = ({ open, handleToggleModalState, id }: Open) => {
         <div className="no-scrollbar relative w-full max-w-[700px] overflow-y-auto rounded-3xl bg-white p-4 dark:bg-gray-900 lg:p-11">
           <div className="px-2 pr-14">
             <h4 className="mb-2 text-2xl font-semibold text-gray-800 dark:text-white/90">
-              Agregar nota
+              Agregar Oficio de Cierre
             </h4>
           </div>
           <form className="flex flex-col">
@@ -54,17 +55,17 @@ const ModalNota = ({ open, handleToggleModalState, id }: Open) => {
               <div className="mt-7">
                 <div className="grid grid-cols-1 gap-x-6 gap-y-5 lg:grid-cols-2">
                   <div className="col-span-2">
-                    <Label>Descripcion</Label>
+                    <Label>Oficio de Cierre</Label>
                     <Controller
-                      name="Descripcion"
+                      name="Numero_Oficio"
                       control={control}
                       rules={{ required: "Este campo es obligatorio" }}
                       render={({ field, fieldState }) => (
-                        <TextArea
-                          rows={10}
+                        <Input
                           {...field}
                           error={!!fieldState.error}
                           hint={fieldState.error?.message}
+                          placeholder="Ingresa el nombre del oficio de cierre"
                         />
                       )}
                     />
@@ -79,8 +80,8 @@ const ModalNota = ({ open, handleToggleModalState, id }: Open) => {
               <Button size="sm" variant="outline" onClick={callbackClose}>
                 Cerrar
               </Button>
-              <Button size="sm" onClick={handleSubmit(handlePutNota)}>
-                Guardar nota
+              <Button size="sm" onClick={handleSubmit(handleSave)}>
+                Guardar Oficio
               </Button>
             </div>
           </form>
@@ -90,4 +91,4 @@ const ModalNota = ({ open, handleToggleModalState, id }: Open) => {
   );
 };
 
-export default ModalNota;
+export default ModalOficio;

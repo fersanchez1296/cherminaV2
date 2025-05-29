@@ -27,11 +27,12 @@ interface singleItem {
     Dependencia: { _id: string; Dependencia: string };
     direccion_area: { _id: string; direccion_area: string };
   };
-  disabled: boolean;
+  disabled?: boolean;
   isEdit?: boolean;
   isCreate?: boolean;
   onSuccess?: () => void;
   closeModal?: () => void;
+  handleReturnClientId?: () => void;
 }
 interface SelectsData {
   dareas: Array<{ _id: string; Direccion_General: string }>;

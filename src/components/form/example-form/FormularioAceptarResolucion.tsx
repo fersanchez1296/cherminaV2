@@ -17,7 +17,7 @@ export default function FormularioAceptar() {
     setMessage(value);
     console.log("Message:", value);
   };
-  return (
+  return (  
     <ComponentCard title="Aceptar Resolución">
       <Form onSubmit={handleSubmit}>
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">

@@ -1,41 +1,64 @@
-'use client'
+"use client";
+
 import React, { useEffect } from "react";
 import { useModal } from "@/hooks/useModal";
 import { Modal } from "@/components/ui/modal/index";
 import TextArea from "@/components/form/input/TextArea";
 import Label from "@/components/form/Label";
-import DropzoneComponent from "@/components/form/form-elements/DropZone";
 import Button from "@/components/ui/button/Button";
 import { useForm, Controller } from "react-hook-form";
-import { putNota } from "@/services/ticketService";
+import { putRechazarResolucion } from "@/services/ticketService";
+import Input from "@/components/form/input/InputField";
+import DropzoneComponent from "@/components/form/form-elements/DropZone";
 interface Open {
   open: boolean;
   handleToggleModalState: (modal: string, boolState: boolean) => void;
   id?: string;
+  uuid?: string;
+  resolutor?: string;
+  fechaResolucion?: string;
 }
 
-const ModalNota = ({ open, handleToggleModalState, id }: Open) => {
+const ModalRechazar = ({
+  open,
+  handleToggleModalState,
+  id,
+  uuid,
+  resolutor,
+  fechaResolucion,
+}: Open) => {
   const { isOpen, closeModal, setOpen } = useModal();
   const form = useForm();
   const { handleSubmit, control, reset } = form;
   const callbackClose = () => {
     closeModal();
-    handleToggleModalState("nota", false);
+    handleToggleModalState("rechazar", false);
   };
 
   const clearFiles = () => {
     reset();
   };
 
-  const handlePutNota = async (data) => {
-    const result = await putNota(data, id);
+  const handleSave = async (data) => {
+    const result = await putRechazarResolucion(data, uuid);
     // result.status = 201
     clearFiles();
   };
 
   useEffect(() => {
     setOpen(open);
-  });
+  }, [setOpen, open]);
+
+  useEffect(() => {
+    if (open) {
+      reset({
+        Nombre: resolutor,
+        feedback: "",
+        Files: undefined,
+      });
+    }
+  }, [open, resolutor, reset]);
+
   return (
     <>
       <Modal
@@ -46,19 +69,37 @@ const ModalNota = ({ open, handleToggleModalState, id }: Open) => {
         <div className="no-scrollbar relative w-full max-w-[700px] overflow-y-auto rounded-3xl bg-white p-4 dark:bg-gray-900 lg:p-11">
           <div className="px-2 pr-14">
             <h4 className="mb-2 text-2xl font-semibold text-gray-800 dark:text-white/90">
-              Agregar nota
+              Rechazar resolución
             </h4>
           </div>
-          <form className="flex flex-col">
-            <div className="custom-scrollbar h-[450px] overflow-y-auto px-2 pb-3">
+          <form className="flex flex-col" onSubmit={handleSubmit(handleSave)}>
+            <div className="custom-scrollbar h-[550px] overflow-y-auto px-2 pb-3">
               <div className="mt-7">
                 <div className="grid grid-cols-1 gap-x-6 gap-y-5 lg:grid-cols-2">
                   <div className="col-span-2">
-                    <Label>Descripcion</Label>
+                    <Label>Resolutor</Label>
                     <Controller
-                      name="Descripcion"
+                      name="Nombre"
                       control={control}
-                      rules={{ required: "Este campo es obligatorio" }}
+                      render={({ field, fieldState }) => (
+                        <Input
+                          disabled
+                          {...field}
+                          error={!!fieldState.error}
+                          hint={fieldState.error?.message}
+                        />
+                      )}
+                    />
+                  </div>
+                  <div className="col-span-2">
+                    <Label>Fecha de resolución</Label>
+                    <Input defaultValue={fechaResolucion} disabled />
+                  </div>
+                  <div className="col-span-2">
+                    <Label>Feedback</Label>
+                    <Controller
+                      name="feedback"
+                      control={control}
                       render={({ field, fieldState }) => (
                         <TextArea
                           rows={10}
@@ -79,8 +120,8 @@ const ModalNota = ({ open, handleToggleModalState, id }: Open) => {
               <Button size="sm" variant="outline" onClick={callbackClose}>
                 Cerrar
               </Button>
-              <Button size="sm" onClick={handleSubmit(handlePutNota)}>
-                Guardar nota
+              <Button size="sm" type="submit">
+                Guardar ticket
               </Button>
             </div>
           </form>
@@ -90,4 +131,4 @@ const ModalNota = ({ open, handleToggleModalState, id }: Open) => {
   );
 };
 
-export default ModalNota;
+export default ModalRechazar;

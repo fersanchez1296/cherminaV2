@@ -27,3 +27,7 @@ export const postCrearCliente = async (data: object) => {
 export const updateCliente = async (clientId: string, data: object) => {
   return await api.put(`clients/${clientId}`, data);
 };
+
+export const getBuscarCliente = async (data: string) => {
+  return await api.get(`clients/${data}`)
+}
