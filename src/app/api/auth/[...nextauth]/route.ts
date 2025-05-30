@@ -22,7 +22,15 @@ const handler = NextAuth({
 
           const user = response.data;
 
-          if (user) return user;
+          console.log(response.data);
+
+          // if (user) return user;
+          if (user?.accesToken) {
+            return {
+              ...user.userTokenData,
+              accessToken: user.accesToken,
+            };
+          }
           return null;
         } catch (error) {
           console.error("Error en la autorización:", error);
@@ -33,10 +41,14 @@ const handler = NextAuth({
   ],
   callbacks: {
     async jwt({ token, user }) {
+      if (user) {
+        token.accessToken = user.token;
+      }
       return { ...token, ...user };
     },
     async session({ session, token }) {
       session.user = token as any;
+      session.user.token = token.accessToken;
       return session;
     },
   },

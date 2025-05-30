@@ -258,7 +258,7 @@ type NavItem = {
 
 const AppSidebar: React.FC = () => {
   const { data: session } = useSession();
-  const role = session?.user?.Rol?.Rol;
+  const role = session?.user?.rol;
   const { isExpanded, isMobileOpen, isHovered, setIsHovered } = useSidebar();
   const pathname = usePathname();
   const navItems: NavItem[] = [

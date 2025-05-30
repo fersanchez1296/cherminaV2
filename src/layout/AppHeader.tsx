@@ -8,16 +8,20 @@ import Link from "next/link";
 import Button from "@/components/ui/button/Button";
 import React, { useEffect, useRef, useState } from "react";
 import { getTicketByParameter } from "@/services/ticketService";
-import { useModal } from "@/hooks/useModal";
-import { Modal } from "@/components/ui/modal/index";
-import Invoice from "@/components/invoice/Invoice";
 import { useSession } from "next-auth/react";
+import ModalVer from "@/components/example/ModalExample/ModalVer";
+import { Ticket } from "@/common/interfaces/ticket.interface";
+import { useModals } from "@/context/ModalManager";
+import AllModals from "@/components/example/ModalExample/ModalProvider";
+import { getActions } from "@/factories/actionsFactory";
 const AppHeader: React.FC = () => {
   const { data: session } = useSession();
+  const userRole = session?.user?.rol;
+  const { state, toggleModal } = useModals();
   const [busqueda, setBusqueda] = useState("");
-  const [singleItem, setSingleItem] = useState("");
+  const [status, setStatus] = useState("curso");
+  const [singleItem, setSingleItem] = useState<Partial<Ticket>>();
   const [isApplicationMenuOpen, setApplicationMenuOpen] = useState(false);
-  const { isOpen, openModal, closeModal } = useModal();
 
   const { isMobileOpen, toggleSidebar, toggleMobileSidebar } = useSidebar();
 
@@ -54,7 +58,9 @@ const AppHeader: React.FC = () => {
     try {
       const result = await getTicketByParameter(busqueda);
       if (result.status === 200 && result.data) {
-        openModal();
+        toggleModal("ver", true);
+        // console.log(result?.data[0].Estado?.Estado)
+        // setStatus(result?.data[0].Estado?.Estado);
         setSingleItem(result?.data[0]);
       }
     } catch (error) {
@@ -63,6 +69,8 @@ const AppHeader: React.FC = () => {
       setBusqueda("");
     }
   };
+
+  console.log(session)
 
   return (
     <>
@@ -144,9 +152,9 @@ const AppHeader: React.FC = () => {
                 />
               </svg>
             </button>
-            {session?.user.Rol.Rol !== "Usuario" && (
+            {userRole !== "Usuario" && (
               <div className="hidden lg:block">
-                <form>
+                <form onSubmit={handleBusqueda}>
                   <div className="relative">
                     <span className="absolute -translate-y-1/2 left-4 top-1/2 pointer-events-none">
                       <svg
@@ -176,7 +184,7 @@ const AppHeader: React.FC = () => {
                     <Button
                       size="sm"
                       className="ml-1 self-end"
-                      onClick={handleBusqueda}
+                      onClick={() => handleBusqueda()}
                       disabled={busqueda === "" ? true : false}
                     >
                       Buscar
@@ -204,16 +212,14 @@ const AppHeader: React.FC = () => {
           </div>
         </div>
       </header>
-      {
-        <Modal
-          isOpen={isOpen}
-          onClose={closeModal}
-          isFullscreen
-          className="fixed top-0 left-0 flex flex-col justify-between w-full h-screen p-6 overflow-x-hidden overflow-y-auto bg-white dark:bg-gray-900 lg:p-15"
-        >
-          <Invoice singleItem={singleItem} />
-        </Modal>
-      }
+      <AllModals ticket={singleItem} status={status} />
+      {/* {state["ver"] && (
+        <ModalVer
+          open
+          handleToggleModalState={toggleModal}
+          ticket={singleItem}
+        />
+      )} */}
     </>
   );
 };

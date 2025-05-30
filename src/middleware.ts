@@ -22,7 +22,7 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(new URL("/login", request.url));
   }
 
-  const userRole = token?.user?.Rol?.Rol;
+  const userRole = token?.user?.rol;
   const path = request.nextUrl.pathname;
 
   for (const [role, routes] of Object.entries(protectedRoutes)) {
@@ -39,8 +39,8 @@ export async function middleware(request: NextRequest) {
 // Define las rutas donde se aplica el middleware
 export const config = {
   matcher: [
-    "/usuarios/:path*",
-    "/clientes/:path*",
+    //"/usuarios/:path*",
+    //"/clientes/:path*",
     "/tickets/:path*",
   ],
 };

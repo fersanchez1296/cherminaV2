@@ -16,7 +16,7 @@ interface Open {
   open: boolean;
   handleToggleModalState: (modal: string, boolState: boolean) => void;
   ticket?: Partial<Ticket>;
-  status: string;
+  status?: string;
 }
 
 const getFileExtension = (filename: string) => {
@@ -41,7 +41,7 @@ const iconMap: { [key: string]: string } = {
 const ModalVer = ({ open, handleToggleModalState, ticket, status }: Open) => {
   const [singleItem, setSingleItem] = useState();
   const { data: session } = useSession();
-  const userRole = session?.user?.Rol?.Rol;
+  const userRole = session?.user?.rol;
   const { toggleModal } = useModals();
   const { isOpen, closeModal, setOpen } = useModal();
   const callbackClose = () => {
@@ -51,14 +51,15 @@ const ModalVer = ({ open, handleToggleModalState, ticket, status }: Open) => {
 
   useEffect(() => {
     setOpen(open);
-  });
+  }, [open, toggleModal]);
 
   const handlers = {
     setSingleItem,
     toggleModal,
   };
 
-  console.log("Este es el status", status);
+  const itemActions = getActions(ticket, handlers, userRole, status);
+  console.log(itemActions)
   return (
     <>
       <Modal
@@ -85,28 +86,18 @@ const ModalVer = ({ open, handleToggleModalState, ticket, status }: Open) => {
               </h3>
 
               <div className="flex items-center gap-4">
-                {[ticket].map((item, index) => {
-                  const itemActions = getActions(
-                    item,
-                    handlers,
-                    userRole,
-                    status
-                  );
-                  return (
-                    <div className="flex gap-2 ml-4 mr-2.5" key={index}>
-                      {itemActions.map((action, i) => (
-                        <Tooltip key={i} content={action.tooltip} theme="dark">
-                          <button
-                            onClick={action.onClick}
-                            className="text-gray-500 hover:text-gray-800"
-                          >
-                            {action.icon()}
-                          </button>
-                        </Tooltip>
-                      ))}
-                    </div>
-                  );
-                })}
+                <div className="flex gap-2 ml-4 mr-2.5">
+                  {itemActions.map((action, i) => (
+                    <Tooltip key={i} content={action.tooltip} theme="dark">
+                      <button
+                        onClick={action.onClick}
+                        className="text-gray-500 hover:text-gray-800"
+                      >
+                        {action.icon()}
+                      </button>
+                    </Tooltip>
+                  ))}
+                </div>
               </div>
             </div>
             {ticket?.PendingReason && (
