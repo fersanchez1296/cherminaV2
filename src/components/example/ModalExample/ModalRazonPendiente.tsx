@@ -7,6 +7,7 @@ import Label from "@/components/form/Label";
 import Button from "@/components/ui/button/Button";
 import { useForm, Controller } from "react-hook-form";
 import { putRazonPendiente } from "@/services/ticketService";
+import { useNotification } from "@/context/NotificationProvider";
 interface Open {
   open: boolean;
   handleToggleModalState: (modal: string, boolState: boolean) => void;
@@ -23,19 +24,36 @@ const ModalRazonPendiente = ({
   const { isOpen, closeModal, setOpen } = useModal();
   const form = useForm();
   const { handleSubmit, control, reset } = form;
+  const { showNotification } = useNotification();
   const callbackClose = () => {
     closeModal();
     handleToggleModalState("razonPendiente", false);
   };
 
-  const clearFiles = () => {
-    reset();
-  };
+  const handleSave = async (data) => {
+    try {
+      const result = await putRazonPendiente(data, uuid);
 
-  const handlePutRazonPendiente = async (data) => {
-    const result = await putRazonPendiente(data, uuid);
-    // result.status = 201
-    clearFiles();
+      if (result.status === 201) {
+        showNotification(
+          "Éxito",
+          result.data?.desc || "Operación exitosa",
+          "success"
+        );
+        reset();
+        callbackClose();
+      } else {
+        showNotification(
+          "Aviso",
+          result.data?.desc || "Respuesta inesperada del servidor",
+          "warning"
+        );
+      }
+    } catch (error) {
+      const message =
+        error.response?.data?.desc || "Ocurrió un error inesperado.";
+      showNotification("Error", message, "error");
+    }
   };
 
   useEffect(() => {
@@ -54,10 +72,7 @@ const ModalRazonPendiente = ({
               Agregar Razón Pendiente
             </h4>
           </div>
-          <form
-            className="flex flex-col"
-            onSubmit={handleSubmit(handlePutRazonPendiente)}
-          >
+          <form className="flex flex-col" onSubmit={handleSubmit(handleSave)}>
             <div className="custom-scrollbar h-[450px] overflow-y-auto px-2 pb-3">
               <div className="mt-7">
                 <div className="grid grid-cols-1 gap-x-6 gap-y-5 lg:grid-cols-2">

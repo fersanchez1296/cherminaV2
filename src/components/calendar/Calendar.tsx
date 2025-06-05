@@ -40,7 +40,10 @@ const Calendar: React.FC = () => {
   };
 
   useEffect(() => {
-    getCalendarEvents().then((ce) => setCalendarEvents(ce.data));
+    getCalendarEvents().then((ce) => {
+      setCalendarEvents(ce.data);
+      console.log(ce.data);
+    });
   }, []);
 
   useEffect(() => {

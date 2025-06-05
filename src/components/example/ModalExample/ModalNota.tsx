@@ -1,4 +1,4 @@
-'use client'
+"use client";
 import React, { useEffect } from "react";
 import { useModal } from "@/hooks/useModal";
 import { Modal } from "@/components/ui/modal/index";
@@ -8,6 +8,7 @@ import DropzoneComponent from "@/components/form/form-elements/DropZone";
 import Button from "@/components/ui/button/Button";
 import { useForm, Controller } from "react-hook-form";
 import { putNota } from "@/services/ticketService";
+import { useNotification } from "@/context/NotificationProvider";
 interface Open {
   open: boolean;
   handleToggleModalState: (modal: string, boolState: boolean) => void;
@@ -15,6 +16,7 @@ interface Open {
 }
 
 const ModalNota = ({ open, handleToggleModalState, id }: Open) => {
+  const { showNotification } = useNotification();
   const { isOpen, closeModal, setOpen } = useModal();
   const form = useForm();
   const { handleSubmit, control, reset } = form;
@@ -27,11 +29,31 @@ const ModalNota = ({ open, handleToggleModalState, id }: Open) => {
     reset();
   };
 
-  const handlePutNota = async (data) => {
-    const result = await putNota(data, id);
-    // result.status = 201
-    clearFiles();
-  };
+  const handleSave = async (data) => {
+        try {
+          const result = await putNota(data, uuid);
+    
+          if (result.status === 201) {
+            showNotification(
+              "Éxito",
+              result.data?.desc || "Operación exitosa",
+              "success"
+            );
+            reset();
+            callbackClose();
+          } else {
+            showNotification(
+              "Aviso",
+              result.data?.desc || "Respuesta inesperada del servidor",
+              "warning"
+            );
+          }
+        } catch (error) {
+          const message =
+            error.response?.data?.desc || "Ocurrió un error inesperado.";
+          showNotification("Error", message, "error");
+        }
+      };
 
   useEffect(() => {
     setOpen(open);
@@ -79,7 +101,7 @@ const ModalNota = ({ open, handleToggleModalState, id }: Open) => {
               <Button size="sm" variant="outline" onClick={callbackClose}>
                 Cerrar
               </Button>
-              <Button size="sm" onClick={handleSubmit(handlePutNota)}>
+              <Button size="sm" onClick={handleSubmit(handleSave)}>
                 Guardar nota
               </Button>
             </div>

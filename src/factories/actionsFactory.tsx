@@ -86,13 +86,7 @@ export const getActions = (
         handlers.setSingleItem(item);
       },
       visible: ["Administrador", "Root", "Moderador", "Usuario"],
-      estados: [
-        "curso",
-        "nuevo",
-        "reabierto",
-        "revision",
-        "mesaServicio",
-      ],
+      estados: ["curso", "nuevo", "reabierto", "revision", "mesaServicio"],
     },
     // contacto
     {
@@ -145,9 +139,7 @@ export const getActions = (
         handlers.setSingleItem(item);
       },
       visible: ["Administrador", "Root"],
-      estados: [
-        "pendiente",
-      ],
+      estados: ["pendiente"],
     },
     // razon pendiente
     {
@@ -158,9 +150,7 @@ export const getActions = (
         handlers.setSingleItem(item);
       },
       visible: ["Administrador", "Root", "Moderador", "Usuario"],
-      estados: [
-        "mesaServicio",
-      ],
+      estados: ["mesaServicio"],
     },
     // asignar
     {
@@ -171,9 +161,7 @@ export const getActions = (
         handlers.setSingleItem(item);
       },
       visible: ["Administrador", "Root", "Moderador", "Usuario"],
-      estados: [
-        "mesaServicio",
-      ],
+      estados: ["mesaServicio"],
     },
     // reasignar
     {
@@ -185,12 +173,7 @@ export const getActions = (
         handlers.setFechaResolucionSLA(item.Fecha_limite_resolucion_SLA);
       },
       visible: ["Moderador"],
-      estados: [
-        "curso",
-        "nuevo",
-        "reabierto",
-        "revision",
-      ],
+      estados: ["curso", "nuevo", "reabierto", "revision"],
     },
     // editar
     {
@@ -201,9 +184,7 @@ export const getActions = (
         handlers.setTicketId(item._id);
       },
       visible: ["Administrador", "Root", "Moderador", "Usuario"],
-      estados: [
-        "mesaServicio",
-      ],
+      estados: ["mesaServicio"],
     },
     // regresar a mesa de servicio
     {
@@ -285,10 +266,7 @@ export const getActions = (
         handlers.setSingleItem(item);
       },
       visible: ["Administrador", "Root", "Moderador", "Usuario"],
-      estados: [
-        "cerrado",
-        "resuelto",
-      ],
+      estados: ["cerrado", "resuelto"],
     },
   ];
 

@@ -21,6 +21,7 @@ import {
   postCrearTicket,
 } from "@/services/ticketService";
 import { getBuscarCliente } from "@/services/clientService";
+import { useNotification } from "@/context/NotificationProvider";
 
 // Interfaces para React Select
 interface Option {
@@ -68,12 +69,13 @@ export default function FormularioCrearTicket() {
   const [descripcion, setDescripcion] = useState("");
   const [tiempo, setTiempo] = useState("");
   const form = useForm();
-  const { handleSubmit, control, setValue } = form;
+  const { handleSubmit, control, setValue, reset } = form;
   const [resolutores, setResolutores] = useState<GroupedOption[]>([]);
   const [medios, setMedios] = useState<Option[]>([]);
   const [subcategoria, setSubcategoria] = useState([]);
   const [clienteId, setClienteId] = useState();
   const [cliente, setCliente] = useState("");
+  const { showNotification } = useNotification();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -117,16 +119,36 @@ export default function FormularioCrearTicket() {
     }
   };
 
-  const handleSave = async (data: any) => {
-    await postCrearTicket(data);
-    // clearFiles();
+  const handleSave = async (data) => {
+    try {
+      const result = await postCrearTicket(data);
+      if (result.status === 201) {
+        showNotification(
+          "Éxito",
+          result.data?.desc || "Operación exitosa",
+          "success"
+        );
+        reset();
+      } else {
+        showNotification(
+          "Aviso",
+          result.data?.desc || "Respuesta inesperada del servidor",
+          "warning"
+        );
+      }
+    } catch (error) {
+      const message =
+        error.response?.data?.desc || "Ocurrió un error inesperado.";
+      showNotification("Error", message, "error");
+    }
   };
 
   const handleBuscarCliente = async () => {
     try {
       const result = await getBuscarCliente(cliente);
-
+      console.log(result.data);
       if (result?.status === 200 && result.data) {
+        setClienteId(result.data);
         setValue("Cliente", result.data._id);
       } else {
         console.warn("Cliente no encontrado o respuesta inesperada:", result);
@@ -175,6 +197,14 @@ export default function FormularioCrearTicket() {
             >
               Crear Cliente
             </Button>
+            {clienteId && (
+              <div>
+                <h4 className="pb-4 text-base font-medium text-gray-800 border-b border-gray-200 dark:border-gray-800 dark:text-white/90">
+                  Cliente Seleccionado:{" "}
+                  <span className="text-violet-800">{clienteId.Nombre}</span>
+                </h4>
+              </div>
+            )}
           </div>
 
           <div className="col-span-2">
@@ -184,7 +214,7 @@ export default function FormularioCrearTicket() {
           </div>
           {/* medio de contacto */}
           <div className="col-span-1">
-            <Label htmlFor="email">Medio de Contacto</Label>
+            <Label htmlFor="medio">Medio de Contacto</Label>
             <Controller
               name="Medio"
               control={control}
@@ -286,13 +316,12 @@ export default function FormularioCrearTicket() {
               )}
             />
           </div>
-
+          {/* resolutor */}
           <div className="col-span-2">
             <h4 className="pb-4 text-base font-medium text-gray-800 border-b border-gray-200 dark:border-gray-800 dark:text-white/90">
               Resolutor o Moderador
             </h4>
           </div>
-          {/* resolutor */}
           <div className="col-span-2">
             <Label htmlFor="email">Resolutor</Label>
             <Controller

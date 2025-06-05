@@ -6,6 +6,7 @@ import { SidebarProvider } from "@/context/SidebarContext";
 import { ThemeProvider } from "@/context/ThemeContext";
 import SessionAuthProvider from "../context/SessionAuthProvider";
 import { ModalProvider } from "@/context/ModalManager";
+import { NotificationProvider } from "@/context/NotificationProvider";
 const outfit = Outfit({
   subsets: ["latin"],
 });
@@ -19,11 +20,13 @@ export default function RootLayout({
     <html lang="en">
       <body className={`${outfit.className} dark:bg-gray-900`}>
         <SessionAuthProvider>
-          <ThemeProvider>
-            <ModalProvider>
-              <SidebarProvider>{children}</SidebarProvider>
-            </ModalProvider>
-          </ThemeProvider>
+          <NotificationProvider>
+            <ThemeProvider>
+              <ModalProvider>
+                <SidebarProvider>{children}</SidebarProvider>
+              </ModalProvider>
+            </ThemeProvider>
+          </NotificationProvider>
         </SessionAuthProvider>
       </body>
     </html>

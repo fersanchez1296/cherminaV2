@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   AlertIcon,
   CheckCircleIcon,
@@ -49,15 +49,24 @@ const Notification: React.FC<NotificationProps> = ({
 
   const { borderColor, iconBg, icon } = variantStyles[variant];
 
-  const handleClose = () => {
-    // Hide the notification
-    setIsVisible(false);
+  // const handleClose = () => {
+  //   // Hide the notification
+  //   setIsVisible(false);
 
-    // Show it again after the specified time
-    setTimeout(() => {
-      setIsVisible(true);
-    }, hideDuration);
+  //   // Show it again after the specified time
+  //   setTimeout(() => {
+  //     setIsVisible(true);
+  //   }, hideDuration);
+  // };
+
+  const handleClose = () => {
+    setIsVisible(false);
   };
+
+  useEffect(() => {
+    const timer = setTimeout(() => setIsVisible(false), hideDuration);
+    return () => clearTimeout(timer);
+  }, []);
 
   if (!isVisible) return null; // Don't render anything if not visible
 

@@ -56,7 +56,8 @@ export default function AllModals({ ticket, status }: Props) {
         <ModalResolver
           open
           handleToggleModalState={toggleModal}
-          id={ticket._id}
+          id={ticket.Id}
+          uuid={ticket._id}
         />
       )}
 

@@ -495,10 +495,52 @@ export const getSelectsCrearTicket = async (): Promise<SelectsCrearTicket> => {
   }
 };
 
-export const postCrearTicket = async (data: object) => {
-  console.log(data);
-};
+export const postCrearTicket = async (data: {
+  Asignado_a: { label: string; value: string };
+  Cliente: string;
+  Descripcion: string;
+  Medio: { value: string; label: string };
+  NumeroRec_Oficio: string;
+  Subcategoria: { _id: string };
+  tiempo: number;
+  Files?: File[];
+}) => {
+  const formData = new FormData();
+  const auxData = {
+    Asignado_a: data.Asignado_a?.value,
+    Medio: data.Medio?.value,
+    Subcategoria: data.Subcategoria._id,
+    Tiempo: data.tiempo,
+    Cliente: data.Cliente,
+    Descripcion: data.Descripcion,
+    NumeroRec_Oficio: data.NumeroRec_Oficio,
+  };
 
+  Object.entries(auxData).forEach(([key, value]) => {
+    if (value !== undefined && value !== null) {
+      formData.append(key, String(value));
+    }
+  });
+
+  if (data.Files) {
+    Object.entries(data).forEach(([key, value]) => {
+      if (key === "Files" && Array.isArray(value)) {
+        value.forEach((file) => {
+          if (file instanceof File) {
+            formData.append("files", file);
+          } else {
+            console.error(`El archivo no es válido:`, file);
+          }
+        });
+      }
+    });
+  }
+  return await api.post(`tickets/crear/ticket`, formData, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  });
+};
 export const getTicketByParameter = async (parameter: string) => {
   return await api.post(`tickets/buscar/${parameter}`);
 };

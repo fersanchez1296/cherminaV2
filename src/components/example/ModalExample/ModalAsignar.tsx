@@ -12,6 +12,7 @@ import ComponentCard from "../../common/ComponentCard";
 import Form from "@/components/form/Form";
 import Input from "@/components/form/input/InputField";
 import Select from "react-select";
+import { useNotification } from "@/context/NotificationProvider";
 // Interfaces para React Select
 interface Option {
   value: string;
@@ -67,7 +68,7 @@ const ModalAsignar = ({
   const { isOpen, closeModal, setOpen } = useModal();
   const form = useForm();
   const { handleSubmit, control, reset } = form;
-
+  const { showNotification } = useNotification();
   const [resolutores, setResolutores] = useState<GroupedOption[]>([]);
 
   const callbackClose = () => {
@@ -75,13 +76,30 @@ const ModalAsignar = ({
     handleToggleModalState("asignar", false);
   };
 
-  const clearFiles = () => {
-    reset();
-  };
+  const handleSave = async (data) => {
+    try {
+      const result = await putAsignar(data, uuid);
 
-  const handleSave = async (data: any) => {
-    await putAsignar(data, uuid);
-    clearFiles();
+      if (result.status === 201) {
+        showNotification(
+          "Éxito",
+          result.data?.desc || "Operación exitosa",
+          "success"
+        );
+        reset();
+        callbackClose();
+      } else {
+        showNotification(
+          "Aviso",
+          result.data?.desc || "Respuesta inesperada del servidor",
+          "warning"
+        );
+      }
+    } catch (error) {
+      const message =
+        error.response?.data?.desc || "Ocurrió un error inesperado.";
+      showNotification("Error", message, "error");
+    }
   };
 
   useEffect(() => {

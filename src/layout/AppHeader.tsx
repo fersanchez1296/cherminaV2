@@ -212,7 +212,7 @@ const AppHeader: React.FC = () => {
           </div>
         </div>
       </header>
-      <AllModals ticket={singleItem} status={status} />
+      {/* <AllModals ticket={singleItem} status={status} /> */}
       {/* {state["ver"] && (
         <ModalVer
           open

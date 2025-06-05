@@ -22,7 +22,11 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(new URL("/login", request.url));
   }
 
-  const userRole = token?.user?.rol;
+  // nest
+  // const userRole = token?.user?.rol;
+
+  // node
+  const userRole = token?.user?.Rol.Rol;
   const path = request.nextUrl.pathname;
 
   for (const [role, routes] of Object.entries(protectedRoutes)) {

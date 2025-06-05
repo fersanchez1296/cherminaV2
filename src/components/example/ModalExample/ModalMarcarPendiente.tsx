@@ -13,6 +13,7 @@ import ComponentCard from "../../common/ComponentCard";
 import Form from "@/components/form/Form";
 import Input from "@/components/form/input/InputField";
 import { getCorreosCliente } from "@/services/ticketService";
+import { useNotification } from "@/context/NotificationProvider";
 interface Open {
   open: boolean;
   handleToggleModalState: (modal: string, boolState: boolean) => void;
@@ -31,21 +32,39 @@ const ModalMarcarPendiente = ({
   const { isOpen, closeModal, setOpen } = useModal();
   const [cliente, setCliente] = useState<string>("");
   const form = useForm();
+  const { showNotification } = useNotification();
   const { handleSubmit, control, reset } = form;
   const callbackClose = () => {
     closeModal();
     handleToggleModalState("pendiente", false);
   };
 
-  const clearFiles = () => {
-    reset();
+  const handleSave = async (data) => {
+    try {
+      const result = await putTicketPendiente(data, uuid);
+
+      if (result.status === 201) {
+        showNotification(
+          "Éxito",
+          result.data?.desc || "Operación exitosa",
+          "success"
+        );
+        reset();
+        callbackClose();
+      } else {
+        showNotification(
+          "Aviso",
+          result.data?.desc || "Respuesta inesperada del servidor",
+          "warning"
+        );
+      }
+    } catch (error) {
+      const message =
+        error.response?.data?.desc || "Ocurrió un error inesperado.";
+      showNotification("Error", message, "error");
+    }
   };
 
-  const handleSave = async (data) => {
-    await putTicketPendiente(data, uuid);
-    // result.status = 201
-    clearFiles();
-  };
   useEffect(() => {
     if (open && uuid) {
       getCorreosCliente(uuid).then((c) => {

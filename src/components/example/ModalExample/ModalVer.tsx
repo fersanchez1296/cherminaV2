@@ -5,7 +5,6 @@ import { Modal } from "@/components/ui/modal/index";
 import InvoiceOficio from "@/components/invoice/InvoiceOficio";
 import InvoiceCategoria from "@/components/invoice/InvoiceCategoria";
 import InvoiceHistoria from "@/components/invoice/InvoiceHistoria";
-import { EnvelopeIcon, CheckLineIcon, DocumentPlusIcon } from "@/icons";
 import { Tooltip } from "@/components/ui/tooltip/Tooltip";
 import Image from "next/image";
 import { Ticket } from "@/common/interfaces/ticket.interface";
@@ -59,7 +58,6 @@ const ModalVer = ({ open, handleToggleModalState, ticket, status }: Open) => {
   };
 
   const itemActions = getActions(ticket, handlers, userRole, status);
-  console.log(itemActions)
   return (
     <>
       <Modal

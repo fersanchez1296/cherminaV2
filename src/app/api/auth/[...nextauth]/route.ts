@@ -21,10 +21,11 @@ const handler = NextAuth({
           );
 
           const user = response.data;
-
-          console.log(response.data);
-
+          console.log(user);
+          // node
           // if (user) return user;
+
+          // nest
           if (user?.accesToken) {
             return {
               ...user.userTokenData,
@@ -41,13 +42,18 @@ const handler = NextAuth({
   ],
   callbacks: {
     async jwt({ token, user }) {
+      // nest
       if (user) {
         token.accessToken = user.token;
       }
+
+      // para nest y node
       return { ...token, ...user };
     },
     async session({ session, token }) {
+      // node
       session.user = token as any;
+      // nest
       session.user.token = token.accessToken;
       return session;
     },

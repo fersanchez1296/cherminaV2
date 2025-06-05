@@ -27,7 +27,12 @@ interface props {
 
 export default function DataTableTwo({ status }: props) {
   const { data: session } = useSession();
+
+  // nest
   const userRole = session?.user?.rol;
+
+  // node
+  //const userRole = session?.user?.Rol.Rol;
   const { toggleModal } = useModals();
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(5);

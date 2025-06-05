@@ -1,4 +1,4 @@
-'use client'
+"use client";
 import React, { useEffect } from "react";
 import { useModal } from "@/hooks/useModal";
 import { Modal } from "@/components/ui/modal/index";
@@ -8,6 +8,7 @@ import Button from "@/components/ui/button/Button";
 import { useForm, Controller } from "react-hook-form";
 import { putAceptarResolucion } from "@/services/ticketService";
 import Input from "@/components/form/input/InputField";
+import { useNotification } from "@/context/NotificationProvider";
 interface Open {
   open?: boolean;
   handleToggleModalState: (modal: string, boolState: boolean) => void;
@@ -22,10 +23,12 @@ const ModalAceptar = ({
   open,
   handleToggleModalState,
   id,
+  uuid,
   resolutor,
   fechaResolucion,
   descripcion_resolucion,
 }: Open) => {
+  const { showNotification } = useNotification();
   const { isOpen, closeModal, setOpen } = useModal();
   const form = useForm();
   const { handleSubmit, control, reset } = form;
@@ -34,14 +37,30 @@ const ModalAceptar = ({
     handleToggleModalState("aceptar", false);
   };
 
-  const clearFiles = () => {
-    reset();
-  };
-
   const handleSave = async (data) => {
-    const result = await putAceptarResolucion(data, id);
-    // result.status = 201
-    clearFiles();
+    try {
+      const result = await putAceptarResolucion(data, uuid);
+
+      if (result.status === 201) {
+        showNotification(
+          "Éxito",
+          result.data?.desc || "Operación exitosa",
+          "success"
+        );
+        reset();
+        callbackClose();
+      } else {
+        showNotification(
+          "Aviso",
+          result.data?.desc || "Respuesta inesperada del servidor",
+          "warning"
+        );
+      }
+    } catch (error) {
+      const message =
+        error.response?.data?.desc || "Ocurrió un error inesperado.";
+      showNotification("Error", message, "error");
+    }
   };
 
   useEffect(() => {

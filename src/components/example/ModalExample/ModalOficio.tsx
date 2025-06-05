@@ -8,6 +8,7 @@ import Button from "@/components/ui/button/Button";
 import { useForm, Controller } from "react-hook-form";
 import { putNota } from "@/services/ticketService";
 import Input from "@/components/form/input/InputField";
+import { useNotification } from "@/context/NotificationProvider";
 interface Open {
   open: boolean;
   handleToggleModalState: (modal: string, boolState: boolean) => void;
@@ -16,6 +17,7 @@ interface Open {
 }
 
 const ModalOficio = ({ open, handleToggleModalState, uuid }: Open) => {
+  const { showNotification } = useNotification();
   const { isOpen, closeModal, setOpen } = useModal();
   const form = useForm();
   const { handleSubmit, control, reset } = form;
@@ -24,14 +26,30 @@ const ModalOficio = ({ open, handleToggleModalState, uuid }: Open) => {
     handleToggleModalState("oficio", false);
   };
 
-  const clearFiles = () => {
-    reset();
-  };
-
   const handleSave = async (data) => {
-    const result = await putNota(data, uuid);
-    // result.status = 201
-    clearFiles();
+    try {
+      const result = await putReabrir(data, uuid);
+
+      if (result.status === 201) {
+        showNotification(
+          "Éxito",
+          result.data?.desc || "Operación exitosa",
+          "success"
+        );
+        reset();
+        callbackClose();
+      } else {
+        showNotification(
+          "Aviso",
+          result.data?.desc || "Respuesta inesperada del servidor",
+          "warning"
+        );
+      }
+    } catch (error) {
+      const message =
+        error.response?.data?.desc || "Ocurrió un error inesperado.";
+      showNotification("Error", message, "error");
+    }
   };
 
   useEffect(() => {

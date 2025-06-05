@@ -10,6 +10,7 @@ import { useForm, Controller } from "react-hook-form";
 import { putRechazarResolucion } from "@/services/ticketService";
 import Input from "@/components/form/input/InputField";
 import DropzoneComponent from "@/components/form/form-elements/DropZone";
+import { useNotification } from "@/context/NotificationProvider";
 interface Open {
   open: boolean;
   handleToggleModalState: (modal: string, boolState: boolean) => void;
@@ -29,20 +30,37 @@ const ModalRechazar = ({
 }: Open) => {
   const { isOpen, closeModal, setOpen } = useModal();
   const form = useForm();
+  const { showNotification } = useNotification();
   const { handleSubmit, control, reset } = form;
   const callbackClose = () => {
     closeModal();
     handleToggleModalState("rechazar", false);
   };
 
-  const clearFiles = () => {
-    reset();
-  };
-
   const handleSave = async (data) => {
-    const result = await putRechazarResolucion(data, uuid);
-    // result.status = 201
-    clearFiles();
+    try {
+      const result = await putRechazarResolucion(data, uuid);
+
+      if (result.status === 201) {
+        showNotification(
+          "Éxito",
+          result.data?.desc || "Operación exitosa",
+          "success"
+        );
+        reset();
+        callbackClose();
+      } else {
+        showNotification(
+          "Aviso",
+          result.data?.desc || "Respuesta inesperada del servidor",
+          "warning"
+        );
+      }
+    } catch (error) {
+      const message =
+        error.response?.data?.desc || "Ocurrió un error inesperado.";
+      showNotification("Error", message, "error");
+    }
   };
 
   useEffect(() => {

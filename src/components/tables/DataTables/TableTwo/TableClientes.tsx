@@ -57,7 +57,10 @@ export default function TableClientes() {
   const [disabled, setDisabled] = useState<boolean>(false);
 
   const fetchClients = () => {
-    getClients().then((res) => setTableRowData(res.data));
+    getClients().then((res) => {
+      setTableRowData(res.data);
+      console.log(res.data);
+    });
   };
 
   useEffect(() => {
