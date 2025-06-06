@@ -38,6 +38,7 @@ const iconMap: { [key: string]: string } = {
 };
 
 const ModalVer = ({ open, handleToggleModalState, ticket, status }: Open) => {
+  console.log(open, handleToggleModalState, ticket, status);
   const [singleItem, setSingleItem] = useState();
   const { data: session } = useSession();
   const userRole = session?.user?.rol;
@@ -263,13 +264,15 @@ const ModalVer = ({ open, handleToggleModalState, ticket, status }: Open) => {
                         </h5>
 
                         <p className="mb-4 text-sm text-gray-500 dark:text-gray-400">
-                          Instituto de Pensiones del Estado de Jalisco
+                          {ticket?.Asignado_a?.[0]?.Dependencia?.Dependencia ||
+                            ""}
                           <br />
-                          Dirección de Informatica
+                          {ticket?.Asignado_a?.[0]?.Direccion_General
+                            .Direccion_General || ""}
                           <br />
-                          {(ticket?.Reasignado_a ?? [])[0]?.Area.map(
-                            (a) => a.Area
-                          ).join(", ")}
+                          {ticket?.Asignado_a[0]?.Area.map((a) => a.Area).join(
+                            ", "
+                          )}
                         </p>
 
                         <span className="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">

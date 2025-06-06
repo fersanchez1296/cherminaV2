@@ -541,6 +541,7 @@ export const postCrearTicket = async (data: {
     },
   });
 };
+
 export const getTicketByParameter = async (parameter: string) => {
   return await api.post(`tickets/buscar/${parameter}`);
 };

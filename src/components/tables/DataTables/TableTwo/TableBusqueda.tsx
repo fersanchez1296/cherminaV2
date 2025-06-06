@@ -8,27 +8,20 @@ import {
   TableHeader,
   TableRow,
 } from "../../../ui/table";
-import {
-  AngleDownIcon,
-  AngleUpIcon,
-  EyeIcon,
-  EnvelopeIcon,
-  DocumentPlusIcon,
-} from "../../../../icons";
+import { AngleDownIcon, AngleUpIcon } from "../../../../icons";
 import PaginationWithButton from "./PaginationWithButton";
 import Badge from "../../../ui/badge/Badge";
-import { useModal } from "@/hooks/useModal";
-import { Modal } from "@/components/ui/modal/index";
-import Invoice from "@/components/invoice/Invoice";
 import { Tooltip } from "@/components/ui/tooltip/Tooltip";
 import Button from "@/components/ui/button/Button";
-import TextArea from "@/components/form/input/TextArea";
 import Label from "@/components/form/Label";
-import DropzoneComponent from "@/components/form/form-elements/DropZone";
-import FormularioContacto from "@/components/form/example-form/FormularioContacto";
 import Select from "react-select";
 import Input from "@/components/form/input/InputField";
 import { busquedaAvanzada } from "@/services/dashboard";
+import AllModals from "@/components/example/ModalExample/ModalProvider";
+import { useModals } from "@/context/ModalManager";
+import { Ticket } from "@/common/interfaces/ticket.interface";
+import { EyeIcon } from "lucide-react";
+import { badgeColors } from "@/common/badgeColors/badgeColors";
 type SortKey =
   | "resolutor"
   | "cliente"
@@ -58,29 +51,20 @@ const customStyles = {
 };
 
 export default function TableBusqueda() {
+  const { toggleModal } = useModals();
+  const [singleItem, setSingleItem] = useState<object>({});
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [sortKey, setSortKey] = useState<SortKey>("resolutor");
   const [sortOrder, setSortOrder] = useState<SortOrder>("asc");
-  const [tableRowData, setTableRowData] = useState([]);
+  const [tableRowData, setTableRowData] = useState<Array<Ticket>>([]);
   const [searchTerm, setSearchTerm] = useState("");
-  const [message, setMessage] = useState("");
-  const { isOpen, openModal, closeModal } = useModal();
+  const [status, setStatus] = useState("NUEVOS");
   const [criterio, setCriterio] = useState({
     value: "general",
     label: "General",
   });
   const [termino, setTermino] = useState("");
-  const {
-    isOpen: isOpenNota,
-    openModal: openModalNota,
-    closeModal: closeModalNota,
-  } = useModal();
-  const {
-    isOpen: isOpenContactoCliente,
-    openModal: openModalContactoCliente,
-    closeModal: closeModalContactoCliente,
-  } = useModal();
 
   const filteredAndSortedData = useMemo(() => {
     return tableRowData
@@ -115,7 +99,7 @@ export default function TableBusqueda() {
     try {
       const result = await busquedaAvanzada(criterio.value, termino);
       if (result.status === 200 && result.data) {
-        console.log("Entra al if")
+        console.log("Entra al if");
         setTableRowData(result.data);
       }
     } catch (error) {
@@ -124,6 +108,11 @@ export default function TableBusqueda() {
     } finally {
       setTermino("");
     }
+  };
+
+  const handlers = {
+    setSingleItem,
+    toggleModal,
   };
 
   const startIndex = (currentPage - 1) * itemsPerPage;
@@ -165,7 +154,7 @@ export default function TableBusqueda() {
       <div className="overflow-hidden rounded-xl bg-white dark:bg-white/[0.03]">
         <div className="flex flex-col gap-2 px-4 py-4 border border-b-0 border-gray-100 dark:border-white/[0.05] rounded-t-xl sm:flex-row sm:items-center sm:justify-between">
           <div className="flex items-center gap-3">
-            <span className="text-gray-500 dark:text-gray-400"> Mostrar </span>
+            <span className="text-gray-500 dark:text-gray-400"> Show </span>
             <div className="relative z-20 bg-transparent">
               <select
                 className="w-full py-2 pl-3 pr-8 text-sm text-gray-800 bg-transparent border border-gray-300 rounded-lg appearance-none dark:bg-dark-900 h-9 bg-none shadow-theme-xs placeholder:text-gray-400 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 dark:focus:border-brand-800"
@@ -201,10 +190,7 @@ export default function TableBusqueda() {
                 </svg>
               </span>
             </div>
-            <span className="text-gray-500 dark:text-gray-400">
-              {" "}
-              resultados{" "}
-            </span>
+            <span className="text-gray-500 dark:text-gray-400"> entries </span>
           </div>
 
           <div className="relative">
@@ -229,7 +215,7 @@ export default function TableBusqueda() {
               type="text"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              placeholder="Filtrar..."
+              placeholder="Search..."
               className="dark:bg-dark-900 h-11 w-full rounded-lg border border-gray-300 bg-transparent py-2.5 pl-11 pr-4 text-sm text-gray-800 shadow-theme-xs placeholder:text-gray-400 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 dark:focus:border-brand-800 xl:w-[300px]"
             />
           </div>
@@ -299,123 +285,97 @@ export default function TableBusqueda() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {currentData.map((item, index) => (
-                  <TableRow key={index}>
-                    {/* iconos */}
-                    <TableCell className="px-4 py-4 font-normal text-gray-800 border border-gray-100 dark:border-white/[0.05] text-theme-sm dark:text-white/90 whitespace-nowrap">
-                      <div className="flex items-center w-full gap-2">
-                        <Tooltip content="Ver" position="top" theme="dark">
-                          <button
-                            className="text-gray-500 hover:text-gray-800 dark:text-gray-400 dark:hover:text-white/90"
-                            onClick={openModal}
-                          >
-                            <EyeIcon />
-                          </button>
-                        </Tooltip>
-                        <Tooltip
-                          content="Agregar nota"
-                          position="top"
-                          theme="dark"
-                        >
-                          <button
-                            className="text-gray-500 hover:text-gray-800 dark:text-gray-400 dark:hover:text-white/90"
-                            onClick={openModalNota}
-                          >
-                            <DocumentPlusIcon />
-                          </button>
-                        </Tooltip>
-                        <Tooltip
-                          content="Contactar Cliente"
-                          position="top"
-                          theme="dark"
-                        >
-                          <button
-                            className="text-gray-500 hover:text-gray-800 dark:text-gray-400 dark:hover:text-white/90"
-                            onClick={openModalContactoCliente}
-                          >
-                            <EnvelopeIcon />
-                          </button>
-                        </Tooltip>
-                      </div>
-                    </TableCell>
-                    {/* resolutor */}
-                    <TableCell className="px-4 py-4 border border-gray-100 dark:border-white/[0.05] dark:text-white/90 whitespace-nowrap">
-                      <div className="flex gap-3">
-                        <div>
-                          <p className="block font-medium text-gray-800 text-theme-sm dark:text-white/90">
-                            {item.Reasignado_a?.length > 0
-                              ? item.Reasignado_a[0]?.Nombre
-                              : item.Asignado_a?.length > 0
-                              ? item.Asignado_a[0]?.Nombre
-                              : "Sin asignación"}
-                          </p>
+                {currentData.map((item, index) => {
+                  return (
+                    <TableRow key={index}>
+                      {/* iconos */}
+                      <TableCell>
+                        <div className="flex justify-center">
+                          <Tooltip content={"Ver Ticket"} theme="dark">
+                            <button
+                              onClick={() => {
+                                setSingleItem(item);
+                                toggleModal("ver", true);
+                                setStatus(item.Estado?.Estado);
+                              }}
+                              className="text-gray-500 hover:text-gray-800"
+                            >
+                              <EyeIcon />
+                            </button>
+                          </Tooltip>
                         </div>
-                      </div>
-                    </TableCell>
-                    {/* cliente */}
-                    <TableCell className="px-4 py-4 border border-gray-100 dark:border-white/[0.05] dark:text-white/90 whitespace-nowrap">
-                      <div className="flex gap-3">
-                        <div>
-                          <p className="block font-medium text-gray-800 text-theme-sm dark:text-white/90">
-                            {item.Cliente.Nombre}
-                          </p>
+                      </TableCell>
+                      {/* resolutor */}
+                      <TableCell className="px-4 py-4 border border-gray-100 dark:border-white/[0.05] dark:text-white/90 whitespace-nowrap">
+                        <div className="flex gap-3">
+                          <div>
+                            <p className="block font-medium text-gray-800 text-theme-sm dark:text-white/90">
+                              {item.Reasignado_a?.[0]?.Nombre ??
+                                item.Asignado_a?.[0]?.Nombre}
+                            </p>
+                          </div>
                         </div>
-                      </div>
-                    </TableCell>
-                    {/* id */}
-                    <TableCell className="px-4 py-4 font-normal text-gray-800 border border-gray-100 dark:border-white/[0.05] text-theme-sm dark:text-white/90 whitespace-nowrap">
-                      {item.Id}
-                    </TableCell>
-                    {/* estado */}
-                    <TableCell className="px-4 py-4 font-normal text-gray-800 border border-gray-100 dark:border-white/[0.05] text-theme-sm dark:text-white/90 whitespace-nowrap">
-                      <Badge
-                        size="sm"
-                        color={
-                          item.status === "Hired"
-                            ? "success"
-                            : item.status === "In Progress"
-                            ? "warning"
-                            : "error"
-                        }
-                      >
-                        {item.Estado.Estado}
-                      </Badge>
-                    </TableCell>
-                    {/* prioridad */}
-                    <TableCell className="px-4 py-4 font-normal text-gray-800 border border-gray-100 dark:border-white/[0.05] text-theme-sm dark:text-white/90 whitespace-nowrap">
-                      <Badge
-                        size="sm"
-                        color={
-                          item.status === "Hired"
-                            ? "success"
-                            : item.status === "In Progress"
-                            ? "warning"
-                            : "error"
-                        }
-                      >
-                        {item.Subcategoria?.Descripcion_prioridad}
-                      </Badge>
-                    </TableCell>
-                    {/* fecha creacion */}
-                    <TableCell className="px-4 py-4 font-normal text-gray-800 border border-gray-100 dark:border-white/[0.05] text-theme-sm dark:text-gray-400 whitespace-nowrap">
-                      <span> {item.Fecha_hora_creacion}</span>
-                    </TableCell>
-                    {/* Fecha limite de resolucion */}
-                    <TableCell className="px-4 py-4 font-normal text-gray-800 border border-gray-100 dark:border-white/[0.05] text-theme-sm dark:text-white/90 whitespace-nowrap">
-                      {item.Fecha_limite_resolucion_SLA}
-                    </TableCell>
-                    {/* Fecha de cierre */}
-                    <TableCell className="px-4 py-4 font-normal text-gray-800 border border-gray-100 dark:border-white/[0.05] text-theme-sm dark:text-white/90 whitespace-nowrap">
-                      {item.Fecha_hora_cierre !== ""
-                        ? item.Fecha_hora_cierre
-                        : "Ticket en curso"}
-                    </TableCell>
-                    {/* tipo */}
-                    <TableCell className="px-4 py-4 font-normal text-gray-800 border border-gray-100 dark:border-white/[0.05] text-theme-sm dark:text-white/90 whitespace-nowrap">
-                      {item.Subcategoria?.Tipo}
-                    </TableCell>
-                  </TableRow>
-                ))}
+                      </TableCell>
+                      {/* cliente */}
+                      <TableCell className="px-4 py-4 border border-gray-100 dark:border-white/[0.05] dark:text-white/90 whitespace-nowrap">
+                        <div className="flex gap-3">
+                          <div>
+                            <p className="block font-medium text-gray-800 text-theme-sm dark:text-white/90">
+                              {item.Cliente.Nombre}
+                            </p>
+                          </div>
+                        </div>
+                      </TableCell>
+                      {/* id */}
+                      <TableCell className="px-4 py-4 font-normal text-gray-800 border border-gray-100 dark:border-white/[0.05] text-theme-sm dark:text-white/90 whitespace-nowrap">
+                        {item.Id}
+                      </TableCell>
+                      {/* estado */}
+                      <TableCell className="px-4 py-4 font-normal text-gray-800 border border-gray-100 dark:border-white/[0.05] text-theme-sm dark:text-white/90 whitespace-nowrap">
+                        <Badge
+                          size="sm"
+                          color={
+                            badgeColors[item?.Estado?.Estado ?? ""] ?? "default"
+                          }
+                        >
+                          {item.Estado.Estado ?? "Sin estado"}
+                        </Badge>
+                      </TableCell>
+                      {/* prioridad */}
+                      <TableCell className="px-4 py-4 font-normal text-gray-800 border border-gray-100 dark:border-white/[0.05] text-theme-sm dark:text-white/90 whitespace-nowrap">
+                        <Badge
+                          size="sm"
+                          color={
+                            badgeColors[
+                              item?.Subcategoria?.Descripcion_prioridad ?? ""
+                            ] ?? "default"
+                          }
+                        >
+                          {item?.Subcategoria?.Descripcion_prioridad ??
+                            "Sin prioridad"}
+                        </Badge>
+                      </TableCell>
+                      {/* fecha creacion */}
+                      <TableCell className="px-4 py-4 font-normal text-gray-800 border border-gray-100 dark:border-white/[0.05] text-theme-sm dark:text-gray-400 whitespace-nowrap">
+                        <span> {item.Fecha_hora_creacion}</span>
+                      </TableCell>
+                      {/* Fecha limite de resolucion */}
+                      <TableCell className="px-4 py-4 font-normal text-gray-800 border border-gray-100 dark:border-white/[0.05] text-theme-sm dark:text-white/90 whitespace-nowrap">
+                        {item.Fecha_limite_resolucion_SLA}
+                      </TableCell>
+                      {/* Fecha de cierre */}
+                      <TableCell className="px-4 py-4 font-normal text-gray-800 border border-gray-100 dark:border-white/[0.05] text-theme-sm dark:text-white/90 whitespace-nowrap">
+                        {item.Fecha_hora_cierre != ""
+                          ? item.Fecha_hora_cierre
+                          : "Ticket en curso"}
+                      </TableCell>
+                      {/* tipo */}
+                      <TableCell className="px-4 py-4 font-normal text-gray-800 border border-gray-100 dark:border-white/[0.05] text-theme-sm dark:text-white/90 whitespace-nowrap">
+                        {item.Subcategoria.Tipo}
+                      </TableCell>
+                    </TableRow>
+                  );
+                })}
               </TableBody>
             </Table>
           </div>
@@ -439,62 +399,7 @@ export default function TableBusqueda() {
           </div>
         </div>
       </div>
-
-      <Modal
-        isOpen={isOpen}
-        onClose={closeModal}
-        isFullscreen
-        className="fixed top-0 left-0 flex flex-col justify-between w-full h-screen p-6 overflow-x-hidden overflow-y-auto bg-white dark:bg-gray-900 lg:p-15"
-      >
-        <Invoice />
-      </Modal>
-      <Modal
-        isOpen={isOpenNota}
-        onClose={closeModalNota}
-        className="max-w-[700px] m-4"
-      >
-        <div className="no-scrollbar relative w-full max-w-[700px] overflow-y-auto rounded-3xl bg-white p-4 dark:bg-gray-900 lg:p-11">
-          <div className="px-2 pr-14">
-            <h4 className="mb-2 text-2xl font-semibold text-gray-800 dark:text-white/90">
-              Agregar nota
-            </h4>
-          </div>
-          <form className="flex flex-col">
-            <div className="custom-scrollbar h-[450px] overflow-y-auto px-2 pb-3">
-              <div className="mt-7">
-                <div className="grid grid-cols-1 gap-x-6 gap-y-5 lg:grid-cols-2">
-                  <div className="col-span-2">
-                    <Label>Descripcion</Label>
-                    <TextArea
-                      value={message}
-                      onChange={(value) => setMessage(value)}
-                      rows={10}
-                    />
-                  </div>
-                  <div className="col-span-2 mt-5">
-                    <DropzoneComponent />
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div className="flex items-center gap-3 px-2 mt-6 lg:justify-end">
-              <Button size="sm" variant="outline" onClick={closeModalNota}>
-                Cerrar
-              </Button>
-              <Button size="sm">Guardar nota</Button>
-            </div>
-          </form>
-        </div>
-      </Modal>
-      <Modal
-        isOpen={isOpenContactoCliente}
-        onClose={closeModalContactoCliente}
-        className="max-w-[700px] m-4"
-      >
-        <div className="no-scrollbar relative w-full max-w-[700px] max-h-[90vh] overflow-y-auto rounded-3xl bg-white p-4 dark:bg-gray-900 lg:p-4">
-          <FormularioContacto />
-        </div>
-      </Modal>
+      <AllModals ticket={singleItem} status={status} />
     </>
   );
 }

@@ -36,6 +36,14 @@ export const getActions = (
       },
       visible: ["Administrador", "Root", "Moderador", "Usuario"],
       estados: [
+        "CERRADOS",
+        "ABIERTOS",
+        "NUEVOS",
+        "PENDIENTES",
+        "REABIERTOS",
+        "RESUELTOS",
+        "REVISION",
+        "STANDBY",
         "cerrado",
         "curso",
         "nuevo",
@@ -56,6 +64,14 @@ export const getActions = (
       },
       visible: ["Administrador", "Root", "Moderador", "Usuario"],
       estados: [
+        "CERRADOS",
+        "ABIERTOS",
+        "NUEVOS",
+        "PENDIENTES",
+        "REABIERTOS",
+        "RESUELTOS",
+        "REVISION",
+        "STANDBY",
         "cerrado",
         "curso",
         "nuevo",
@@ -75,7 +91,7 @@ export const getActions = (
         handlers.setSingleItem(item);
       },
       visible: ["Moderador"],
-      estados: ["revision"],
+      estados: ["revision", "REVISION"],
     },
     // resolver
     {
@@ -86,7 +102,18 @@ export const getActions = (
         handlers.setSingleItem(item);
       },
       visible: ["Administrador", "Root", "Moderador", "Usuario"],
-      estados: ["curso", "nuevo", "reabierto", "revision", "mesaServicio"],
+      estados: [
+        "ABIERTOS",
+        "NUEVOS",
+        "REABIERTOS",
+        "REVISION",
+        "STANDBY",
+        "curso",
+        "nuevo",
+        "reabierto",
+        "revision",
+        "mesaServicio",
+      ],
     },
     // contacto
     {
@@ -98,6 +125,14 @@ export const getActions = (
       },
       visible: ["Administrador", "Root", "Moderador", "Usuario"],
       estados: [
+        "CERRADOS",
+        "ABIERTOS",
+        "NUEVOS",
+        "PENDIENTES",
+        "REABIERTOS",
+        "RESUELTOS",
+        "REVISION",
+        "STANDBY",
         "cerrado",
         "curso",
         "nuevo",
@@ -117,7 +152,7 @@ export const getActions = (
         handlers.setSingleItem(item);
       },
       visible: ["Administrador", "Root", "Moderador", "Usuario"],
-      estados: ["resuelto"],
+      estados: ["resuelto", "RESUELTOS"],
     },
     // reabrir
     {
@@ -128,7 +163,7 @@ export const getActions = (
         handlers.setSingleItem(item);
       },
       visible: ["Administrador", "Root", "Moderador", "Usuario"],
-      estados: ["cerrado", "resuelto"],
+      estados: ["cerrado", "CERRADOS", "resuelto", "RESUELTOS"],
     },
     // regresar a resolutor
     {
@@ -139,7 +174,7 @@ export const getActions = (
         handlers.setSingleItem(item);
       },
       visible: ["Administrador", "Root"],
-      estados: ["pendiente"],
+      estados: ["pendiente", "PENDIENTES"],
     },
     // razon pendiente
     {
@@ -150,7 +185,7 @@ export const getActions = (
         handlers.setSingleItem(item);
       },
       visible: ["Administrador", "Root", "Moderador", "Usuario"],
-      estados: ["mesaServicio"],
+      estados: ["mesaServicio", "STANDBY"],
     },
     // asignar
     {
@@ -161,7 +196,7 @@ export const getActions = (
         handlers.setSingleItem(item);
       },
       visible: ["Administrador", "Root", "Moderador", "Usuario"],
-      estados: ["mesaServicio"],
+      estados: ["mesaServicio", "STANDBY"],
     },
     // reasignar
     {
@@ -173,7 +208,16 @@ export const getActions = (
         handlers.setFechaResolucionSLA(item.Fecha_limite_resolucion_SLA);
       },
       visible: ["Moderador"],
-      estados: ["curso", "nuevo", "reabierto", "revision"],
+      estados: [
+        "curso",
+        "ABIERTOS",
+        "nuevo",
+        "NUEVOS",
+        "reabierto",
+        "REABIERTOS",
+        "revision",
+        "REVISION",
+      ],
     },
     // editar
     {
@@ -184,7 +228,7 @@ export const getActions = (
         handlers.setTicketId(item._id);
       },
       visible: ["Administrador", "Root", "Moderador", "Usuario"],
-      estados: ["mesaServicio"],
+      estados: ["mesaServicio", "STANDBY"],
     },
     // regresar a mesa de servicio
     {
@@ -196,14 +240,12 @@ export const getActions = (
       },
       visible: ["Moderador"],
       estados: [
-        "cerrado",
+        "ABIERTOS",
+        "NUEVOS",
+        "REABIERTOS",
         "curso",
         "nuevo",
-        "pendiente",
         "reabierto",
-        "resuelto",
-        "revision",
-        "mesaServicio",
       ],
     },
     // aceptar
@@ -215,7 +257,7 @@ export const getActions = (
         handlers.setSingleItem(item);
       },
       visible: ["Moderador"],
-      estados: ["revision"],
+      estados: ["revision","REVISION"],
     },
     // marcar como pendiente
     {
@@ -227,14 +269,12 @@ export const getActions = (
       },
       visible: ["Usuario"],
       estados: [
-        "cerrado",
+        "ABIERTOS",
+        "NUEVOS",
+        "REABIERTOS",
         "curso",
         "nuevo",
-        "pendiente",
         "reabierto",
-        "resuelto",
-        "revision",
-        "mesaServicio",
       ],
     },
     // regresar a moderador
@@ -247,14 +287,8 @@ export const getActions = (
       },
       visible: ["Usuario"],
       estados: [
-        "cerrado",
         "curso",
-        "nuevo",
-        "pendiente",
-        "reabierto",
-        "resuelto",
-        "revision",
-        "mesaServicio",
+        "ABIERTOS"
       ],
     },
     // oficio de cierre
@@ -266,7 +300,7 @@ export const getActions = (
         handlers.setSingleItem(item);
       },
       visible: ["Administrador", "Root", "Moderador", "Usuario"],
-      estados: ["cerrado", "resuelto"],
+      estados: ["cerrado", "resuelto", "CERRADOS", "RESUELTOS"],
     },
   ];
 

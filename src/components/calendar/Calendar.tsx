@@ -22,6 +22,8 @@ interface data {
   };
   Fecha_limite_resolucion_SLA: string;
   Id: number;
+  Descripcion: string;
+  Cliente: { Nombre: string; Correo: string };
 }
 
 const Calendar: React.FC = () => {
@@ -42,7 +44,6 @@ const Calendar: React.FC = () => {
   useEffect(() => {
     getCalendarEvents().then((ce) => {
       setCalendarEvents(ce.data);
-      console.log(ce.data);
     });
   }, []);
 
@@ -56,6 +57,7 @@ const Calendar: React.FC = () => {
         calendar:
           calendarsEvents[item?.Subcategoria?.Descripcion_prioridad ?? ""] ??
           "default",
+        originalData: item,
       },
     }));
 
@@ -63,8 +65,8 @@ const Calendar: React.FC = () => {
   }, [calendarEvents]);
 
   function handleEventClick(clickInfo) {
-    console.log(clickInfo.event.title);
-    setEvenetData(clickInfo.event);
+    const originalData = clickInfo.event.extendedProps.originalData;
+    setEvenetData(originalData);
     openModal();
   }
 
@@ -98,7 +100,24 @@ const Calendar: React.FC = () => {
 
       <Modal isOpen={isOpen} onClose={closeModal} className="max-w-[700px] m-4">
         <div className="no-scrollbar relative w-full max-w-[700px] max-h-[90vh] overflow-y-auto rounded-3xl bg-white p-4 dark:bg-gray-900 lg:p-4">
-          <h1>{eventData?.title}</h1>
+          <h1 className="text-xl font-semibold mb-2">
+            Ticket #{eventData?.Id}
+          </h1>
+          <p className="text-gray-600 dark:text-gray-300">
+            <strong>Prioridad:</strong>{" "}
+            {eventData?.Subcategoria?.Descripcion_prioridad}
+          </p>
+          <p className="text-gray-600 dark:text-gray-300">
+            <strong>Fecha límite de resolución:</strong>{" "}
+            {new Date(eventData?.Fecha_limite_resolucion_SLA).toLocaleString()}
+          </p>
+          <p className="text-gray-600 dark:text-gray-300">
+            <strong>Cliente:</strong> {eventData?.Cliente?.Nombre} -{" "}
+            {eventData?.Cliente?.Correo}
+          </p>
+          <p className="text-gray-600 dark:text-gray-300">
+            <strong>Descripcion:</strong> {eventData?.Descripcion}
+          </p>
         </div>
       </Modal>
     </>
