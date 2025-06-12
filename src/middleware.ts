@@ -19,14 +19,11 @@ export async function middleware(request: NextRequest) {
 
   // Si no hay token, redirige al login
   if (!token) {
-    return NextResponse.redirect(new URL("/login", request.url));
+    return NextResponse.redirect(new URL("/", request.url));
   }
 
   // nest
-  // const userRole = token?.user?.rol;
-
-  // node
-  const userRole = token?.user?.Rol.Rol;
+  const userRole = token?.user?.rol;
   const path = request.nextUrl.pathname;
 
   for (const [role, routes] of Object.entries(protectedRoutes)) {

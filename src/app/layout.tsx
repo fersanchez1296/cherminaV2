@@ -7,6 +7,7 @@ import { ThemeProvider } from "@/context/ThemeContext";
 import SessionAuthProvider from "../context/SessionAuthProvider";
 import { ModalProvider } from "@/context/ModalManager";
 import { NotificationProvider } from "@/context/NotificationProvider";
+import { LoaderOverlay } from "@/components/loaderOverlay/LoaderOverlay";
 const outfit = Outfit({
   subsets: ["latin"],
 });
@@ -22,6 +23,7 @@ export default function RootLayout({
         <SessionAuthProvider>
           <NotificationProvider>
             <ThemeProvider>
+              <LoaderOverlay/>
               <ModalProvider>
                 <SidebarProvider>{children}</SidebarProvider>
               </ModalProvider>

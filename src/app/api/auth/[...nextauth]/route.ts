@@ -21,7 +21,6 @@ const handler = NextAuth({
           );
 
           const user = response.data;
-          console.log(user);
           // node
           // if (user) return user;
 

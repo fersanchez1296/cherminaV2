@@ -14,6 +14,7 @@ interface data {
     Mensaje: string;
     Titulo: string;
     Nombre: { Nombre: string };
+    stopper: boolean;
   }>;
 }
 
@@ -64,7 +65,13 @@ export default function InvoiceTable({ historia }: data) {
                     {h.Fecha}
                   </TableCell>
                   <TableCell className="px-5 py-3.5 text-left dark:border-white/[0.05] text-gray-500 text-theme-sm dark:text-gray-400">
-                    {h.Mensaje}
+                    <span
+                      className={`${
+                        h.stopper ? "text-red-500" : "text-gray-500"
+                      }`}
+                    >
+                      {h.Mensaje}
+                    </span>
                   </TableCell>
                 </TableRow>
               ))}

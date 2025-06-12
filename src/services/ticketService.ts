@@ -119,37 +119,33 @@ export const putResolverTicket = async (
 };
 
 export const putContactoCliente = async (
-  data: { cuerpo: string; Otros_correos: string[]; Files?: File[] },
+  data: { cuerpoCorreo: string; Files?: File[]; emailsExtra: string },
   ticketId: string
 ) => {
+  const { cuerpoCorreo, emailsExtra } = data;
+
+  const emailsArray = emailsExtra
+    .split(",")
+    .map(email => email.trim())
+    .filter(email => email !== "");
+
   const formData = new FormData();
-  const { cuerpo } = data;
-  const auxData = {
-    cuerpo,
-  };
+  formData.append("cuerpoCorreo", cuerpoCorreo);
+
+  emailsArray.forEach(email => {
+    formData.append("emailsExtra", email);
+  });
+
   if (data.Files) {
-    Object.entries(data).forEach(([key, value]) => {
-      if (key === "Files" && Array.isArray(value)) {
-        value.forEach((file) => {
-          if (file instanceof File) {
-            formData.append("files", file);
-          } else {
-            console.error(`El archivo no es válido:`, file);
-          }
-        });
+    data.Files.forEach((file) => {
+      if (file instanceof File) {
+        formData.append("files", file);
+      } else {
+        console.error("El archivo no es válido:", file);
       }
     });
   }
-  if (data.Otros_correos) {
-    Object.entries(data).forEach(([key, value]) => {
-      if (key === "Otros_correos" && Array.isArray(value)) {
-        formData.append("emails_extra", JSON.stringify(value));
-      }
-    });
-  } else {
-    formData.append("emails_extra", JSON.stringify([]));
-  }
-  formData.append("ticketData", JSON.stringify(auxData));
+
   return await api.put(`tickets/contactoCliente/${ticketId}`, formData, {
     headers: {
       "Content-Type": "multipart/form-data",
@@ -320,26 +316,33 @@ export const putRegresarResolutor = async (
 };
 
 export const putTicketPendiente = async (
-  data: { cuerpo: string; Files?: File[] },
+  data: { cuerpoCorreo: string; Files?: File[]; emailsExtra: string },
   ticketId: string
 ) => {
-  const { cuerpo } = data;
+  const { cuerpoCorreo, emailsExtra } = data;
+
+  const emailsArray = emailsExtra
+    .split(",")
+    .map(email => email.trim())
+    .filter(email => email !== "");
+
   const formData = new FormData();
-  const ticketData = { cuerpo };
+  formData.append("cuerpoCorreo", cuerpoCorreo);
+
+  emailsArray.forEach(email => {
+    formData.append("emailsExtra", email);
+  });
+
   if (data.Files) {
-    Object.entries(data).forEach(([key, value]) => {
-      if (key === "Files" && Array.isArray(value)) {
-        value.forEach((file) => {
-          if (file instanceof File) {
-            formData.append("files", file);
-          } else {
-            console.error(`El archivo no es válido:`, file);
-          }
-        });
+    data.Files.forEach((file) => {
+      if (file instanceof File) {
+        formData.append("files", file);
+      } else {
+        console.error("El archivo no es válido:", file);
       }
     });
   }
-  formData.append("ticketData", JSON.stringify(ticketData));
+
   return await api.put(`tickets/pendiente/${ticketId}`, formData, {
     headers: {
       "Content-Type": "multipart/form-data",
@@ -414,9 +417,9 @@ export const putReasignar = async (
   const formData = new FormData();
   const Asignado_a = data.Asignado_a?.value;
   const auxData: { Asignado_a: string; Nota?: string[]; vistoBueno?: boolean } =
-    {
-      Asignado_a,
-    };
+  {
+    Asignado_a,
+  };
   if (data.Nota) auxData.Nota = data.Nota;
   if (data.vistoBueno) auxData.vistoBueno = data.vistoBueno;
   if (data.Files) {

@@ -13,9 +13,10 @@ interface Open {
   open: boolean;
   handleToggleModalState: (modal: string, boolState: boolean) => void;
   id?: string;
+  uuid?: string,
 }
 
-const ModalNota = ({ open, handleToggleModalState, id }: Open) => {
+const ModalNota = ({ open, handleToggleModalState, id, uuid }: Open) => {
   const { showNotification } = useNotification();
   const { isOpen, closeModal, setOpen } = useModal();
   const form = useForm();

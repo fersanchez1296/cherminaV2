@@ -20,7 +20,8 @@ import { useSession } from "next-auth/react";
 import { Ticket } from "@/common/interfaces/ticket.interface";
 import { SortKey, SortOrder } from "@/types/sort";
 import { badgeColors } from "@/common/badgeColors/badgeColors";
-
+import { useLoadingStore } from "@/stores/loadingStore";
+import { useNotification } from "@/context/NotificationProvider";
 interface props {
   status: string;
 }
@@ -40,10 +41,25 @@ export default function DataTableTwo({ status }: props) {
   const [sortOrder, setSortOrder] = useState<SortOrder>("asc");
   const [searchTerm, setSearchTerm] = useState("");
   const [tableRowData, setTableRowData] = useState<Array<Ticket>>([]);
+  const setLoading = useLoadingStore((state) => state.setLoading);
+  const loading = useLoadingStore((state) => state.isLoading);
   //estados relacionados a la info del ticket
   const [singleItem, setSingleItem] = useState<object>({});
+  const { showNotification } = useNotification();
   useEffect(() => {
-    getTickets(status).then((res) => setTableRowData(res.data));
+    const fetchTickets = async () => {
+      setLoading(true);
+      try {
+        const res = await getTickets(status); // ✅ Aquí esperas la respuesta
+        setTableRowData(res.data);
+      } catch (error) {
+        showNotification("Error", "Error al cargar usuarios", "error");
+      } finally {
+        setLoading(false); // ✅ Esto se ejecuta correctamente al final
+      }
+    };
+
+    fetchTickets();
   }, [status]);
 
   const getNestedValue = (obj: any, path: string): any => {

@@ -17,22 +17,22 @@ import { useNotification } from "@/context/NotificationProvider";
 interface Open {
   open: boolean;
   handleToggleModalState: (modal: string, boolState: boolean) => void;
-  uuid?: string;
   id?: string;
+  uuid?: string;
   nombreCliente?: string;
 }
 
 const ModalMarcarPendiente = ({
   open,
   handleToggleModalState,
-  uuid,
   id,
+  uuid,
   nombreCliente,
 }: Open) => {
+  const { showNotification } = useNotification();
   const { isOpen, closeModal, setOpen } = useModal();
   const [cliente, setCliente] = useState<string>("");
   const form = useForm();
-  const { showNotification } = useNotification();
   const { handleSubmit, control, reset } = form;
   const callbackClose = () => {
     closeModal();
@@ -42,8 +42,7 @@ const ModalMarcarPendiente = ({
   const handleSave = async (data) => {
     try {
       const result = await putTicketPendiente(data, uuid);
-
-      if (result.status === 201) {
+      if (result.status === 200) {
         showNotification(
           "Éxito",
           result.data?.desc || "Operación exitosa",
@@ -59,8 +58,7 @@ const ModalMarcarPendiente = ({
         );
       }
     } catch (error) {
-      const message =
-        error.response?.data?.desc || "Ocurrió un error inesperado.";
+      error.response?.data?.desc || "Ocurrió un error inesperado.";
       showNotification("Error", message, "error");
     }
   };
@@ -85,25 +83,56 @@ const ModalMarcarPendiente = ({
       >
         <div className="no-scrollbar relative w-full max-w-[700px] max-h-[90vh] overflow-y-auto rounded-3xl bg-white p-4 dark:bg-gray-900 lg:p-4">
           {" "}
-          <ComponentCard title="Contactar cliente">
+          <ComponentCard title="Marcar Ticket Como Pendiente">
             <Form onSubmit={handleSubmit(handleSave)}>
               <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
                 <div className="col-span-2 sm:col-span-1">
-                  <Label htmlFor="firstName">Nombre del cliente</Label>
+                  <Label htmlFor="nombre-cliente">Nombre del cliente</Label>
                   <Input
                     type="text"
-                    id="firstName"
+                    id="nombre-cliente"
                     disabled
                     defaultValue={nombreCliente}
                   />
                 </div>
                 <div className="col-span-2 sm:col-span-1">
-                  <Label htmlFor="email">Email cliente</Label>
+                  <Label htmlFor="email-cliente">Email cliente</Label>
                   <Input
                     type="text"
-                    id="email"
+                    id="email-cliente"
                     disabled
                     defaultValue={cliente.correoCliente}
+                  />
+                </div>
+                <div className="col-span-2 sm:col-span-2">
+                  <Label htmlFor="Otros_correos">Otros destinatarios</Label>
+                  <Controller
+                    name="emailsExtra"
+                    control={control}
+                    defaultValue={
+                      Array.isArray(form.watch("emailsExtra"))
+                        ? form.watch("emailsExtra").join(", ")
+                        : ""
+                    }
+                    render={({ field, fieldState }) => (
+                      <Input
+                        type="text"
+                        id="emailsExtra"
+                        placeholder="Ingresa los destinatarios separados por una coma..."
+                        {...field}
+                        error={!!fieldState.error}
+                        hint={fieldState.error?.message}
+                        onChange={(e) => {
+                          const value = e.target.value;
+                          const emails = value
+                            .split(",")
+                            .map((email) => email.trim())
+                            .filter((email) => email.length > 0);
+                          form.setValue("emailsExtra", emails);
+                          field.onChange(value);
+                        }}
+                      />
+                    )}
                   />
                 </div>
                 <div className="col-span-2">
@@ -116,9 +145,9 @@ const ModalMarcarPendiente = ({
                   />
                 </div>
                 <div className="col-span-2">
-                  <Label htmlFor="cuerpo">Mensaje</Label>
+                  <Label htmlFor="cuerpoCorreo">Mensaje</Label>
                   <Controller
-                    name="cuerpo"
+                    name="cuerpoCorreo"
                     control={control}
                     render={({ field, fieldState }) => (
                       <TextArea

@@ -45,7 +45,7 @@ const ModalContacto = ({
     try {
       const result = await putContactoCliente(data, uuid);
 
-      if (result.status === 201) {
+      if (result.status === 200) {
         showNotification(
           "Éxito",
           result.data?.desc || "Operación exitosa",
@@ -109,19 +109,19 @@ const ModalContacto = ({
                   />
                 </div>
                 <div className="col-span-2 sm:col-span-2">
-                  <Label htmlFor="Otros_correos">Otros destinatarios</Label>
+                  <Label htmlFor="emailsExtra">Otros destinatarios</Label>
                   <Controller
-                    name="Otros_correos"
+                    name="emailsExtra"
                     control={control}
                     defaultValue={
-                      Array.isArray(form.watch("Otros_correos"))
-                        ? form.watch("Otros_correos").join(", ")
+                      Array.isArray(form.watch("emailsExtra"))
+                        ? form.watch("emailsExtra").join(", ")
                         : ""
                     }
                     render={({ field, fieldState }) => (
                       <Input
                         type="text"
-                        id="Otros_correos"
+                        id="emailsExtra"
                         placeholder="Ingresa los destinatarios separados por una coma..."
                         {...field}
                         error={!!fieldState.error}
@@ -132,7 +132,7 @@ const ModalContacto = ({
                             .split(",")
                             .map((email) => email.trim())
                             .filter((email) => email.length > 0);
-                          form.setValue("Otros_correos", emails);
+                          form.setValue("emailsExtra", emails);
                           field.onChange(value);
                         }}
                       />
@@ -145,13 +145,13 @@ const ModalContacto = ({
                     type="text"
                     id="subject"
                     disabled
-                    defaultValue={`Seguimiento al numero de ticket #${ticketNumericId}`}
+                    defaultValue={`Seguimiento al numero de ticket #${id}`}
                   />
                 </div>
                 <div className="col-span-2">
-                  <Label htmlFor="cuerpo">Mensaje</Label>
+                  <Label htmlFor="cuerpoCorreo">Mensaje</Label>
                   <Controller
-                    name="cuerpo"
+                    name="cuerpoCorreo"
                     control={control}
                     render={({ field, fieldState }) => (
                       <TextArea
