@@ -11,6 +11,7 @@ import PhoneInput from "../group-input/PhoneInput";
 import Select from "react-select";
 import { getInfoSelectsUsuario, updateUsuario } from "@/services/userService";
 import { useForm, Controller } from "react-hook-form";
+import { postCrearCliente } from "@/services/clientService";
 interface singleItem {
   singleItem?: {
     Area: Array<{ _id: string; Area: string }>;
@@ -51,6 +52,7 @@ export default function FormularioUsuarios({
   const [dataSelects, setDataSelects] = useState<string[]>();
   const [userId, setUserId] = useState("");
   const { handleSubmit, control } = useForm();
+  
   useEffect(() => {
     setUserId(singleItem?._id);
     getInfoSelectsUsuario().then((d) => setDataSelects(d));

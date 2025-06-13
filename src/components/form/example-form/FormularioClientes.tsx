@@ -1,10 +1,10 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { CSSProperties, useEffect, useState } from "react";
 import ComponentCard from "../../common/ComponentCard";
 import Form from "../Form";
 import Label from "../Label";
 import Input from "../input/InputField";
-import Select from "../Select";
+import Select from "react-select";
 import TextArea from "../input/TextArea";
 import Button from "../../ui/button/Button";
 import PhoneInput from "../group-input/PhoneInput";
@@ -38,6 +38,35 @@ interface SelectsData {
   dareas: Array<{ _id: string; Direccion_General: string }>;
   dgenerales: Array<{ _id: string; direccion_area: string }>;
 }
+
+interface Option {
+  value: string;
+  label: string;
+}
+
+interface GroupedOption {
+  label: string;
+  options: Option[];
+}
+
+const groupStyles = {
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "space-between",
+};
+
+const groupBadgeStyles: CSSProperties = {
+  backgroundColor: "#EBECF0",
+  borderRadius: "2em",
+  color: "#172B4D",
+  display: "inline-block",
+  fontSize: 12,
+  fontWeight: "normal",
+  lineHeight: "1",
+  minWidth: 1,
+  padding: "0.16666666666667em 0.5em",
+  textAlign: "center",
+};
 export default function FormularioCrearCliente({
   singleItem,
   disabled,
@@ -49,13 +78,20 @@ export default function FormularioCrearCliente({
   const [selectsData, setSelectsData] = useState<SelectsData>();
   const { handleSubmit, control } = useForm();
   const [clientId, setClientId] = useState("");
+  const [dGenerales, setDGenerales] = useState<Option[]>([]);
+  const [dAreas, setDAreas] = useState<Option[]>([]);
   const [nuevaDireccionGeneral, setNuevaDireccionGeneral] = useState(false);
   const [nuevaDireccionArea, setNuevaDireccionArea] = useState(false);
 
   useEffect(() => {
     setClientId(singleItem?._id);
-    getInfoSelectsClientes().then((res) => setSelectsData(res));
+    getInfoSelectsClientes().then((res) => {
+      setSelectsData(res);
+      setDGenerales(res.dgenerales);
+      setDAreas(res.dareas);
+    });
   }, []);
+
   const countries = [
     { code: "IPEJAL", label: "333-208-0340" },
     { code: "Otro", label: "" },
@@ -75,6 +111,9 @@ export default function FormularioCrearCliente({
       console.log("Resultado del query:", result);
     }
   };
+
+  console.log(singleItem);
+
   return (
     <ComponentCard
       title={
@@ -181,17 +220,25 @@ export default function FormularioCrearCliente({
                 name="Direccion_General"
                 control={control}
                 rules={{ required: "Este campo es obligatorio" }}
-                defaultValue={singleItem?.Direccion_General?._id || ""}
-                render={({ field, fieldState }) => (
-                  <Select
-                    options={selectsData?.dgenerales ?? []}
-                    placeholder="Selecciona una opción"
-                    defaultValue={singleItem?.Direccion_General?._id}
-                    disabled={disabled}
-                    className="bg-gray-50 dark:bg-gray-800"
+                render={({ field }) => (
+                  <Select<Option, false, GroupedOption>
+                    placeholder="Selecciona la Dirección General"
                     {...field}
-                    error={!!fieldState.error}
-                    hint={fieldState.error?.message}
+                    defaultValue={
+                      singleItem?.Direccion_General
+                        ? {
+                            label:
+                              singleItem?.Direccion_General.Direccion_General,
+                            value: singleItem?.Direccion_General._id,
+                          }
+                        : []
+                    }
+                    options={dGenerales}
+                    isDisabled={disabled}
+                    onChange={(selectedOption) => {
+                      field.onChange(selectedOption);
+                    }}
+                    value={field.value}
                   />
                 )}
               />
@@ -237,17 +284,24 @@ export default function FormularioCrearCliente({
                 name="direccion_area"
                 control={control}
                 rules={{ required: "Este campo es obligatorio" }}
-                defaultValue={singleItem?.direccion_area?._id || ""}
-                render={({ field, fieldState }) => (
-                  <Select
-                    options={selectsData?.dareas ?? []}
-                    placeholder="Selecciona una opción"
-                    defaultValue={singleItem?.direccion_area?._id}
-                    disabled={disabled}
-                    className="bg-gray-50 dark:bg-gray-800"
+                render={({ field }) => (
+                  <Select<Option, false, GroupedOption>
+                    placeholder="Selecciona la Dirección de Área"
                     {...field}
-                    error={!!fieldState.error}
-                    hint={fieldState.error?.message}
+                    isDisabled={disabled}
+                    defaultValue={
+                      singleItem?.direccion_area
+                        ? {
+                            label: singleItem?.direccion_area.direccion_area,
+                            value: singleItem?.direccion_area._id,
+                          }
+                        : []
+                    }
+                    options={dAreas}
+                    onChange={(selectedOption) => {
+                      field.onChange(selectedOption);
+                    }}
+                    value={field.value}
                   />
                 )}
               />

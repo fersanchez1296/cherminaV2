@@ -38,7 +38,6 @@ const iconMap: { [key: string]: string } = {
 };
 
 const ModalVer = ({ open, handleToggleModalState, ticket, status }: Open) => {
-  console.log(open, handleToggleModalState, ticket, status);
   const [singleItem, setSingleItem] = useState();
   const { data: session } = useSession();
   const userRole = session?.user?.rol;

@@ -6,18 +6,7 @@ export const getClients = async () => {
 
 export const getInfoSelectsClientes = async () => {
   const res = await api.get("clients/selectData");
-
-  const dareas = (res.data?.dareas ?? []).map((item: any) => ({
-    value: item._id,
-    label: item.direccion_area,
-  }));
-
-  const dgenerales = (res.data?.dgenerales ?? []).map((item: any) => ({
-    value: item._id,
-    label: item.Direccion_General,
-  }));
-
-  return { dareas, dgenerales };
+  return res.data;
 };
 
 export const postCrearCliente = async (data: object) => {

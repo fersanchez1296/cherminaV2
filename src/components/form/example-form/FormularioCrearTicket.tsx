@@ -88,7 +88,7 @@ export default function FormularioCrearTicket() {
   }, []);
 
   const handleSubcategoriaChange = (selectedOption: string) => {
-    if (!selectedOption) return; // por si se limpia el select
+    if (!selectedOption) return;
 
     const selectedSubcategoria = selectedOption._id;
     const catalogo = subcategoria.find((s) =>

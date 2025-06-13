@@ -11,19 +11,7 @@ export const updateEstadoUsuario = async (estado: boolean, userId: string) => {
 };
 
 export const getInfoSelectsUsuario = async () => {
-  const res = await api.get("users/usuarios/roles");
-
-  const areas = (res.data?.areas ?? []).map((item: any) => ({
-    value: item._id,
-    label: item.Area,
-  }));
-
-  const roles = (res.data?.roles ?? []).map((item: any) => ({
-    value: item._id,
-    label: item.Rol,
-  }));
-
-  return { areas, roles };
+  return await api.get("users/getInfoSelectsUsuarios");
 };
 
 export const updateUsuario = async (userId: string, data: any) => {

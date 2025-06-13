@@ -14,12 +14,12 @@ import Form from "@/components/form/Form";
 import Input from "@/components/form/input/InputField";
 import { getCorreosCliente } from "@/services/ticketService";
 import { useNotification } from "@/context/NotificationProvider";
+import { useLoadingStore } from "@/stores/loadingStore";
 interface Open {
   open: boolean;
   handleToggleModalState: (modal: string, boolState: boolean) => void;
   id?: string;
   uuid?: string;
-  ticketNumericId?: string;
   nombreCliente?: string;
 }
 
@@ -28,9 +28,9 @@ const ModalContacto = ({
   handleToggleModalState,
   id,
   uuid,
-  ticketNumericId,
   nombreCliente,
 }: Open) => {
+  const setLoading = useLoadingStore((state) => state.setLoading);
   const { showNotification } = useNotification();
   const { isOpen, closeModal, setOpen } = useModal();
   const [cliente, setCliente] = useState<string>("");
@@ -42,6 +42,7 @@ const ModalContacto = ({
   };
 
   const handleSave = async (data) => {
+    setLoading(true);
     try {
       const result = await putContactoCliente(data, uuid);
 
@@ -64,6 +65,8 @@ const ModalContacto = ({
       const message =
         error.response?.data?.desc || "Ocurrió un error inesperado.";
       showNotification("Error", message, "error");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -83,9 +86,9 @@ const ModalContacto = ({
       <Modal
         isOpen={isOpen}
         onClose={callbackClose}
-        className="max-w-[700px] m-4"
+        className="max-w-[700px] m-4 z-[99]"
       >
-        <div className="no-scrollbar relative w-full max-w-[700px] max-h-[90vh] overflow-y-auto rounded-3xl bg-white p-4 dark:bg-gray-900 lg:p-4">
+        <div className="no-scrollbar relative w-full z-[99] max-w-[700px] max-h-[90vh] overflow-y-auto rounded-3xl bg-white p-4 dark:bg-gray-900 lg:p-4">
           {" "}
           <ComponentCard title="Contactar cliente">
             <Form onSubmit={handleSubmit(handleSave)}>

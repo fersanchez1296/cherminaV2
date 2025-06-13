@@ -59,7 +59,6 @@ export default function TableClientes() {
   const fetchClients = () => {
     getClients().then((res) => {
       setTableRowData(res.data);
-      console.log(res.data);
     });
   };
 
@@ -159,7 +158,7 @@ export default function TableClientes() {
                 </svg>
               </span>
             </div>
-            <span className="text-gray-500 dark:text-gray-400"> entries </span>
+            <span className="text-gray-500 dark:text-gray-400"> resultados </span>
           </div>
 
           <div className="relative">
@@ -356,7 +355,7 @@ export default function TableClientes() {
             />
             <div className="pt-3 xl:pt-0">
               <p className="pt-3 text-sm font-medium text-center text-gray-500 border-t border-gray-100 dark:border-gray-800 dark:text-gray-400 xl:border-t-0 xl:pt-0 xl:text-left">
-                Showing {startIndex + 1} to {endIndex} of {totalItems} entries
+                Mostrando {startIndex + 1} a {endIndex} de {totalItems} resultados
               </p>
             </div>
           </div>

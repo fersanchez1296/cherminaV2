@@ -28,7 +28,6 @@ interface Props {
 
 export default function AllModals({ ticket, status }: Props) {
   const { state, toggleModal } = useModals();
-  console.log(status);
   return (
     <>
       {state["ver"] && (

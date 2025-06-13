@@ -15,7 +15,7 @@ import { Tooltip } from "@/components/ui/tooltip/Tooltip";
 import { getTickets } from "@/services/ticketService";
 import { useModals } from "@/context/ModalManager";
 import AllModals from "@/components/example/ModalExample/ModalProvider";
-import { getActions } from "@/factories/actionsFactory";
+import { EyeIcon } from "lucide-react";
 import { useSession } from "next-auth/react";
 import { Ticket } from "@/common/interfaces/ticket.interface";
 import { SortKey, SortOrder } from "@/types/sort";
@@ -28,12 +28,7 @@ interface props {
 
 export default function DataTableTwo({ status }: props) {
   const { data: session } = useSession();
-
-  // nest
   const userRole = session?.user?.rol;
-
-  // node
-  //const userRole = session?.user?.Rol.Rol;
   const { toggleModal } = useModals();
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(5);
@@ -199,12 +194,8 @@ export default function DataTableTwo({ status }: props) {
                   >
                     <div className="flex items-center justify-between cursor-pointer">
                       <p className="font-medium text-gray-700 text-theme-xs dark:text-gray-400">
-                        Acciones
+                        Ver Ticket
                       </p>
-                      <button className="flex flex-col gap-0.5">
-                        <AngleUpIcon className="text-gray-300 dark:text-gray-700" />
-                        <AngleDownIcon className="text-gray-300 dark:text-gray-700" />
-                      </button>
                     </div>
                   </TableCell>
                   {[
@@ -253,31 +244,22 @@ export default function DataTableTwo({ status }: props) {
               </TableHeader>
               <TableBody>
                 {currentData.map((item, index) => {
-                  const itemActions = getActions(
-                    item,
-                    handlers,
-                    userRole,
-                    status
-                  );
                   return (
                     <TableRow key={index}>
                       {/* iconos */}
                       <TableCell>
-                        <div className="flex gap-2 ml-4 mr-2.5">
-                          {itemActions.map((action, i) => (
-                            <Tooltip
-                              key={i}
-                              content={action.tooltip}
-                              theme="dark"
+                        <div className="flex justify-center">
+                          <Tooltip content={"Ver Ticket"} theme="dark">
+                            <button
+                              onClick={() => {
+                                setSingleItem(item);
+                                toggleModal("ver", true);
+                              }}
+                              className="text-gray-500 hover:text-gray-800"
                             >
-                              <button
-                                onClick={action.onClick}
-                                className="text-gray-500 hover:text-gray-800"
-                              >
-                                {action.icon()}
-                              </button>
-                            </Tooltip>
-                          ))}
+                              <EyeIcon />
+                            </button>
+                          </Tooltip>
                         </div>
                       </TableCell>
                       {/* resolutor */}
