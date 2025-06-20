@@ -122,10 +122,11 @@ export default function FormularioCrearTicket() {
   const handleSave = async (data) => {
     try {
       const result = await postCrearTicket(data);
+      console.log(result);
       if (result.status === 201) {
         showNotification(
-          "Éxito",
-          result.data?.desc || "Operación exitosa",
+          "Exito",
+          result.data?.message || "Operación exitosa",
           "success"
         );
         reset();
@@ -137,8 +138,9 @@ export default function FormularioCrearTicket() {
         );
       }
     } catch (error) {
+      const err = error as { response?: { data?: { desc?: string } } };
       const message =
-        error.response?.data?.desc || "Ocurrió un error inesperado.";
+        err.response?.data?.desc || "Ocurrió un error inesperado.";
       showNotification("Error", message, "error");
     }
   };

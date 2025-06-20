@@ -38,28 +38,38 @@ export default function AllModals({ ticket, status }: Props) {
           status={status}
         />
       )}
-
       {state["aceptar"] && (
         <ModalAceptar
           open
           handleToggleModalState={toggleModal}
           id={ticket.Id}
           uuid={ticket._id}
-          resolutor={ticket.Reasignado_a?.[0]?.Nombre || ""}
+          Nombre={ticket.Reasignado_a?.[0]?.Nombre || ""}
           descripcion_resolucion={ticket.Respuesta_cierre_reasignado}
           fechaResolucion={ticket.Fecha_hora_resolucion}
         />
       )}
-
+      {state["rechazar"] && (
+        <ModalRechazar
+          open
+          handleToggleModalState={toggleModal}
+          id={ticket.Id}
+          uuid={ticket._id}
+          resolutor={ticket.Reasignado_a?.[0]?.Nombre || ""}
+          Nombre={ticket.Reasignado_a?.[0]?.Nombre || ""}
+          // descripcion_resolucion={ticket.Respuesta_cierre_reasignado}
+          fechaResolucion={ticket.Fecha_hora_resolucion}
+        />
+      )}
       {state["resolver"] && (
         <ModalResolver
           open
           handleToggleModalState={toggleModal}
           id={ticket.Id}
           uuid={ticket._id}
+          vistoBueno={ticket.vistoBueno?.toString()}
         />
       )}
-
       {state["contacto"] && (
         <ModalContacto
           open
@@ -69,7 +79,6 @@ export default function AllModals({ ticket, status }: Props) {
           nombreCliente={ticket.Cliente?.Nombre}
         />
       )}
-
       {state["cerrar"] && (
         <ModalCerrarTicket
           open
@@ -79,7 +88,6 @@ export default function AllModals({ ticket, status }: Props) {
           descripcionCierre={ticket.Respuesta_cierre_reasignado}
         />
       )}
-
       {state["razonPendiente"] && (
         <ModalRazonPendiente
           open
@@ -88,7 +96,6 @@ export default function AllModals({ ticket, status }: Props) {
           uuid={ticket._id}
         />
       )}
-
       {state["regresarModerador"] && (
         <ModalRegresarModerador
           open
@@ -97,7 +104,6 @@ export default function AllModals({ ticket, status }: Props) {
           uuid={ticket._id}
         />
       )}
-
       {state["pendiente"] && (
         <ModalMarcarPendiente
           open
@@ -107,7 +113,6 @@ export default function AllModals({ ticket, status }: Props) {
           nombreCliente={ticket.Cliente?.Nombre}
         />
       )}
-
       {state["regresarResolutor"] && (
         <ModalRegresarResolutor
           open
@@ -116,19 +121,6 @@ export default function AllModals({ ticket, status }: Props) {
           uuid={ticket._id}
         />
       )}
-
-      {state["rechazar"] && (
-        <ModalRechazar
-          open
-          handleToggleModalState={toggleModal}
-          id={ticket.Id}
-          uuid={ticket._id}
-          resolutor={ticket.Reasignado_a?.[0]?.Nombre || ""}
-          // descripcion_resolucion={ticket.Respuesta_cierre_reasignado}
-          fechaResolucion={ticket.Fecha_hora_resolucion}
-        />
-      )}
-
       {state["regresarMesa"] && (
         <ModalRegresarMesa
           open
@@ -137,7 +129,6 @@ export default function AllModals({ ticket, status }: Props) {
           uuid={ticket._id}
         />
       )}
-
       {state["asignar"] && (
         <ModalAsignar
           open
@@ -145,9 +136,9 @@ export default function AllModals({ ticket, status }: Props) {
           uuid={ticket.Id}
           id={ticket._id}
           fechaResolucion={ticket.Fecha_limite_resolucion_SLA}
+          Cliente={ticket.Cliente}
         />
       )}
-
       {state["reasignar"] && (
         <ModalReasignar
           open
@@ -157,7 +148,6 @@ export default function AllModals({ ticket, status }: Props) {
           fechaResolucion={ticket.Fecha_limite_resolucion_SLA}
         />
       )}
-
       {state["reabrir"] && (
         <ModalReabrir
           open
@@ -167,11 +157,9 @@ export default function AllModals({ ticket, status }: Props) {
           fechaResolucion={ticket.Fecha_limite_resolucion_SLA}
         />
       )}
-
       {state["nota"] && (
-        <ModalNota open handleToggleModalState={toggleModal} id={ticket._id} />
+        <ModalNota open handleToggleModalState={toggleModal} uuid={ticket._id} />
       )}
-
       {state["oficio"] && (
         <ModalOficio
           open

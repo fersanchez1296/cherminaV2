@@ -278,7 +278,7 @@ export default function DataTableTwo({ status }: props) {
                         <div className="flex gap-3">
                           <div>
                             <p className="block font-medium text-gray-800 text-theme-sm dark:text-white/90">
-                              {item.Cliente.Nombre}
+                              {item?.Cliente?.Nombre ?? ""}
                             </p>
                           </div>
                         </div>

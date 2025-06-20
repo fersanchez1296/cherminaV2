@@ -14,26 +14,28 @@ interface Open {
   handleToggleModalState: (modal: string, boolState: boolean) => void;
   id?: string;
   uuid?: string;
+  vistoBueno?: string;
 }
 
-const ModalResolver = ({ open, handleToggleModalState, id, uuid }: Open) => {
+const ModalResolver = ({ open, handleToggleModalState, id, uuid, vistoBueno }: Open) => {
   const { showNotification } = useNotification();
   const { isOpen, closeModal, setOpen } = useModal();
   const form = useForm();
   const { handleSubmit, control, reset } = form;
   const callbackClose = () => {
+    reset();
     closeModal();
     handleToggleModalState("resolver", false);
   };
 
-  const handleSave = async (data) => {
+  const handleSave = async (data: any) => {
     try {
-      const result = await putResolverTicket(data, uuid);
+      const result = await putResolverTicket(data, uuid, vistoBueno);
 
-      if (result.status === 201) {
+      if (result.status === 200) {
         showNotification(
-          "Éxito",
-          result.data?.desc || "Operación exitosa",
+          "Exito",
+          result.data?.message || "Operación exitosa",
           "success"
         );
         reset();
@@ -46,8 +48,9 @@ const ModalResolver = ({ open, handleToggleModalState, id, uuid }: Open) => {
         );
       }
     } catch (error) {
+      const err = error as { response?: { data?: { desc?: string } } };
       const message =
-        error.response?.data?.desc || "Ocurrió un error inesperado.";
+        err.response?.data?.desc || "Ocurrió un error inesperado.";
       showNotification("Error", message, "error");
     }
   };
@@ -98,7 +101,9 @@ const ModalResolver = ({ open, handleToggleModalState, id, uuid }: Open) => {
               <Button size="sm" variant="outline" onClick={callbackClose}>
                 Cerrar
               </Button>
-              <Button size="sm">Guardar Ticket</Button>
+              <Button size="sm" type="submit">
+                Guardar Ticket
+              </Button>
             </div>
           </form>
         </div>

@@ -33,14 +33,14 @@ const ModalCerrarTicket = ({
     handleToggleModalState("cerrar", false);
   };
 
-  const handleSave = async (data) => {
+  const handleSave = async (data: any) => {
     try {
       const result = await putCerrarTicket(data, uuid);
 
-      if (result.status === 201) {
+      if (result.status === 200) {
         showNotification(
-          "Éxito",
-          result.data?.desc || "Operación exitosa",
+          "Exito",
+          result.data?.message || "Operación exitosa",
           "success"
         );
         reset();
@@ -53,8 +53,9 @@ const ModalCerrarTicket = ({
         );
       }
     } catch (error) {
+      const err = error as { response?: { data?: { desc?: string } } };
       const message =
-        error.response?.data?.desc || "Ocurrió un error inesperado.";
+        err.response?.data?.desc || "Ocurrió un error inesperado.";
       showNotification("Error", message, "error");
     }
   };
@@ -106,7 +107,9 @@ const ModalCerrarTicket = ({
               <Button size="sm" variant="outline" onClick={callbackClose}>
                 Cerrar
               </Button>
-              <Button size="sm">Guardar Ticket</Button>
+              <Button size="sm" type="submit">
+                Guardar Ticket
+              </Button>
             </div>
           </form>
         </div>

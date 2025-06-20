@@ -78,14 +78,14 @@ const ModalReasignar = ({
     handleToggleModalState("reasignar", false);
   };
 
-  const handleSave = async (data) => {
+  const handleSave = async (data: any) => {
     try {
-      const result = await putReasignar(data, uuid);
+      const result = await putReasignar(data, id);
 
-      if (result.status === 201) {
+      if (result.status === 200) {
         showNotification(
-          "Éxito",
-          result.data?.desc || "Operación exitosa",
+          result.data?.ticketId,
+          result.data?.message || "Operación exitosa",
           "success"
         );
         reset();
@@ -98,8 +98,9 @@ const ModalReasignar = ({
         );
       }
     } catch (error) {
+      const err = error as { response?: { data?: { desc?: string } } };
       const message =
-        error.response?.data?.desc || "Ocurrió un error inesperado.";
+        err.response?.data?.desc || "Ocurrió un error inesperado.";
       showNotification("Error", message, "error");
     }
   };
@@ -130,7 +131,7 @@ const ModalReasignar = ({
                 <div className="col-span-2">
                   <Label htmlFor="resolutor">Resolutor</Label>
                   <Controller
-                    name="Asignado_a"
+                    name="Reasignado_a"
                     control={control}
                     render={({ field }) => (
                       <Select<Option, false, GroupedOption>

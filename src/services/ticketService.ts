@@ -1,4 +1,5 @@
 import api from "@/lib/axios";
+import { da } from "date-fns/locale";
 
 interface Categorizacion {
   _id: string;
@@ -65,10 +66,19 @@ export const getTickets = async (estado: string) => {
 
 export const putNota = async (
   data: { Descripcion: string; Files?: File[] },
-  ticketId: string
+  ticketId?: string
 ) => {
   const formData = new FormData();
-  const ticketData = { Nota: data.Descripcion };
+  const auxData = {
+    Nota: data.Descripcion,
+  };
+
+  Object.entries(auxData).forEach(([key, value]) => {
+    if (value !== undefined && value !== null) {
+      formData.append(key, String(value));
+    }
+  });
+
   if (data.Files) {
     Object.entries(data).forEach(([key, value]) => {
       if (key === "Files" && Array.isArray(value)) {
@@ -81,8 +91,10 @@ export const putNota = async (
         });
       }
     });
-  }
-  formData.append("ticketData", JSON.stringify(ticketData));
+  };
+  // formData.forEach((value, key) => {
+  //   console.log(`${key}:`, value);
+  // });
   return await api.put(`tickets/nota/${ticketId}`, formData, {
     headers: {
       "Content-Type": "multipart/form-data",
@@ -92,11 +104,22 @@ export const putNota = async (
 
 export const putResolverTicket = async (
   data: { Respuesta_cierre_reasignado: string; Files?: File[] },
-  ticketId: string
+  ticketId?: string,
+  vistoBueno?: string
 ) => {
-  const { Respuesta_cierre_reasignado } = data;
   const formData = new FormData();
-  const ticketData = { Respuesta_cierre_reasignado, _id: ticketId };
+  const auxData = {
+    Respuesta_cierre_reasignado: data.Respuesta_cierre_reasignado,
+    Files: data.Files,
+    vistoBueno: vistoBueno,
+  };
+
+  Object.entries(auxData).forEach(([key, value]) => {
+    if (value !== undefined && value !== null) {
+      formData.append(key, String(value));
+    }
+  });
+
   if (data.Files) {
     Object.entries(data).forEach(([key, value]) => {
       if (key === "Files" && Array.isArray(value)) {
@@ -109,8 +132,10 @@ export const putResolverTicket = async (
         });
       }
     });
-  }
-  formData.append("ticketData", JSON.stringify(ticketData));
+  };
+  formData.forEach((value, key) => {
+    console.log(`${key}:`, value);
+  });
   return await api.put(`tickets/resolver/${ticketId}`, formData, {
     headers: {
       "Content-Type": "multipart/form-data",
@@ -159,27 +184,32 @@ export const getCorreosCliente = async (ticketId: string) => {
 
 export const putCerrarTicket = async (
   data: { Descripcion_cierre: string; Files?: File[] },
-  ticketId: string
+  ticketId?: string
 ) => {
   const formData = new FormData();
-  const { Descripcion_cierre } = data;
-  const ticketData = {
-    Descripcion_cierre,
+  const auxData = {
+    Descripcion_cierre: data.Descripcion_cierre,
   };
+
+  Object.entries(auxData).forEach(([key, value]) => {
+    if (value !== undefined && value !== null) {
+      formData.append(key, String(value));
+    }
+  });
+
   if (data.Files) {
-    Object.entries(data).forEach(([key, value]) => {
-      if (key === "Files" && Array.isArray(value)) {
-        value.forEach((file) => {
-          if (file instanceof File) {
-            formData.append("files", file);
-          } else {
-            console.error(`El archivo no es válido:`, file);
-          }
-        });
+    data.Files.forEach((file) => {
+      if (file instanceof File) {
+        formData.append("files", file);
+      } else {
+        console.error(`El archivo no es válido:`, file);
       }
     });
-  }
-  formData.append("ticketData", JSON.stringify(ticketData));
+  };
+
+  formData.forEach((value, key) => {
+    console.log(`${key}:`, value);
+  });
   return await api.put(`tickets/cerrar/${ticketId}`, formData, {
     headers: {
       "Content-Type": "multipart/form-data",
@@ -197,11 +227,19 @@ export const putRazonPendiente = async (
 
 export const putRegresarMesa = async (
   data: { descripcion_retorno: string; Files?: File[] },
-  ticketId: string
+  ticketId?: string
 ) => {
-  const { descripcion_retorno } = data;
   const formData = new FormData();
-  const ticketData = { descripcion_retorno };
+  const auxData = {
+    descripcion_retorno: data.descripcion_retorno,
+  };
+
+  Object.entries(auxData).forEach(([key, value]) => {
+    if (value !== undefined && value !== null) {
+      formData.append(key, String(value));
+    }
+  });
+
   if (data.Files) {
     Object.entries(data).forEach(([key, value]) => {
       if (key === "Files" && Array.isArray(value)) {
@@ -214,8 +252,7 @@ export const putRegresarMesa = async (
         });
       }
     });
-  }
-  formData.append("ticketData", JSON.stringify(ticketData));
+  };
   return await api.put(`tickets/retornoMesa/${ticketId}`, formData, {
     headers: {
       "Content-Type": "multipart/form-data",
@@ -225,11 +262,19 @@ export const putRegresarMesa = async (
 
 export const putRegresarModerador = async (
   data: { descripcion_retorno: string; Files?: File[] },
-  ticketId: string
+  ticketId?: string
 ) => {
-  const { descripcion_retorno } = data;
   const formData = new FormData();
-  const ticketData = { descripcion_retorno };
+  const auxData = {
+    descripcion_retorno: data.descripcion_retorno,
+  };
+
+  Object.entries(auxData).forEach(([key, value]) => {
+    if (value !== undefined && value !== null) {
+      formData.append(key, String(value));
+    }
+  });
+
   if (data.Files) {
     Object.entries(data).forEach(([key, value]) => {
       if (key === "Files" && Array.isArray(value)) {
@@ -242,8 +287,7 @@ export const putRegresarModerador = async (
         });
       }
     });
-  }
-  formData.append("ticketData", JSON.stringify(ticketData));
+  };
   return await api.put(`tickets/retornoModerador/${ticketId}`, formData, {
     headers: {
       "Content-Type": "multipart/form-data",
@@ -253,7 +297,7 @@ export const putRegresarModerador = async (
 
 export const putAceptarResolucion = async (
   data: { Nombre: string },
-  ticketId: string
+  ticketId?: string
 ) => {
   const Nombre = data.Nombre;
   return await api.put(`tickets/resolver/aceptar/${ticketId}`, { Nombre });
@@ -261,11 +305,20 @@ export const putAceptarResolucion = async (
 
 export const putRechazarResolucion = async (
   data: { feedback: string; Nombre: string; Files?: File[] },
-  ticketId: string
+  ticketId?: string
 ) => {
-  const { feedback, Nombre } = data;
   const formData = new FormData();
-  const ticketData = { Nombre, feedback };
+  const auxData = {
+    feedback: data.feedback,
+    Nombre: data.Nombre,
+  };
+
+  Object.entries(auxData).forEach(([key, value]) => {
+    if (value !== undefined && value !== null) {
+      formData.append(key, String(value));
+    }
+  });
+
   if (data.Files) {
     Object.entries(data).forEach(([key, value]) => {
       if (key === "Files" && Array.isArray(value)) {
@@ -278,8 +331,7 @@ export const putRechazarResolucion = async (
         });
       }
     });
-  }
-  formData.append("ticketData", JSON.stringify(ticketData));
+  };
   return await api.put(`tickets/resolver/rechazar/${ticketId}`, formData, {
     headers: {
       "Content-Type": "multipart/form-data",
@@ -288,26 +340,33 @@ export const putRechazarResolucion = async (
 };
 
 export const putRegresarResolutor = async (
-  data: { Descripcion_respuesta_cliente: string; Files?: File[] },
-  ticketId: string
+  data: { Descripcion_respuesta_cliente: string; Files?: File[]; },
+  ticketId?: string
 ) => {
-  const { Descripcion_respuesta_cliente } = data;
   const formData = new FormData();
-  const ticketData = { Descripcion_respuesta_cliente };
+  const auxData = {
+    Descripcion_respuesta_cliente: data.Descripcion_respuesta_cliente,
+  };
+
+  Object.entries(auxData).forEach(([key, value]) => {
+    if (value !== undefined && value !== null) {
+      formData.append(key, String(value));
+    }
+  });
+
   if (data.Files) {
-    Object.entries(data).forEach(([key, value]) => {
-      if (key === "Files" && Array.isArray(value)) {
-        value.forEach((file) => {
-          if (file instanceof File) {
-            formData.append("files", file);
-          } else {
-            console.error(`El archivo no es válido:`, file);
-          }
-        });
+    data.Files.forEach((file) => {
+      if (file instanceof File) {
+        formData.append("files", file);
+      } else {
+        console.error(`El archivo no es válido:`, file);
       }
     });
-  }
-  formData.append("ticketData", JSON.stringify(ticketData));
+  };
+
+  formData.forEach((value, key) => {
+    console.log(`${key}:`, value);
+  });
   return await api.put(`tickets/regresar/${ticketId}`, formData, {
     headers: {
       "Content-Type": "multipart/form-data",
@@ -375,15 +434,23 @@ export const putAsignar = async (
     Asignado_a: { label: string; value: string };
     Nota?: string[];
     Files?: File[];
+    Cliente?: any;
   },
-  ticketId: string
+  ticketId?: string
 ) => {
   const formData = new FormData();
-  const Asignado_a = data.Asignado_a?.value;
-  const auxData: { Asignado_a: string; Nota?: string[] } = {
-    Asignado_a,
+  const auxData = {
+    Asignado_a: data.Asignado_a?.value,
+    Nota: data.Nota,
+    Cliente: data.Cliente._id,
   };
-  if (data.Nota) auxData.Nota = data.Nota;
+
+  Object.entries(auxData).forEach(([key, value]) => {
+    if (value !== undefined && value !== null) {
+      formData.append(key, String(value));
+    }
+  });
+
   if (data.Files) {
     Object.entries(data).forEach(([key, value]) => {
       if (key === "Files" && Array.isArray(value)) {
@@ -396,8 +463,10 @@ export const putAsignar = async (
         });
       }
     });
-  }
-  formData.append("ticketData", JSON.stringify(auxData));
+  };
+  formData.forEach((value, key) => {
+    console.log(`${key}:`, value);
+  });
   return await api.put(`tickets/asignar/${ticketId}`, formData, {
     headers: {
       "Content-Type": "multipart/form-data",
@@ -407,21 +476,26 @@ export const putAsignar = async (
 
 export const putReasignar = async (
   data: {
-    Asignado_a: { label: string; value: string };
+    Reasignado_a: { label: string; value: string };
     vistoBueno: boolean;
     Nota?: string[];
     Files?: File[];
   },
-  ticketId: string
+  ticketId?: string
 ) => {
   const formData = new FormData();
-  const Asignado_a = data.Asignado_a?.value;
-  const auxData: { Asignado_a: string; Nota?: string[]; vistoBueno?: boolean } =
-  {
-    Asignado_a,
+  const auxData = {
+    Reasignado_a: data.Reasignado_a?.value,
+    Nota: data.Nota,
+    vistoBueno: data.vistoBueno,
   };
-  if (data.Nota) auxData.Nota = data.Nota;
-  if (data.vistoBueno) auxData.vistoBueno = data.vistoBueno;
+
+  Object.entries(auxData).forEach(([key, value]) => {
+    if (value !== undefined && value !== null) {
+      formData.append(key, String(value));
+    }
+  });
+
   if (data.Files) {
     Object.entries(data).forEach(([key, value]) => {
       if (key === "Files" && Array.isArray(value)) {
@@ -434,9 +508,9 @@ export const putReasignar = async (
         });
       }
     });
-  }
-  formData.append("ticketData", JSON.stringify(auxData));
-  return await api.put(`tickets/asignar/${ticketId}`, formData, {
+  };
+
+  return await api.put(`tickets/reasignar/${ticketId}`, formData, {
     headers: {
       "Content-Type": "multipart/form-data",
     },
@@ -449,14 +523,20 @@ export const putReabrir = async (
     Nota?: string[];
     Files?: File[];
   },
-  ticketId: string
+  ticketId?: string
 ) => {
   const formData = new FormData();
-  const Asignado_a = data.Asignado_a?.value;
-  const auxData: { Asignado_a: string; Nota?: string[] } = {
-    Asignado_a,
+  const auxData = {
+    Asignado_a: data.Asignado_a?.value,
+    Nota: data.Nota,
   };
-  if (data.Nota) auxData.Nota = data.Nota;
+
+  Object.entries(auxData).forEach(([key, value]) => {
+    if (value !== undefined && value !== null) {
+      formData.append(key, String(value));
+    }
+  });
+
   if (data.Files) {
     Object.entries(data).forEach(([key, value]) => {
       if (key === "Files" && Array.isArray(value)) {
@@ -469,8 +549,7 @@ export const putReabrir = async (
         });
       }
     });
-  }
-  formData.append("ticketData", JSON.stringify(auxData));
+  };
   return await api.put(`tickets/reabrir/${ticketId}`, formData, {
     headers: {
       "Content-Type": "multipart/form-data",

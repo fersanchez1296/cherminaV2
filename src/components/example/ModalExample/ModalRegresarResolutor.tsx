@@ -31,14 +31,15 @@ const ModalRegresarResolutor = ({
     handleToggleModalState("regresarResolutor", false);
   };
 
-  const handleSave = async (data) => {
+  const handleSave = async (data: any) => {
     try {
       const result = await putRegresarResolutor(data, uuid);
-
-      if (result.status === 201) {
+      console.log("Result", result);
+      console.log(result);
+      if (result.status === 200) {
         showNotification(
-          "Éxito",
-          result.data?.desc || "Operación exitosa",
+          "Exito",
+          result.data?.message || "Operación exitosa",
           "success"
         );
         reset();
@@ -51,8 +52,9 @@ const ModalRegresarResolutor = ({
         );
       }
     } catch (error) {
+      const err = error as { response?: { data?: { desc?: string } } };
       const message =
-        error.response?.data?.desc || "Ocurrió un error inesperado.";
+        err.response?.data?.desc || "Ocurrió un error inesperado.";
       showNotification("Error", message, "error");
     }
   };
@@ -103,7 +105,9 @@ const ModalRegresarResolutor = ({
               <Button size="sm" variant="outline" onClick={callbackClose}>
                 Cerrar
               </Button>
-              <Button size="sm">Guardar Ticket</Button>
+              <Button size="sm" type="submit">
+                Guardar Ticket
+              </Button>
             </div>
           </form>
         </div>

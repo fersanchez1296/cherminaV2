@@ -13,7 +13,7 @@ interface Open {
   open: boolean;
   handleToggleModalState: (modal: string, boolState: boolean) => void;
   id?: string;
-  uuid?: string,
+  uuid?: string;
 }
 
 const ModalNota = ({ open, handleToggleModalState, id, uuid }: Open) => {
@@ -30,31 +30,32 @@ const ModalNota = ({ open, handleToggleModalState, id, uuid }: Open) => {
     reset();
   };
 
-  const handleSave = async (data) => {
-        try {
-          const result = await putNota(data, uuid);
-    
-          if (result.status === 201) {
-            showNotification(
-              "Éxito",
-              result.data?.desc || "Operación exitosa",
-              "success"
-            );
-            reset();
-            callbackClose();
-          } else {
-            showNotification(
-              "Aviso",
-              result.data?.desc || "Respuesta inesperada del servidor",
-              "warning"
-            );
-          }
-        } catch (error) {
-          const message =
-            error.response?.data?.desc || "Ocurrió un error inesperado.";
-          showNotification("Error", message, "error");
-        }
-      };
+  const handleSave = async (data: any) => {
+    try {
+      const result = await putNota(data, uuid);
+
+      if (result.status === 200) {
+        showNotification(
+          "Exito",
+          result.data?.message || "Operación exitosa",
+          "success"
+        );
+        reset();
+        callbackClose();
+      } else {
+        showNotification(
+          "Aviso",
+          result.data?.desc || "Respuesta inesperada del servidor",
+          "warning"
+        );
+      }
+    } catch (error) {
+      const err = error as { response?: { data?: { desc?: string } } };
+      const message =
+        err.response?.data?.desc || "Ocurrió un error inesperado.";
+      showNotification("Error", message, "error");
+    }
+  };
 
   useEffect(() => {
     setOpen(open);

@@ -18,6 +18,7 @@ interface Open {
   uuid?: string;
   resolutor?: string;
   fechaResolucion?: string;
+  Nombre?: string;
 }
 
 const ModalRechazar = ({
@@ -27,6 +28,7 @@ const ModalRechazar = ({
   uuid,
   resolutor,
   fechaResolucion,
+  Nombre,
 }: Open) => {
   const { isOpen, closeModal, setOpen } = useModal();
   const form = useForm();
@@ -37,14 +39,18 @@ const ModalRechazar = ({
     handleToggleModalState("rechazar", false);
   };
 
-  const handleSave = async (data) => {
+  const handleSave = async (data: any) => {
+    const dataWithNombre = {
+      ...data,
+      Nombre: Nombre,
+    };
     try {
-      const result = await putRechazarResolucion(data, uuid);
+      const result = await putRechazarResolucion(dataWithNombre, uuid);
 
-      if (result.status === 201) {
+      if (result.status === 200) {
         showNotification(
-          "Éxito",
-          result.data?.desc || "Operación exitosa",
+          "Exito",
+          result.data?.message || "Operación exitosa",
           "success"
         );
         reset();
@@ -57,14 +63,18 @@ const ModalRechazar = ({
         );
       }
     } catch (error) {
+      const err = error as { response?: { data?: { desc?: string } } };
       const message =
-        error.response?.data?.desc || "Ocurrió un error inesperado.";
+        err.response?.data?.desc || "Ocurrió un error inesperado.";
       showNotification("Error", message, "error");
     }
   };
 
   useEffect(() => {
     setOpen(open);
+    reset({
+      Files: [],
+    });
   }, [setOpen, open]);
 
   useEffect(() => {
@@ -97,17 +107,18 @@ const ModalRechazar = ({
                   <div className="col-span-2">
                     <Label>Resolutor</Label>
                     <Controller
-                      name="Nombre"
-                      control={control}
-                      render={({ field, fieldState }) => (
-                        <Input
-                          disabled
-                          {...field}
-                          error={!!fieldState.error}
-                          hint={fieldState.error?.message}
-                        />
-                      )}
-                    />
+                    name="resolutor"
+                    control={control}
+                    render={({ field, fieldState }) => (
+                      <Input
+                        defaultValue={Nombre}
+                        disabled
+                        {...field}
+                        error={!!fieldState.error}
+                        hint={fieldState.error?.message}
+                      />
+                    )}
+                  />
                   </div>
                   <div className="col-span-2">
                     <Label>Fecha de resolución</Label>

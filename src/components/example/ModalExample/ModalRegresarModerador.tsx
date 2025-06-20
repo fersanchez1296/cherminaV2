@@ -31,14 +31,14 @@ const ModalRegresarModerador = ({
     handleToggleModalState("regresarModerador", false);
   };
 
-  const handleSave = async (data) => {
+  const handleSave = async (data: any) => {
     try {
       const result = await putRegresarModerador(data, uuid);
 
-      if (result.status === 201) {
+      if (result.status === 200) {
         showNotification(
-          "Éxito",
-          result.data?.desc || "Operación exitosa",
+          "Exito",
+          result.data?.message || "Operación exitosa",
           "success"
         );
         reset();
@@ -51,8 +51,9 @@ const ModalRegresarModerador = ({
         );
       }
     } catch (error) {
+      const err = error as { response?: { data?: { desc?: string } } };
       const message =
-        error.response?.data?.desc || "Ocurrió un error inesperado.";
+        err.response?.data?.desc || "Ocurrió un error inesperado.";
       showNotification("Error", message, "error");
     }
   };

@@ -10,11 +10,11 @@ import { putAceptarResolucion } from "@/services/ticketService";
 import Input from "@/components/form/input/InputField";
 import { useNotification } from "@/context/NotificationProvider";
 interface Open {
-  open?: boolean;
+  open: boolean;
   handleToggleModalState: (modal: string, boolState: boolean) => void;
   id?: string;
   uuid?: string;
-  resolutor?: string;
+  Nombre: string;
   fechaResolucion?: string;
   descripcion_resolucion?: string;
 }
@@ -24,7 +24,7 @@ const ModalAceptar = ({
   handleToggleModalState,
   id,
   uuid,
-  resolutor,
+  Nombre,
   fechaResolucion,
   descripcion_resolucion,
 }: Open) => {
@@ -36,15 +36,17 @@ const ModalAceptar = ({
     closeModal();
     handleToggleModalState("aceptar", false);
   };
-
-  const handleSave = async (data) => {
+  const data = {
+    Nombre,
+  };
+  const handleSave = async () => {
     try {
       const result = await putAceptarResolucion(data, uuid);
 
-      if (result.status === 201) {
+      if (result.status === 200) {
         showNotification(
-          "Éxito",
-          result.data?.desc || "Operación exitosa",
+          "Exito",
+          result.data?.message || "Operación exitosa",
           "success"
         );
         reset();
@@ -57,8 +59,9 @@ const ModalAceptar = ({
         );
       }
     } catch (error) {
+      const err = error as { response?: { data?: { desc?: string } } };
       const message =
-        error.response?.data?.desc || "Ocurrió un error inesperado.";
+        err.response?.data?.desc || "Ocurrió un error inesperado.";
       showNotification("Error", message, "error");
     }
   };
@@ -80,50 +83,44 @@ const ModalAceptar = ({
               Aceptar resolución
             </h4>
           </div>
-          <form className="flex flex-col" onSubmit={handleSubmit(handleSave)}>
-            <div className="custom-scrollbar h-[450px] overflow-y-auto px-2 pb-3">
-              <div className="mt-7">
-                <div className="grid grid-cols-1 gap-x-6 gap-y-5 lg:grid-cols-2">
-                  <div className="col-span-2">
-                    <Label>Resolutor</Label>
-                    <Controller
-                      name="resolutor"
-                      control={control}
-                      defaultValue={resolutor}
-                      render={({ field, fieldState }) => (
-                        <Input
-                          disabled
-                          {...field}
-                          error={!!fieldState.error}
-                          hint={fieldState.error?.message}
-                        />
-                      )}
-                    />
-                  </div>
-                  <div className="col-span-2">
-                    <Label>Fecha de resolución</Label>
-                    <Input defaultValue={fechaResolucion} disabled />
-                  </div>
-                  <div className="col-span-2">
-                    <Label>Descripcion</Label>
-                    <TextArea
-                      disabled
-                      rows={10}
-                      value={descripcion_resolucion}
-                    />
-                  </div>
+          <div className="custom-scrollbar h-[450px] overflow-y-auto px-2 pb-3">
+            <div className="mt-7">
+              <div className="grid grid-cols-1 gap-x-6 gap-y-5 lg:grid-cols-2">
+                <div className="col-span-2">
+                  <Label>Resolutor</Label>
+                  <Controller
+                    name="resolutor"
+                    control={control}
+                    render={({ field, fieldState }) => (
+                      <Input
+                        defaultValue={Nombre}
+                        disabled
+                        {...field}
+                        error={!!fieldState.error}
+                        hint={fieldState.error?.message}
+                      />
+                    )}
+                  />
+                </div>
+                <div className="col-span-2">
+                  <Label>Fecha de resolución</Label>
+                  <Input defaultValue={fechaResolucion} disabled />
+                </div>
+                <div className="col-span-2">
+                  <Label>Descripcion</Label>
+                  <TextArea disabled rows={10} value={descripcion_resolucion} />
                 </div>
               </div>
             </div>
-            <div className="flex items-center gap-3 px-2 mt-6 lg:justify-end">
-              <Button size="sm" variant="outline" onClick={callbackClose}>
-                Cerrar
-              </Button>
-              <Button size="sm" type="submit">
-                Guardar ticket
-              </Button>
-            </div>
-          </form>
+          </div>
+          <div className="flex items-center gap-3 px-2 mt-6 lg:justify-end">
+            <Button size="sm" variant="outline" onClick={callbackClose}>
+              Cerrar
+            </Button>
+            <Button size="sm" type="submit" onClick={handleSave}>
+              Guardar ticket
+            </Button>
+          </div>
         </div>
       </Modal>
     </>
