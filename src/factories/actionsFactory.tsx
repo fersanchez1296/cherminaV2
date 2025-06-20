@@ -25,35 +25,37 @@ export const getActions = (
   userRole: string,
   status: string
 ) => {
+  console.log("este es el item", item);
+
   const allActions = [
     // ver
-    {
-      icon: () => <EyeIcon />,
-      tooltip: "Ver",
-      onClick: () => {
-        handlers.toggleModal("ver", true);
-        handlers.setSingleItem(item);
-      },
-      visible: ["Administrador", "Root", "Moderador", "Usuario"],
-      estados: [
-        "CERRADOS",
-        "ABIERTOS",
-        "NUEVOS",
-        "PENDIENTES",
-        "REABIERTOS",
-        "RESUELTOS",
-        "REVISION",
-        "STANDBY",
-        "cerrado",
-        "curso",
-        "nuevo",
-        "pendiente",
-        "reabierto",
-        "resuelto",
-        "revision",
-        "mesaServicio",
-      ],
-    },
+    // {
+    //   icon: () => <EyeIcon />,
+    //   tooltip: "Ver",
+    //   onClick: () => {
+    //     handlers.toggleModal("ver", true);
+    //     handlers.setSingleItem(item);
+    //   },
+    //   visible: ["Administrador", "Root", "Moderador", "Usuario"],
+    //   estados: [
+    //     "CERRADOS",
+    //     "ABIERTOS",
+    //     "NUEVOS",
+    //     "PENDIENTES",
+    //     "REABIERTOS",
+    //     "RESUELTOS",
+    //     "REVISION",
+    //     "STANDBY",
+    //     "cerrado",
+    //     "curso",
+    //     "nuevo",
+    //     "pendiente",
+    //     "reabierto",
+    //     "resuelto",
+    //     "revision",
+    //     "mesaServicio",
+    //   ],
+    // },
     // nota
     {
       icon: () => <AnnotationIcon />,
@@ -257,7 +259,7 @@ export const getActions = (
         handlers.setSingleItem(item);
       },
       visible: ["Moderador"],
-      estados: ["revision","REVISION"],
+      estados: ["revision", "REVISION"],
     },
     // marcar como pendiente
     {
@@ -286,10 +288,7 @@ export const getActions = (
         handlers.setSingleItem(item);
       },
       visible: ["Usuario"],
-      estados: [
-        "curso",
-        "ABIERTOS"
-      ],
+      estados: ["curso", "ABIERTOS"],
     },
     // oficio de cierre
     {

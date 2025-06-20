@@ -1,4 +1,5 @@
 "use client";
+
 import { useState, useMemo, useEffect } from "react";
 import {
   Table,
@@ -7,57 +8,67 @@ import {
   TableHeader,
   TableRow,
 } from "../../../ui/table";
-import { AngleDownIcon, AngleUpIcon } from "../../../../icons";
+import {
+  AngleDownIcon,
+  AngleUpIcon,
+  EyeIcon,
+  EditIcon,
+} from "../../../../icons";
 import PaginationWithButton from "./PaginationWithButton";
-import Badge from "../../../ui/badge/Badge";
+import { useModal } from "@/hooks/useModal";
+import { Modal } from "@/components/ui/modal/index";
 import { Tooltip } from "@/components/ui/tooltip/Tooltip";
-import { getTickets } from "@/services/ticketService";
-import { EyeIcon } from "lucide-react";
-import { Ticket } from "@/common/interfaces/ticket.interface";
-import { SortKey, SortOrder } from "@/types/sort";
-import { badgeColors } from "@/common/badgeColors/badgeColors";
-import { useLoadingStore } from "@/stores/loadingStore";
+import Switch from "@/components/form/switch/Switch";
+import Button from "@/components/ui/button/Button";
+import { getUsersCelulas, updateEstadoUsuario } from "@/services/userService";
+import FormularioCelulas from "@/components/form/example-form/FormularioCelulas";
 import { useNotification } from "@/context/NotificationProvider";
-import { useRouter } from "next/navigation";
-interface props {
-  status: string;
+import { useLoadingStore } from "@/stores/loadingStore";
+type SortKey = "Nombre" | "Correo" | "Username" | "Area";
+type SortOrder = "asc" | "desc";
+
+interface data {
+  Area: Array<{ _id: string; Area: string }>;
+  Nombre: string;
+  Correo: string;
+  Rol: object;
+  Tickets_resueltos: object;
+  Username: string;
+  _id: string;
+  isActive: boolean;
 }
 
-export default function DataTableTwo({ status }: props) {
-  const router = useRouter();
+export default function TableCelulas() {
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(5);
-  const [sortKey, setSortKey] = useState<SortKey>("Id");
+  const [sortKey, setSortKey] = useState<SortKey>("Nombre");
   const [sortOrder, setSortOrder] = useState<SortOrder>("asc");
   const [searchTerm, setSearchTerm] = useState("");
-  const [tableRowData, setTableRowData] = useState<Array<Ticket>>([]);
-  const setLoading = useLoadingStore((state) => state.setLoading);
-  //estados relacionados a la info del ticket
+  const { isOpen, openModal, closeModal } = useModal();
+  const [tableRowData, setTableRowData] = useState<Array<data>>([]);
+  const [singleItem, setSingleItem] = useState<data>();
+  const [isEdit, setIsEdit] = useState<boolean>(false);
+  const [isCreate, setIsCreate] = useState<boolean>(false);
+  const [disabled, setDisabled] = useState<boolean>(false);
   const { showNotification } = useNotification();
-  useEffect(() => {
-    const fetchTickets = async () => {
+  const setLoading = useLoadingStore((state) => state.setLoading);
+
+  const fetchClients = () => {
+    try {
       setLoading(true);
-      try {
-        const res = await getTickets(status);
-        setTableRowData(res.data);
-      } catch (error) {
-        showNotification("Error", "Error al cargar tickets", "error");
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchTickets();
-  }, [status]);
-
-  const getNestedValue = (obj: any, path: string): any => {
-    return path.split(".").reduce((acc, part) => {
-      if (acc === null || acc === undefined) return undefined;
-      if (Array.isArray(acc)) acc = acc[0]; // tomar el primer elemento
-      if (typeof acc !== "object") return undefined; // evitar acceder propiedades de strings, numbers, etc.
-      return acc[part];
-    }, obj);
+      getUsersCelulas().then((res) => setTableRowData(res.data));
+    } catch (error) {
+      const message =
+        error.response?.data?.desc || "Ocurrió un error inesperado.";
+      showNotification("Error", message, "error");
+    } finally {
+      setLoading(false);
+    }
   };
+
+  useEffect(() => {
+    fetchClients();
+  }, []);
 
   const filteredAndSortedData = useMemo(() => {
     return tableRowData
@@ -67,15 +78,9 @@ export default function DataTableTwo({ status }: props) {
         )
       )
       .sort((a, b) => {
-        const aValue = getNestedValue(a, sortKey);
-        const bValue = getNestedValue(b, sortKey);
-
-        if (aValue === undefined) return 1;
-        if (bValue === undefined) return -1;
-
         return sortOrder === "asc"
-          ? String(aValue).localeCompare(String(bValue))
-          : String(bValue).localeCompare(String(aValue));
+          ? String(a[sortKey]).localeCompare(String(b[sortKey]))
+          : String(b[sortKey]).localeCompare(String(a[sortKey]));
       });
   }, [sortKey, sortOrder, searchTerm, tableRowData]);
 
@@ -99,8 +104,38 @@ export default function DataTableTwo({ status }: props) {
   const endIndex = Math.min(startIndex + itemsPerPage, totalItems);
   const currentData = filteredAndSortedData.slice(startIndex, endIndex);
 
+  const handleChangeEstadoUsuario = async (estado: boolean, userId: string) => {
+    try {
+      setLoading(true);
+      const result = await updateEstadoUsuario(estado, userId);
+      if (result.status === 200) {
+        showNotification(
+          "Éxito",
+          result.data?.message || "Operación exitosa",
+          "success"
+        );
+      } else {
+        showNotification(
+          "Aviso",
+          result.data?.desc || "Respuesta inesperada del servidor",
+          "warning"
+        );
+      }
+    } catch (error) {
+      const message =
+        error.response?.data?.desc || "Ocurrió un error inesperado.";
+      showNotification("Error", message, "error");
+    } finally {
+      setLoading(false);
+    }
+  };
   return (
     <>
+      <div className="flex gap-3 my-3">
+        <Button size="sm" onClick={fetchClients}>
+          Actualizar
+        </Button>
+      </div>
       <div className="overflow-hidden rounded-xl bg-white dark:bg-white/[0.03]">
         <div className="flex flex-col gap-2 px-4 py-4 border border-b-0 border-gray-100 dark:border-white/[0.05] rounded-t-xl sm:flex-row sm:items-center sm:justify-between">
           <div className="flex items-center gap-3">
@@ -140,7 +175,10 @@ export default function DataTableTwo({ status }: props) {
                 </svg>
               </span>
             </div>
-            <span className="text-gray-500 dark:text-gray-400"> resultados </span>
+            <span className="text-gray-500 dark:text-gray-400">
+              {" "}
+              resultados{" "}
+            </span>
           </div>
 
           <div className="relative">
@@ -165,7 +203,7 @@ export default function DataTableTwo({ status }: props) {
               type="text"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              placeholder="Search..."
+              placeholder="Filtrar resultados..."
               className="dark:bg-dark-900 h-11 w-full rounded-lg border border-gray-300 bg-transparent py-2.5 pl-11 pr-4 text-sm text-gray-800 shadow-theme-xs placeholder:text-gray-400 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 dark:focus:border-brand-800 xl:w-[300px]"
             />
           </div>
@@ -178,24 +216,28 @@ export default function DataTableTwo({ status }: props) {
                 <TableRow>
                   <TableCell
                     isHeader
+                    className="px-8 py-3 border border-gray-100 dark:border-white/[0.05]"
+                  >
+                    <div className="flex items-center justify-center cursor-pointer">
+                      <p className="font-medium text-gray-700 text-theme-xs dark:text-gray-400">
+                        Acciones
+                      </p>
+                    </div>
+                  </TableCell>
+                  <TableCell
+                    isHeader
                     className="px-4 py-3 border border-gray-100 dark:border-white/[0.05]"
                   >
                     <div className="flex items-center justify-between cursor-pointer">
                       <p className="font-medium text-gray-700 text-theme-xs dark:text-gray-400">
-                        Ver Ticket
+                        Estado
                       </p>
                     </div>
                   </TableCell>
                   {[
-                    { key: "resolutor", label: "Resolutor" },
-                    { key: "cliente", label: "Cliente" },
-                    { key: "id", label: "Id" },
-                    { key: "estado", label: "Status" },
-                    { key: "prioridad", label: "Prioridad" },
-                    { key: "fcreacion", label: "Fecha de creacion" },
-                    { key: "fresolucion", label: "Fecha limite de resolucion" },
-                    { key: "fcierre", label: "Fecha de cierre" },
-                    { key: "tipo", label: "Tipo" },
+                    { key: "Nombre", label: "Nombre" },
+                    { key: "Correo", label: "Correo" },
+                    { key: "Celula", label: "Célula" },
                   ].map(({ key, label }) => (
                     <TableCell
                       key={key}
@@ -231,108 +273,80 @@ export default function DataTableTwo({ status }: props) {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {currentData.map((item, index) => {
-                  return (
-                    <TableRow key={index}>
-                      {/* iconos */}
-                      <TableCell>
-                        <div className="flex justify-center text-blue-600 underline">
-                          <Tooltip content={"Ver Ticket"} theme="dark">
-                            <button
-                              // onClick={() => {
-                              //   setSingleItem(item);
-                              //   //toggleModal("ver", true);
-                              // }}
-                              onClick={() => {
-                                router.push(
-                                  `/tickets/${status}/${item.Id}`,
-                                  { scroll: false }
-                                );
-                              }}
-                              className="text-gray-500 hover:text-gray-800"
-                            >
-                              {/* <Link
-                                href={`/tickets/${status}/${item.Id}`}
-                                scroll={false}
-                                className="text-blue-600 underline"
-                              > */}
-                                <EyeIcon />
-                              {/* </Link> */}
-                            </button>
-                          </Tooltip>
-                        </div>
-                      </TableCell>
-                      {/* resolutor */}
-                      <TableCell className="px-4 py-4 border border-gray-100 dark:border-white/[0.05] dark:text-white/90 whitespace-nowrap">
-                        <div className="flex gap-3">
-                          <div>
-                            <p className="block font-medium text-gray-800 text-theme-sm dark:text-white/90">
-                              {item.Reasignado_a?.[0]?.Nombre ??
-                                item.Asignado_a?.[0]?.Nombre}
-                            </p>
-                          </div>
-                        </div>
-                      </TableCell>
-                      {/* cliente */}
-                      <TableCell className="px-4 py-4 border border-gray-100 dark:border-white/[0.05] dark:text-white/90 whitespace-nowrap">
-                        <div className="flex gap-3">
-                          <div>
-                            <p className="block font-medium text-gray-800 text-theme-sm dark:text-white/90">
-                              {item.Cliente.Nombre}
-                            </p>
-                          </div>
-                        </div>
-                      </TableCell>
-                      {/* id */}
-                      <TableCell className="px-4 py-4 font-normal text-gray-800 border border-gray-100 dark:border-white/[0.05] text-theme-sm dark:text-white/90 whitespace-nowrap">
-                        {item.Id}
-                      </TableCell>
-                      {/* estado */}
-                      <TableCell className="px-4 py-4 font-normal text-gray-800 border border-gray-100 dark:border-white/[0.05] text-theme-sm dark:text-white/90 whitespace-nowrap">
-                        <Badge
-                          size="sm"
-                          color={
-                            badgeColors[item?.Estado?.Estado ?? ""] ?? "default"
-                          }
+                {currentData.map((item, index) => (
+                  <TableRow key={index}>
+                    {/* iconos */}
+                    <TableCell>
+                      <div className="flex justify-center items-center gap-2">
+                        <Tooltip
+                          content="Ver Usuario"
+                          position="top"
+                          theme="dark"
                         >
-                          {item.Estado.Estado ?? "Sin estado"}
-                        </Badge>
-                      </TableCell>
-                      {/* prioridad */}
-                      <TableCell className="px-4 py-4 font-normal text-gray-800 border border-gray-100 dark:border-white/[0.05] text-theme-sm dark:text-white/90 whitespace-nowrap">
-                        <Badge
-                          size="sm"
-                          color={
-                            badgeColors[
-                              item?.Subcategoria?.Descripcion_prioridad ?? ""
-                            ] ?? "default"
-                          }
+                          <button
+                            className="text-gray-500 hover:text-gray-800 dark:text-gray-400 dark:hover:text-white/90"
+                            onClick={() => {
+                              openModal();
+                              setIsEdit(false);
+                              setDisabled(true);
+                              setIsCreate(false);
+                              setSingleItem(item);
+                            }}
+                          >
+                            <EyeIcon />
+                          </button>
+                        </Tooltip>
+                        <Tooltip
+                          content="Editar Usuario"
+                          position="top"
+                          theme="dark"
                         >
-                          {item?.Subcategoria?.Descripcion_prioridad ??
-                            "Sin prioridad"}
-                        </Badge>
-                      </TableCell>
-                      {/* fecha creacion */}
-                      <TableCell className="px-4 py-4 font-normal text-gray-800 border border-gray-100 dark:border-white/[0.05] text-theme-sm dark:text-gray-400 whitespace-nowrap">
-                        <span> {item.Fecha_hora_creacion}</span>
-                      </TableCell>
-                      {/* Fecha limite de resolucion */}
-                      <TableCell className="px-4 py-4 font-normal text-gray-800 border border-gray-100 dark:border-white/[0.05] text-theme-sm dark:text-white/90 whitespace-nowrap">
-                        {item.Fecha_limite_resolucion_SLA}
-                      </TableCell>
-                      {/* Fecha de cierre */}
-                      <TableCell className="px-4 py-4 font-normal text-gray-800 border border-gray-100 dark:border-white/[0.05] text-theme-sm dark:text-white/90 whitespace-nowrap">
-                        {item.Fecha_hora_cierre != ""
-                          ? item.Fecha_hora_cierre
-                          : "Ticket en curso"}
-                      </TableCell>
-                      {/* tipo */}
-                      <TableCell className="px-4 py-4 font-normal text-gray-800 border border-gray-100 dark:border-white/[0.05] text-theme-sm dark:text-white/90 whitespace-nowrap">
-                        {item.Subcategoria.Tipo}
-                      </TableCell>
-                    </TableRow>
-                  );
-                })}
+                          <button
+                            className="text-gray-500 hover:text-gray-800 dark:text-gray-400 dark:hover:text-white/90"
+                            onClick={() => {
+                              openModal();
+                              setIsEdit(!false);
+                              setDisabled(!true);
+                              setIsCreate(false);
+                              setSingleItem(item);
+                            }}
+                          >
+                            <EditIcon />
+                          </button>
+                        </Tooltip>
+                      </div>
+                    </TableCell>
+                    <TableCell className="px-4 py-4 font-normal text-gray-800 border border-gray-100 dark:border-white/[0.05] text-theme-sm dark:text-white/90 whitespace-nowrap">
+                      <div className="flex items-center w-full gap-2">
+                        <Switch
+                          label="Activo"
+                          defaultChecked={item.isActive}
+                          onChange={() =>
+                            handleChangeEstadoUsuario(!item.isActive, item._id)
+                          }
+                        />
+                      </div>
+                    </TableCell>
+                    {/* Usuario */}
+                    <TableCell className="px-4 py-4 border border-gray-100 dark:border-white/[0.05] dark:text-white/90 whitespace-nowrap">
+                      <div className="flex gap-3">
+                        <div>
+                          <p className="block font-medium text-gray-800 text-theme-sm dark:text-white/90">
+                            {item.Nombre}
+                          </p>
+                        </div>
+                      </div>
+                    </TableCell>
+                    {/* Correo */}
+                    <TableCell className="px-4 py-4 font-normal text-gray-800 border border-gray-100 dark:border-white/[0.05] text-theme-sm dark:text-white/90 whitespace-nowrap">
+                      {item.Correo}
+                    </TableCell>
+                    {/* Celula */}
+                    <TableCell className="px-4 py-4 font-normal text-gray-800 border border-gray-100 dark:border-white/[0.05] text-theme-sm dark:text-white/90 whitespace-nowrap">
+                      {item.Celula?.map((c) => c.Celula).join(", ")}
+                    </TableCell>
+                  </TableRow>
+                ))}
               </TableBody>
             </Table>
           </div>
@@ -356,6 +370,19 @@ export default function DataTableTwo({ status }: props) {
           </div>
         </div>
       </div>
+
+      <Modal isOpen={isOpen} onClose={closeModal} className="max-w-[700px] m-4">
+        <div className="no-scrollbar relative w-full max-w-[700px] max-h-[90vh] overflow-y-auto rounded-3xl bg-white p-4 dark:bg-gray-900 lg:p-4">
+          <FormularioCelulas
+            usuario={singleItem}
+            disabled={disabled}
+            isEdit={isEdit}
+            isCreate={isCreate}
+            onSuccess={fetchClients}
+            closeModal={closeModal}
+          />
+        </div>
+      </Modal>
     </>
   );
 }

@@ -63,6 +63,10 @@ export const getTickets = async (estado: string) => {
   return await api.get(`tickets/estado/${estadoTicket}`);
 };
 
+export const getTicket = async (id: string) => {
+  return await api.get(`tickets/${id}`);
+};
+
 export const putNota = async (
   data: { Descripcion: string; Files?: File[] },
   ticketId: string

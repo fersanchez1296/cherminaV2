@@ -5,8 +5,8 @@ import { getToken } from "next-auth/jwt";
 
 // Define las rutas protegidas por rol
 const protectedRoutes = {
-  Root: ["/usuarios", "/clientes", "/tickets/nuevo"],
-  Admin: ["/tickets/nuevo"],
+  Root: ["/usuarios", "/clientes"],
+  Admin: [],
   User: [],
 };
 
