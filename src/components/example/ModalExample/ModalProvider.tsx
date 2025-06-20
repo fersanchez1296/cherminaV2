@@ -28,16 +28,19 @@ interface Props {
 
 export default function AllModals({ ticket, status }: Props) {
   const { state, toggleModal } = useModals();
+
+  console.log("este es el ticket", ticket);
   return (
     <>
-      {state["ver"] && (
+      {/* {state["ver"] && (
         <ModalVer
           open
           handleToggleModalState={toggleModal}
           ticket={ticket}
           status={status}
         />
-      )}
+      )} */}
+
       {state["aceptar"] && (
         <ModalAceptar
           open

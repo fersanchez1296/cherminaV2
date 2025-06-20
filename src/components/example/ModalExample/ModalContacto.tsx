@@ -86,9 +86,9 @@ const ModalContacto = ({
       <Modal
         isOpen={isOpen}
         onClose={callbackClose}
-        className="max-w-[700px] m-4 z-[99]"
+        className="max-w-[700px] m-4 z-[z-9999]"
       >
-        <div className="no-scrollbar relative w-full z-[99] max-w-[700px] max-h-[90vh] overflow-y-auto rounded-3xl bg-white p-4 dark:bg-gray-900 lg:p-4">
+        <div className="no-scrollbar relative w-full z-[z-9999] max-w-[700px] max-h-[90vh] overflow-y-auto rounded-3xl bg-white p-4 dark:bg-gray-900 lg:p-4">
           {" "}
           <ComponentCard title="Contactar cliente">
             <Form onSubmit={handleSubmit(handleSave)}>

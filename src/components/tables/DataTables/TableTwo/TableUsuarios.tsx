@@ -22,6 +22,8 @@ import Switch from "@/components/form/switch/Switch";
 import FormularioUsuarios from "@/components/form/example-form/FormularioUsuarios";
 import Button from "@/components/ui/button/Button";
 import { getUsers, updateEstadoUsuario } from "@/services/userService";
+import { useLoadingStore } from "@/stores/loadingStore";
+import { useNotification } from "@/context/NotificationProvider";
 type SortKey = "Nombre" | "Correo" | "Username" | "Area";
 type SortOrder = "asc" | "desc";
 
@@ -48,6 +50,8 @@ export default function TableUsuarios() {
   const [isEdit, setIsEdit] = useState<boolean>(false);
   const [isCreate, setIsCreate] = useState<boolean>(false);
   const [disabled, setDisabled] = useState<boolean>(false);
+  const setLoading = useLoadingStore((state) => state.setLoading);
+  const { showNotification } = useNotification();
 
   const fetchClients = () => {
     getUsers().then((res) => setTableRowData(res.data));
@@ -91,7 +95,29 @@ export default function TableUsuarios() {
   const endIndex = Math.min(startIndex + itemsPerPage, totalItems);
   const currentData = filteredAndSortedData.slice(startIndex, endIndex);
   const handleChangeEstadoUsuario = async (estado: boolean, userId: string) => {
-    await updateEstadoUsuario(estado, userId);
+    try {
+      setLoading(true);
+      const result = await updateEstadoUsuario(estado, userId);
+      if (result.status === 200) {
+        showNotification(
+          "Éxito",
+          result.data?.message || "Operación exitosa",
+          "success"
+        );
+      } else {
+        showNotification(
+          "Aviso",
+          result.data?.desc || "Respuesta inesperada del servidor",
+          "warning"
+        );
+      }
+    } catch (error) {
+      const message =
+        error.response?.data?.desc || "Ocurrió un error inesperado.";
+      showNotification("Error", message, "error");
+    } finally {
+      setLoading(false);
+    }
   };
   return (
     <>
@@ -151,7 +177,10 @@ export default function TableUsuarios() {
                 </svg>
               </span>
             </div>
-            <span className="text-gray-500 dark:text-gray-400"> resultados </span>
+            <span className="text-gray-500 dark:text-gray-400">
+              {" "}
+              resultados{" "}
+            </span>
           </div>
 
           <div className="relative">
@@ -349,7 +378,8 @@ export default function TableUsuarios() {
             />
             <div className="pt-3 xl:pt-0">
               <p className="pt-3 text-sm font-medium text-center text-gray-500 border-t border-gray-100 dark:border-gray-800 dark:text-gray-400 xl:border-t-0 xl:pt-0 xl:text-left">
-                Mostrando {startIndex + 1} a {endIndex} de {totalItems} resultados
+                Mostrando {startIndex + 1} a {endIndex} de {totalItems}{" "}
+                resultados
               </p>
             </div>
           </div>
@@ -359,7 +389,7 @@ export default function TableUsuarios() {
       <Modal isOpen={isOpen} onClose={closeModal} className="max-w-[700px] m-4">
         <div className="no-scrollbar relative w-full max-w-[700px] max-h-[90vh] overflow-y-auto rounded-3xl bg-white p-4 dark:bg-gray-900 lg:p-4">
           <FormularioUsuarios
-            singleItem={singleItem}
+            usuario={singleItem}
             disabled={disabled}
             isEdit={isEdit}
             isCreate={isCreate}

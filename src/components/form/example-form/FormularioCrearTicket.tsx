@@ -89,7 +89,6 @@ export default function FormularioCrearTicket() {
 
   const handleSubcategoriaChange = (selectedOption: string) => {
     if (!selectedOption) return;
-
     const selectedSubcategoria = selectedOption._id;
     const catalogo = subcategoria.find((s) =>
       s._id.includes(selectedSubcategoria)
@@ -258,12 +257,12 @@ export default function FormularioCrearTicket() {
           {/* categoria */}
           <div>
             <Label htmlFor="firstName">Categoría</Label>
-            <Input type="text" id="firstName" disabled value={categoria} />
+            <Input type="text" id="firstName" disabled defaultValue={categoria} />
           </div>
           {/* servicio */}
           <div>
             <Label htmlFor="firstName">Servicio</Label>
-            <Input type="text" id="firstName" disabled value={servicio} />
+            <Input type="text" id="firstName" disabled defaultValue={servicio} />
           </div>
           {/* Tipo de incidente */}
           <div>
@@ -272,23 +271,23 @@ export default function FormularioCrearTicket() {
               type="text"
               id="firstName"
               disabled
-              value={Tipo_incidencia}
+              defaultValue={Tipo_incidencia}
             />
           </div>
           {/* area */}
           <div>
             <Label htmlFor="firstName">Área</Label>
-            <Input type="text" id="firstName" disabled value={area} />
+            <Input type="text" id="firstName" disabled defaultValue={area} />
           </div>
           {/* fecha de resolucion */}
           <div>
             <Label htmlFor="firstName">Fecha de Resolución</Label>
-            <Input type="text" id="firstName" disabled value={tiempo} />
+            <Input type="text" id="firstName" disabled defaultValue={tiempo} />
           </div>
           {/* prioridad */}
           <div>
             <Label htmlFor="firstName">Prioridad</Label>
-            <Input type="text" id="firstName" disabled value={descripcion} />
+            <Input type="text" id="firstName" disabled defaultValue={descripcion} />
           </div>
           {/* oficio de recepcion */}
           <div className="col-span-2">

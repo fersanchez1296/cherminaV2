@@ -7,13 +7,8 @@ import Input from "../input/InputField";
 // import Select from "../Select";
 import TextArea from "../input/TextArea";
 import Button from "../../ui/button/Button";
-import PhoneInput from "../group-input/PhoneInput";
 import Select from "react-select";
-import {
-  getInfoSelectsUsuario,
-  postUsuario,
-  updateUsuario,
-} from "@/services/userService";
+import { getInfoSelectsUsuario, updateUsuario } from "@/services/userService";
 import { useForm, Controller } from "react-hook-form";
 import { postCrearCliente } from "@/services/clientService";
 import { Usuario } from "@/common/interfaces/user.interface";
@@ -33,11 +28,10 @@ type DataSelects = {
   celulas: Option[];
   roles: Option[];
   areas: Option[];
-  dGenerales: Option[];
   puestos: Option[];
 };
 
-export default function FormularioUsuarios({
+export default function FormularioCelulas({
   usuario,
   disabled,
   isEdit,
@@ -49,10 +43,9 @@ export default function FormularioUsuarios({
     celulas: [],
     roles: [],
     areas: [],
-    dGenerales: [],
     puestos: [],
   });
-  const [userId, setUserId] = useState("");
+  const [userId, setUserId] = useState<string>("");
   const { handleSubmit, control, setValue } = useForm();
   const { showNotification } = useNotification();
   const setLoading = useLoadingStore((state) => state.setLoading);
@@ -63,28 +56,12 @@ export default function FormularioUsuarios({
   }, []);
 
   useEffect(() => {
-    if (usuario?.Area?.length) {
-      const values = usuario.Area.map((v) => ({
+    if (usuario?.Celula?.length) {
+      const values = usuario.Celula.map((v) => ({
         value: v._id,
-        label: v.Area,
+        label: v.Celula,
       }));
-      setValue("Area", values);
-    }
-
-    if (usuario?.Direccion_General) {
-      const values = {
-        value: usuario.Direccion_General._id,
-        label: usuario.Direccion_General.Direccion_General,
-      };
-      setValue("Direccion_General", values);
-    }
-
-    if (usuario?.Rol) {
-      const values = {
-        value: usuario.Rol._id,
-        label: usuario.Rol.Rol,
-      };
-      setValue("Rol", values);
+      setValue("Celula", values);
     }
 
     if (usuario?.Puesto) {
@@ -100,14 +77,13 @@ export default function FormularioUsuarios({
     try {
       setLoading(true);
       if (isCreate) {
-        const result = await postUsuario(data);
-        console.log(result);
+        const result = await postCrearCliente(data);
         onSuccess?.();
         closeModal?.();
       }
       if (isEdit) {
+        setLoading(true);
         const result = await updateUsuario(userId, data);
-        console.log(result);
         if (result.status === 200) {
           onSuccess?.();
           closeModal?.();
@@ -126,7 +102,6 @@ export default function FormularioUsuarios({
         }
       }
     } catch (error) {
-      console.log(error);
       const message =
         error.response?.data?.desc || "Ocurrió un error inesperado.";
       showNotification("Error", message, "error");
@@ -147,7 +122,6 @@ export default function FormularioUsuarios({
     >
       <Form onSubmit={handleSubmit(onSubmit)}>
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
-          {/* nombre */}
           <div className="col-span-2 sm:col-span-1">
             <Label htmlFor="nombre">Nombre</Label>
             <Controller
@@ -169,7 +143,6 @@ export default function FormularioUsuarios({
               )}
             />
           </div>
-          {/* correo */}
           <div className="col-span-1">
             <Label htmlFor="correo">Correo</Label>
             <Controller
@@ -181,7 +154,7 @@ export default function FormularioUsuarios({
                   placeholder="Ingresa el correo electrónico del usuario"
                   id="correo"
                   defaultValue={usuario?.Correo || ""}
-                  disabled={disabled}
+                  disabled={true}
                   {...field}
                   error={!!fieldState.error}
                   hint={fieldState.error?.message}
@@ -189,7 +162,6 @@ export default function FormularioUsuarios({
               )}
             />
           </div>
-          {/* telefono */}
           <div className="col-span-1">
             <Label htmlFor="telefono">Teléfono</Label>
             <Controller
@@ -211,7 +183,6 @@ export default function FormularioUsuarios({
               )}
             />
           </div>
-          {/* extension */}
           <div className="col-span-1">
             <Label htmlFor="extension">Extensión</Label>
             <Controller
@@ -233,7 +204,6 @@ export default function FormularioUsuarios({
               )}
             />
           </div>
-          {/* dependencia */}
           <div className="col-span-1">
             <Label htmlFor="dependencia">Dependencia</Label>
             <Input
@@ -244,24 +214,45 @@ export default function FormularioUsuarios({
               defaultValue={usuario?.Dependencia?.Dependencia || ""}
             />
           </div>
-          {/* direccion general */}
           <div className="col-span-1">
             <Label htmlFor="direccion-general">Dirección General</Label>
             <Controller
               name="Direccion_General"
               control={control}
-              rules={{ required: "Este campo es obligatorio" }}
+              render={({ field, fieldState }) => (
+                <Input
+                  type="text"
+                  id="direccion-general"
+                  placeholder="Direccion General del Usuario"
+                  defaultValue={
+                    usuario?.Direccion_General?.Direccion_General || ""
+                  }
+                  disabled={true}
+                  {...field}
+                  error={!!fieldState.error}
+                  hint={fieldState.error?.message}
+                />
+              )}
+            />
+          </div>
+          <div className="col-span-1">
+            <Label htmlFor="area">Área</Label>
+            <Controller
+              name="Area"
+              control={control}
               render={({ field, fieldState }) => (
                 <div>
                   <Select
-                    options={dataSelects?.dGenerales}
-                    isDisabled={disabled}
-                    value={dataSelects?.dGenerales?.find(
-                      (option) => option.value === field.value?.value
-                    )}
-                    onChange={(selected) => field.onChange(selected)}
+                    isMulti
+                    options={dataSelects?.areas}
+                    isDisabled={true}
+                    defaultValue={usuario?.Area.map((v) => ({
+                      value: v._id,
+                      label: v.Area,
+                    }))}
                     className="basic-multi-select"
                     classNamePrefix="select"
+                    {...field}
                   />
                   {fieldState.error && (
                     <span style={{ color: "red", fontSize: "0.875rem" }}>
@@ -272,20 +263,19 @@ export default function FormularioUsuarios({
               )}
             />
           </div>
-          {/* area */}
           <div className="col-span-1">
-            <Label htmlFor="area">Área</Label>
+            <Label htmlFor="Celula">Célula</Label>
             <Controller
-              name="Area"
+              name="Celula"
               control={control}
               rules={{ required: "Este campo es obligatorio" }}
               render={({ field, fieldState }) => (
                 <div>
                   <Select
                     isMulti
-                    options={dataSelects?.areas}
+                    options={dataSelects?.celulas}
                     isDisabled={disabled}
-                    value={dataSelects?.areas?.filter((option) =>
+                    value={dataSelects?.celulas?.filter((option) =>
                       field.value?.some((v: any) => v.value === option.value)
                     )}
                     onChange={(selected) => field.onChange(selected)}
@@ -301,7 +291,6 @@ export default function FormularioUsuarios({
               )}
             />
           </div>
-          {/* puesto */}
           <div className="col-span-1">
             <Label htmlFor="puesto">Puesto</Label>
             <Controller
@@ -329,7 +318,6 @@ export default function FormularioUsuarios({
               )}
             />
           </div>
-          {/* nombre de usuario */}
           <div className="col-span-1">
             <Label htmlFor="usuario">Nombre de Usuario</Label>
             <Input
@@ -340,7 +328,6 @@ export default function FormularioUsuarios({
               defaultValue={usuario?.Username || ""}
             />
           </div>
-          {/* estado del usuario */}
           <div className="col-span-1">
             <Label htmlFor="activo">Activo</Label>
             <Input
@@ -351,24 +338,23 @@ export default function FormularioUsuarios({
               defaultValue={JSON.stringify(usuario?.isActive || "")}
             />
           </div>
-          {/* rol */}
           <div className="col-span-1">
             <Label htmlFor="rol">Rol</Label>
             <Controller
               name="Rol"
               control={control}
-              rules={{ required: "Este campo es obligatorio" }}
               render={({ field, fieldState }) => (
                 <div>
                   <Select
                     options={dataSelects?.roles}
-                    isDisabled={disabled}
-                    value={dataSelects?.roles?.find(
-                      (option) => option.value === field.value?.value
-                    )}
-                    onChange={(selected) => field.onChange(selected)}
+                    isDisabled={true}
+                    defaultValue={{
+                      value: usuario?.Rol._id,
+                      label: usuario?.Rol.Rol,
+                    }}
                     className="basic-multi-select"
                     classNamePrefix="select"
+                    {...field}
                   />
                   {fieldState.error && (
                     <span style={{ color: "red", fontSize: "0.875rem" }}>
@@ -379,7 +365,6 @@ export default function FormularioUsuarios({
               )}
             />
           </div>
-          {/* ubicacion */}
           <div className="col-span-2">
             <Label htmlFor="ubicacion">Ubicación</Label>
             <Controller
@@ -406,19 +391,17 @@ export default function FormularioUsuarios({
           Dirección
         </h3>
         <div className="mt-3 grid grid-cols-1 gap-6 sm:grid-cols-2">
-          {/* pais */}
           <div className="col-span-2 sm:col-span-1">
-            <Label htmlFor="Pais">País</Label>
+            <Label htmlFor="pais">País</Label>
             <Controller
               name="Direccion.Pais"
               control={control}
-              defaultValue={usuario?.Direccion?.Pais || ""}
               render={({ field, fieldState }) => (
                 <Input
                   type="text"
+                  placeholder="Ingresa el nombre del país del usuario"
                   id="pais"
-                  placeholder="Ingresa el país del usuario"
-                  disabled={disabled}
+                  disabled={true}
                   defaultValue={usuario?.Direccion?.Pais || ""}
                   {...field}
                   error={!!fieldState.error}
@@ -427,19 +410,17 @@ export default function FormularioUsuarios({
               )}
             />
           </div>
-          {/* ciudad estado */}
           <div className="col-span-2 sm:col-span-1">
             <Label htmlFor="ciudad">Ciudad/Estado</Label>
             <Controller
               name="Direccion.Ciudad"
               control={control}
-              defaultValue={usuario?.Direccion?.Ciudad || ""}
               render={({ field, fieldState }) => (
                 <Input
                   type="text"
-                  id="pais"
-                  placeholder="Ingresa el ciudad del usuario"
-                  disabled={disabled}
+                  placeholder="Ingresa el nombre de la ciudad del usuario"
+                  id="ciudad"
+                  disabled={true}
                   defaultValue={usuario?.Direccion?.Ciudad || ""}
                   {...field}
                   error={!!fieldState.error}
@@ -448,19 +429,17 @@ export default function FormularioUsuarios({
               )}
             />
           </div>
-          {/* codigo postal */}
           <div className="col-span-2 sm:col-span-1">
             <Label htmlFor="codigo-postal">Código Postal</Label>
             <Controller
               name="Direccion.codigoPostal"
               control={control}
-              defaultValue={usuario?.Direccion?.codigoPostal || ""}
               render={({ field, fieldState }) => (
                 <Input
                   type="text"
-                  id="pais"
-                  placeholder="Ingresa el codigo postal del usuario"
-                  disabled={disabled}
+                  placeholder="Ingresa el código postal del usuario"
+                  id="codigo-postal"
+                  disabled={true}
                   defaultValue={usuario?.Direccion?.codigoPostal || ""}
                   {...field}
                   error={!!fieldState.error}
@@ -474,7 +453,6 @@ export default function FormularioUsuarios({
         <h3 className="font-medium text-gray-800 text-theme-xl dark:text-white/90">
           Tickets Resueltos
         </h3>
-        {/* tickets resueltos */}
         <div className="mt-3 grid grid-cols-1 gap-6 sm:grid-cols-2">
           <div className="col-span-2 sm:col-span-1">
             <Label htmlFor="tickets-en-tiempo">En tiempo</Label>

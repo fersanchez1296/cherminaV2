@@ -9,18 +9,10 @@ import Button from "@/components/ui/button/Button";
 import React, { useEffect, useRef, useState } from "react";
 import { getTicketByParameter } from "@/services/ticketService";
 import { useSession } from "next-auth/react";
-import ModalVer from "@/components/example/ModalExample/ModalVer";
-import { Ticket } from "@/common/interfaces/ticket.interface";
-import { useModals } from "@/context/ModalManager";
-import AllModals from "@/components/example/ModalExample/ModalProvider";
-import { getActions } from "@/factories/actionsFactory";
 const AppHeader: React.FC = () => {
   const { data: session } = useSession();
   const userRole = session?.user?.rol;
-  const { state, toggleModal } = useModals();
   const [busqueda, setBusqueda] = useState("");
-  const [status, setStatus] = useState("curso");
-  const [singleItem, setSingleItem] = useState<Partial<Ticket>>();
   const [isApplicationMenuOpen, setApplicationMenuOpen] = useState(false);
 
   const { isMobileOpen, toggleSidebar, toggleMobileSidebar } = useSidebar();
@@ -53,22 +45,6 @@ const AppHeader: React.FC = () => {
       document.removeEventListener("keydown", handleKeyDown);
     };
   }, []);
-
-  const handleBusqueda = async () => {
-    try {
-      const result = await getTicketByParameter(busqueda);
-      if (result.status === 200 && result.data) {
-        toggleModal("ver", true);
-        // console.log(result?.data[0].Estado?.Estado)
-        // setStatus(result?.data[0].Estado?.Estado);
-        setSingleItem(result?.data[0]);
-      }
-    } catch (error) {
-      console.log("Ocurrio un error", error);
-    } finally {
-      setBusqueda("");
-    }
-  };
 
   return (
     <>
@@ -152,7 +128,7 @@ const AppHeader: React.FC = () => {
             </button>
             {userRole !== "Usuario" && (
               <div className="hidden lg:block">
-                <form onSubmit={handleBusqueda}>
+                <form>
                   <div className="flex flex-col sm:flex-row items-center gap-2 w-full">
                     <div className="relative w-full sm:max-w-md">
                       <span className="absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none">
@@ -185,7 +161,7 @@ const AppHeader: React.FC = () => {
                     <Button
                       size="sm"
                       className="w-full sm:w-auto"
-                      onClick={handleBusqueda}
+                      //onClick={handleBusqueda}
                       disabled={busqueda === ""}
                     >
                       Buscar
