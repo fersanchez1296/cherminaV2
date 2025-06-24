@@ -6,7 +6,7 @@ import Label from "@/components/form/Label";
 import DropzoneComponent from "@/components/form/form-elements/DropZone";
 import Button from "@/components/ui/button/Button";
 import { useForm, Controller } from "react-hook-form";
-import { putNota } from "@/services/ticketService";
+import { putNota, putOficio, putReabrir } from "@/services/ticketService";
 import Input from "@/components/form/input/InputField";
 import { useNotification } from "@/context/NotificationProvider";
 interface Open {
@@ -26,14 +26,14 @@ const ModalOficio = ({ open, handleToggleModalState, uuid }: Open) => {
     handleToggleModalState("oficio", false);
   };
 
-  const handleSave = async (data) => {
+  const handleSave = async (data: any) => {
     try {
-      const result = await putReabrir(data, uuid);
+      const result = await putOficio(data, uuid);
 
-      if (result.status === 201) {
+      if (result.status === 200) {
         showNotification(
-          "Éxito",
-          result.data?.desc || "Operación exitosa",
+          "Exito",
+          result.data?.message || "Operación exitosa",
           "success"
         );
         reset();
@@ -46,8 +46,9 @@ const ModalOficio = ({ open, handleToggleModalState, uuid }: Open) => {
         );
       }
     } catch (error) {
+      const err = error as { response?: { data?: { desc?: string } } };
       const message =
-        error.response?.data?.desc || "Ocurrió un error inesperado.";
+        err.response?.data?.desc || "Ocurrió un error inesperado.";
       showNotification("Error", message, "error");
     }
   };

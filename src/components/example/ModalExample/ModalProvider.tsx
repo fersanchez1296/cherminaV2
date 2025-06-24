@@ -20,6 +20,7 @@ import ModalReasignar from "@/components/example/ModalExample/ModalReasignar";
 import ModalReabrir from "@/components/example/ModalExample/ModalReabrir";
 import ModalOficio from "@/components/example/ModalExample/ModalOficio";
 import { Ticket } from "@/common/interfaces/ticket.interface";
+import ModalEditar from "./ModalEditar";
 
 interface Props {
   ticket: Partial<Ticket>;
@@ -167,8 +168,19 @@ export default function AllModals({ ticket, status }: Props) {
         <ModalOficio
           open
           handleToggleModalState={toggleModal}
-          uuid={ticket.Id}
-          id={ticket._id}
+          id={ticket.Id}
+          uuid={ticket._id}
+        />
+      )}
+      {state["nota"] && (
+        <ModalNota open handleToggleModalState={toggleModal} uuid={ticket._id} />
+      )}
+      {state["editar"] && (
+        <ModalEditar
+          open
+          handleToggleModalState={toggleModal}
+          ticket={ticket}
+          uuid={ticket._id}
         />
       )}
     </>

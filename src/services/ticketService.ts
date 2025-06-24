@@ -68,6 +68,10 @@ export const getTicket = async (id: string) => {
   return await api.get(`tickets/${id}`);
 };
 
+export const getMedios = async () => {
+  return await api.get(`tickets/medios`);
+};
+
 export const putNota = async (
   data: { Descripcion: string; Files?: File[] },
   ticketId?: string
@@ -223,10 +227,22 @@ export const putCerrarTicket = async (
 
 export const putRazonPendiente = async (
   data: { PendingReason: string },
-  ticketId: string
+  ticketId?: string
 ) => {
-  const queryData = { PendingReason: data.PendingReason };
-  return await api.put(`tickets/PendingReason/${ticketId}`, queryData);
+  const formData = new FormData();
+  const auxData = {
+    PendingReason: data.PendingReason,
+  };
+
+  Object.entries(auxData).forEach(([key, value]) => {
+    if (value !== undefined && value !== null) {
+      formData.append(key, String(value));
+    }
+  });
+  formData.forEach((value, key) => {
+    console.log(`${key}:`, value);
+  });
+  return await api.put(`tickets/PendingReason/${ticketId}`, formData);
 };
 
 export const putRegresarMesa = async (
@@ -630,4 +646,82 @@ export const postCrearTicket = async (data: {
 
 export const getTicketByParameter = async (parameter: string) => {
   return await api.post(`tickets/buscar/${parameter}`);
+};
+
+export const putOficio = async (
+  data: {
+    Numero_Oficio: string;
+    Files?: File[];
+  },
+  ticketId?: string
+) => {
+  const formData = new FormData();
+  const auxData = {
+    Numero_Oficio: data.Numero_Oficio,
+  };
+
+  Object.entries(auxData).forEach(([key, value]) => {
+    if (value !== undefined && value !== null) {
+      formData.append(key, String(value));
+    }
+  });
+
+  if (data.Files) {
+    Object.entries(data).forEach(([key, value]) => {
+      if (key === "Files" && Array.isArray(value)) {
+        value.forEach((file) => {
+          if (file instanceof File) {
+            formData.append("files", file);
+          } else {
+            console.error(`El archivo no es válido:`, file);
+          }
+        });
+      }
+    });
+  };
+  return await api.put(`tickets/oficio/${ticketId}`, formData, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  });
+};
+export const putEditar = async (
+  data: {
+    Medio: string;
+    Numero_Oficio: string;
+    Descripcion: string;
+    Files?: File[];
+  },
+  ticketId?: string
+) => {
+  console.log("DATA", data);
+  const formData = new FormData();
+  const auxData = {
+    Numero_Oficio: data.Numero_Oficio,
+  };
+
+  Object.entries(auxData).forEach(([key, value]) => {
+    if (value !== undefined && value !== null) {
+      formData.append(key, String(value));
+    }
+  });
+
+  if (data.Files) {
+    Object.entries(data).forEach(([key, value]) => {
+      if (key === "Files" && Array.isArray(value)) {
+        value.forEach((file) => {
+          if (file instanceof File) {
+            formData.append("files", file);
+          } else {
+            console.error(`El archivo no es válido:`, file);
+          }
+        });
+      }
+    });
+  };
+  return await api.put(`tickets/editar/${ticketId}`, formData, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  });
 };
