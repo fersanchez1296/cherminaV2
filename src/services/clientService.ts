@@ -10,11 +10,37 @@ export const getInfoSelectsClientes = async () => {
 };
 
 export const postCrearCliente = async (data: object) => {
-  return await api.post("clients/", data);
+  const formatedData = {
+    ...data,
+  }
+  if (data.Direccion_General) {
+    formatedData.Direccion_General = data.Direccion_General
+  }
+  if (data.direccion_area) {
+    formatedData.direccion_area = data.direccion_area
+  }
+  if (data.nuevaDArea) {
+    formatedData.nuevaDArea = data.nuevaDArea;
+  }
+  if (data.nuevaDGeneral) {
+    formatedData.nuevaDGeneral = data.nuevaDGeneral;
+  }
+  return await api.post("clients/", formatedData);
 };
 
 export const updateCliente = async (clientId: string, data: object) => {
-  return await api.put(`clients/${clientId}`, data);
+  const formatedData = {
+    ...data,
+    Direccion_General: data.Direccion_General.value,
+    direccion_area: data.direccion_area.value,
+  }
+  if (data.nuevaDArea) {
+    formatedData.nuevaDArea = data.nuevaDArea;
+  }
+  if (data.nuevaDGeneral) {
+    formatedData.nuevaDGeneral = data.nuevaDGeneral;
+  }
+  return await api.put(`clients/${clientId}`, formatedData);
 };
 
 export const getBuscarCliente = async (data: string) => {

@@ -15,6 +15,8 @@ import { getActions } from "@/factories/actionsFactory";
 import { Tooltip } from "@/components/ui/tooltip/Tooltip";
 import Image from "next/image";
 import AllModals from "@/components/example/ModalExample/ModalProvider";
+import { Button } from "@/components/ui/button";
+import { downloadFile } from "@/services/files";
 export default function TicketModal({
   params,
 }: {
@@ -466,9 +468,16 @@ export default function TicketModal({
                                 {ext.toUpperCase()}
                               </span>
                               <span className="inline-block w-1 h-1 bg-gray-400 rounded-full"></span>
-                              <span className="text-gray-500 text-theme-xs dark:text-gray-400">
-                                Download
-                              </span>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => downloadFile(f.name)}
+                                className="px-2 py-1 text-xs text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-white"
+                              >
+                                <span className="text-gray-500 text-theme-xs dark:text-gray-400">
+                                  Download
+                                </span>
+                              </Button>
                             </span>
                           </div>
                         </div>
