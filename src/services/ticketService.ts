@@ -685,6 +685,7 @@ export const putOficio = async (
     },
   });
 };
+
 export const putEditar = async (
   data: {
     Medio: string;
@@ -725,3 +726,7 @@ export const putEditar = async (
     },
   });
 };
+
+export const getAreas = async () => {
+  return await api.get("tickets/areas")
+}

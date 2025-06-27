@@ -17,12 +17,6 @@ const DropzoneComponent: React.FC<DropzoneProps> = ({ form }) => {
   };
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
-    accept: {
-      "image/png": [],
-      "image/jpeg": [],
-      "image/webp": [],
-      "image/svg+xml": [],
-    },
   });
   const getFileExtension = (filename: string) => {
     return filename.split(".").pop()?.toLowerCase() || "";

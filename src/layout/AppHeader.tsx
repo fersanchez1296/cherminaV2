@@ -7,16 +7,15 @@ import Image from "next/image";
 import Link from "next/link";
 import Button from "@/components/ui/button/Button";
 import React, { useEffect, useRef, useState } from "react";
-import { getTicketByParameter } from "@/services/ticketService";
 import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
 const AppHeader: React.FC = () => {
   const { data: session } = useSession();
   const userRole = session?.user?.rol;
-  const [busqueda, setBusqueda] = useState("");
+  const [ticketId, setTicketId] = useState("");
   const [isApplicationMenuOpen, setApplicationMenuOpen] = useState(false);
-
+  const router = useRouter();
   const { isMobileOpen, toggleSidebar, toggleMobileSidebar } = useSidebar();
-
   const handleToggle = () => {
     if (window.innerWidth >= 1024) {
       toggleSidebar();
@@ -128,7 +127,13 @@ const AppHeader: React.FC = () => {
             </button>
             {userRole !== "Usuario" && (
               <div className="hidden lg:block">
-                <form>
+                <form
+                  onSubmit={(e) => {
+                    e.preventDefault();
+                    router.push(`/busqueda/${ticketId}`, { scroll: false });
+                    setTicketId("");
+                  }}
+                >
                   <div className="flex flex-col sm:flex-row items-center gap-2 w-full">
                     <div className="relative w-full sm:max-w-md">
                       <span className="absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none">
@@ -151,8 +156,8 @@ const AppHeader: React.FC = () => {
                       <input
                         ref={inputRef}
                         type="text"
-                        value={busqueda}
-                        onChange={(e) => setBusqueda(e.target.value)}
+                        value={ticketId}
+                        onChange={(e) => setTicketId(e.target.value)}
                         placeholder="Buscar ticket por id o por oficio"
                         className="dark:bg-dark-900 h-11 w-full rounded-lg border border-gray-200 bg-transparent py-2.5 pl-12 pr-4 text-sm text-gray-800 shadow-theme-xs placeholder:text-gray-400 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-800 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 dark:focus:border-brand-800"
                       />
@@ -161,8 +166,8 @@ const AppHeader: React.FC = () => {
                     <Button
                       size="sm"
                       className="w-full sm:w-auto"
-                      //onClick={handleBusqueda}
-                      disabled={busqueda === ""}
+                      disabled={ticketId === ""}
+                      type="submit"
                     >
                       Buscar
                     </Button>
@@ -189,14 +194,6 @@ const AppHeader: React.FC = () => {
           </div>
         </div>
       </header>
-      {/* <AllModals ticket={singleItem} status={status} /> */}
-      {/* {state["ver"] && (
-        <ModalVer
-          open
-          handleToggleModalState={toggleModal}
-          ticket={singleItem}
-        />
-      )} */}
     </>
   );
 };

@@ -1,5 +1,5 @@
 "use client";
-import React, { CSSProperties, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import ComponentCard from "../../common/ComponentCard";
 import Form from "../Form";
 import Label from "../Label";
@@ -7,7 +7,6 @@ import Input from "../input/InputField";
 import Select from "react-select";
 import TextArea from "../input/TextArea";
 import Button from "../../ui/button/Button";
-import PhoneInput from "../group-input/PhoneInput";
 import Switch from "../switch/Switch";
 import {
   getInfoSelectsClientes,
@@ -15,6 +14,8 @@ import {
   updateCliente,
 } from "@/services/clientService";
 import { useForm, Controller } from "react-hook-form";
+import { useNotification } from "@/context/NotificationProvider";
+import { useLoadingStore } from "@/stores/loadingStore";
 interface singleItem {
   singleItem?: {
     _id: string;
@@ -49,24 +50,6 @@ interface GroupedOption {
   options: Option[];
 }
 
-const groupStyles = {
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "space-between",
-};
-
-const groupBadgeStyles: CSSProperties = {
-  backgroundColor: "#EBECF0",
-  borderRadius: "2em",
-  color: "#172B4D",
-  display: "inline-block",
-  fontSize: 12,
-  fontWeight: "normal",
-  lineHeight: "1",
-  minWidth: 1,
-  padding: "0.16666666666667em 0.5em",
-  textAlign: "center",
-};
 export default function FormularioCrearCliente({
   singleItem,
   disabled,
@@ -76,12 +59,14 @@ export default function FormularioCrearCliente({
   closeModal,
 }: singleItem) {
   const [selectsData, setSelectsData] = useState<SelectsData>();
-  const { handleSubmit, control } = useForm();
+  const { handleSubmit, control, setValue } = useForm();
   const [clientId, setClientId] = useState("");
   const [dGenerales, setDGenerales] = useState<Option[]>([]);
   const [dAreas, setDAreas] = useState<Option[]>([]);
   const [nuevaDireccionGeneral, setNuevaDireccionGeneral] = useState(false);
   const [nuevaDireccionArea, setNuevaDireccionArea] = useState(false);
+  const { showNotification } = useNotification();
+  const setLoading = useLoadingStore((state) => state.setLoading);
 
   useEffect(() => {
     setClientId(singleItem?._id);
@@ -92,27 +77,65 @@ export default function FormularioCrearCliente({
     });
   }, []);
 
-  const countries = [
-    { code: "IPEJAL", label: "333-208-0340" },
-    { code: "Otro", label: "" },
-  ];
+  useEffect(() => {
+    if (singleItem?.Direccion_General) {
+      const values = {
+        value: singleItem.Direccion_General._id,
+        label: singleItem.Direccion_General.Direccion_General,
+      };
+      setValue("Direccion_General", values);
+    }
+
+    if (singleItem?.direccion_area) {
+      const values = {
+        value: singleItem.direccion_area._id,
+        label: singleItem.direccion_area.direccion_area,
+      };
+      setValue("direccion_area", values);
+    }
+  }, [singleItem, setValue]);
 
   const onSubmit = async (data: any) => {
-    if (isCreate) {
-      const result = await postCrearCliente(data);
-      onSuccess?.();
-      closeModal?.();
-      console.log("Resultado del query:", result);
-    }
-    if (isEdit) {
-      const result = await updateCliente(clientId, data);
-      onSuccess?.();
-      closeModal?.();
-      console.log("Resultado del query:", result);
+    try {
+      setLoading(true);
+      if (isCreate) {
+        const result = await postCrearCliente(data);
+        console.log(result);
+        onSuccess?.();
+        closeModal?.();
+        showNotification(
+          "Éxito",
+          result.data?.message || "Operación exitosa",
+          "success"
+        );
+      }
+      if (isEdit) {
+        const result = await updateCliente(clientId, data);
+        if (result.status === 200) {
+          onSuccess?.();
+          closeModal?.();
+          showNotification(
+            "Éxito",
+            result.data?.message || "Operación exitosa",
+            "success"
+          );
+        } else {
+          showNotification(
+            "Aviso",
+            result.data?.desc || "Respuesta inesperada del servidor",
+            "warning"
+          );
+        }
+      }
+    } catch (error) {
+      console.log(error);
+      const message =
+        error.response?.data?.desc || "Ocurrió un error inesperado.";
+      showNotification("Error", message, "error");
+    } finally {
+      setLoading(false);
     }
   };
-
-  console.log(singleItem);
 
   return (
     <ComponentCard
@@ -179,12 +202,13 @@ export default function FormularioCrearCliente({
               rules={{ required: "Este campo es obligatorio" }}
               defaultValue={singleItem?.Telefono || ""}
               render={({ field, fieldState }) => (
-                <PhoneInput
-                  selectPosition="start"
-                  countries={countries}
+                <Input
+                  type="text"
+                  id="telefono"
+                  placeholder="Ingresa el teléfono del usuario"
                   disabled={disabled}
                   defaultValue={singleItem?.Telefono || ""}
-                  onChange={field.onChange}
+                  {...field}
                   error={!!fieldState.error}
                   hint={fieldState.error?.message}
                 />
@@ -220,26 +244,26 @@ export default function FormularioCrearCliente({
                 name="Direccion_General"
                 control={control}
                 rules={{ required: "Este campo es obligatorio" }}
-                render={({ field }) => (
-                  <Select<Option, false, GroupedOption>
-                    placeholder="Selecciona la Dirección General"
-                    {...field}
-                    defaultValue={
-                      singleItem?.Direccion_General
-                        ? {
-                            label:
-                              singleItem?.Direccion_General.Direccion_General,
-                            value: singleItem?.Direccion_General._id,
-                          }
-                        : []
-                    }
-                    options={dGenerales}
-                    isDisabled={disabled}
-                    onChange={(selectedOption) => {
-                      field.onChange(selectedOption);
-                    }}
-                    value={field.value}
-                  />
+                render={({ field, fieldState }) => (
+                  <div>
+                    <Select<Option, false, GroupedOption>
+                      placeholder="Selecciona la Dirección General"
+                      {...field}
+                      value={dGenerales?.find(
+                        (option) => option.value === field.value?.value
+                      )}
+                      onChange={(selected) => field.onChange(selected)}
+                      options={dGenerales}
+                      isDisabled={disabled}
+                      className="basic-multi-select"
+                      classNamePrefix="select"
+                    />
+                    {fieldState.error && (
+                      <span style={{ color: "red", fontSize: "0.875rem" }}>
+                        {fieldState.error.message}
+                      </span>
+                    )}
+                  </div>
                 )}
               />
             </div>
@@ -284,25 +308,26 @@ export default function FormularioCrearCliente({
                 name="direccion_area"
                 control={control}
                 rules={{ required: "Este campo es obligatorio" }}
-                render={({ field }) => (
-                  <Select<Option, false, GroupedOption>
-                    placeholder="Selecciona la Dirección de Área"
-                    {...field}
-                    isDisabled={disabled}
-                    defaultValue={
-                      singleItem?.direccion_area
-                        ? {
-                            label: singleItem?.direccion_area.direccion_area,
-                            value: singleItem?.direccion_area._id,
-                          }
-                        : []
-                    }
-                    options={dAreas}
-                    onChange={(selectedOption) => {
-                      field.onChange(selectedOption);
-                    }}
-                    value={field.value}
-                  />
+                render={({ field, fieldState }) => (
+                  <div>
+                    <Select<Option, false, GroupedOption>
+                      placeholder="Selecciona la Dirección de Área"
+                      {...field}
+                      value={dAreas?.find(
+                        (option) => option.value === field.value?.value
+                      )}
+                      onChange={(selected) => field.onChange(selected)}
+                      options={dAreas}
+                      isDisabled={disabled}
+                      className="basic-multi-select"
+                      classNamePrefix="select"
+                    />
+                    {fieldState.error && (
+                      <span style={{ color: "red", fontSize: "0.875rem" }}>
+                        {fieldState.error.message}
+                      </span>
+                    )}
+                  </div>
                 )}
               />
             </div>

@@ -266,7 +266,7 @@ export default function TableClientes() {
                           </button>
                         </Tooltip>
                         <Tooltip
-                          content="Editar Ticket"
+                          content="Editar Cliente"
                           position="top"
                           theme="dark"
                         >

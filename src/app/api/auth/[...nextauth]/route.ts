@@ -21,10 +21,7 @@ const handler = NextAuth({
           );
 
           const user = response.data;
-          // node
-          // if (user) return user;
-
-          // nest
+          
           if (user?.accesToken) {
             return {
               ...user.userTokenData,

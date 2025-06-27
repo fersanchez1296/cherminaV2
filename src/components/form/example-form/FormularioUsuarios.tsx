@@ -362,8 +362,8 @@ export default function FormularioUsuarios({
                 <div>
                   <Select
                     options={dataSelects?.roles}
-                    isDisabled={disabled}
-                    value={dataSelects?.roles?.find(
+                    isDisabled={disabled}v
+                    alue={dataSelects?.roles?.find(
                       (option) => option.value === field.value?.value
                     )}
                     onChange={(selected) => field.onChange(selected)}

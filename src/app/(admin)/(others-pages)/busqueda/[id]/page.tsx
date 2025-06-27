@@ -55,10 +55,16 @@ export default function TicketModal({
       setLoading(true);
       try {
         const res = await getTicket(id);
-        setData(res.data[0]);
-        setStatus(res.data[0].Estado.Estado);
+        if (res.data && res.status === 200) {
+          setData(res.data[0]);
+          setStatus(res.data[0].Estado.Estado);
+        } else if (res.status === 404) {
+          router.back();
+          showNotification("Error", "Error al cargar tickets", "error");
+        }
       } catch (error) {
-        showNotification("Error", "Error al cargar tickets", "error");
+        showNotification("Error", error?.response?.data?.message, "error");
+        router.back();
       } finally {
         setLoading(false);
       }

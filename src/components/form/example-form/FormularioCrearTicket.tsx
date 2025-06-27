@@ -170,7 +170,8 @@ export default function FormularioCrearTicket() {
               Cliente
             </h4>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-end min-w-max">
+          <div className="grid grid-cols-1 md:grid-cols-[2fr_1fr_1fr] gap-4 items-end w-full">
+            {/* Input nombre/correo */}
             <div className="flex flex-col">
               <Label htmlFor="firstName">Nombre o Correo del Cliente</Label>
               <Input
@@ -182,14 +183,18 @@ export default function FormularioCrearTicket() {
                 onChange={(e) => setCliente(e.target.value)}
               />
             </div>
+
+            {/* Botón buscar */}
             <Button
               size="sm"
-              disabled={!cliente ? true : false}
+              disabled={!cliente}
               className="w-full self-end"
               onClick={handleBuscarCliente}
             >
               Buscar Cliente
             </Button>
+
+            {/* Botón crear */}
             <Button
               size="sm"
               variant="outline"
@@ -198,9 +203,11 @@ export default function FormularioCrearTicket() {
             >
               Crear Cliente
             </Button>
+
+            {/* Info cliente seleccionado */}
             {clienteId && (
-              <div>
-                <h4 className="pb-4 text-base font-medium text-gray-800 border-b border-gray-200 dark:border-gray-800 dark:text-white/90">
+              <div className="md:col-span-3">
+                <h4 className="pb-4 mt-2 text-base font-medium text-gray-800 border-b border-gray-200 dark:border-gray-800 dark:text-white/90">
                   Cliente Seleccionado:{" "}
                   <span className="text-violet-800">{clienteId.Nombre}</span>
                 </h4>
@@ -257,12 +264,22 @@ export default function FormularioCrearTicket() {
           {/* categoria */}
           <div>
             <Label htmlFor="firstName">Categoría</Label>
-            <Input type="text" id="firstName" disabled defaultValue={categoria} />
+            <Input
+              type="text"
+              id="firstName"
+              disabled
+              defaultValue={categoria}
+            />
           </div>
           {/* servicio */}
           <div>
             <Label htmlFor="firstName">Servicio</Label>
-            <Input type="text" id="firstName" disabled defaultValue={servicio} />
+            <Input
+              type="text"
+              id="firstName"
+              disabled
+              defaultValue={servicio}
+            />
           </div>
           {/* Tipo de incidente */}
           <div>
@@ -287,7 +304,12 @@ export default function FormularioCrearTicket() {
           {/* prioridad */}
           <div>
             <Label htmlFor="firstName">Prioridad</Label>
-            <Input type="text" id="firstName" disabled defaultValue={descripcion} />
+            <Input
+              type="text"
+              id="firstName"
+              disabled
+              defaultValue={descripcion}
+            />
           </div>
           {/* oficio de recepcion */}
           <div className="col-span-2">

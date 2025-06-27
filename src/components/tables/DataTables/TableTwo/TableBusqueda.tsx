@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import {
   Table,
   TableBody,
@@ -17,11 +17,14 @@ import Label from "@/components/form/Label";
 import Select from "react-select";
 import Input from "@/components/form/input/InputField";
 import { busquedaAvanzada } from "@/services/dashboard";
-import AllModals from "@/components/example/ModalExample/ModalProvider";
-import { useModals } from "@/context/ModalManager";
 import { Ticket } from "@/common/interfaces/ticket.interface";
 import { EyeIcon } from "lucide-react";
 import { badgeColors } from "@/common/badgeColors/badgeColors";
+import { Controller, useForm } from "react-hook-form";
+import { useNotification } from "@/context/NotificationProvider";
+import { useLoadingStore } from "@/stores/loadingStore";
+import { useSession } from "next-auth/react";
+import { getAreas } from "@/services/ticketService";
 type SortKey =
   | "resolutor"
   | "cliente"
@@ -34,14 +37,23 @@ type SortKey =
   | "Tipo";
 type SortOrder = "asc" | "desc";
 
-const options = [
-  { value: "general", label: "General" },
-  { value: "id", label: "Id" },
-  { value: "oficio", label: "Número de oficio" },
-  { value: "nccliente", label: "Nombre/correo cliente" },
-  { value: "ncresolutor", label: "Nombre moderador/resolutor" },
-  { value: "area", label: "Área" },
-];
+// const options = [
+//   { value: "general", label: "General" },
+//   { value: "id", label: "Id" },
+//   { value: "oficio", label: "Número de oficio" },
+//   { value: "nccliente", label: "Nombre/correo cliente" },
+//   { value: "ncresolutor", label: "Nombre moderador/resolutor" },
+// ];
+
+interface Option {
+  value: string;
+  label: string;
+}
+
+interface GroupedOption {
+  label: string;
+  options: Option[];
+}
 
 const customStyles = {
   menu: (provided: any) => ({
@@ -51,20 +63,39 @@ const customStyles = {
 };
 
 export default function TableBusqueda() {
-  const { toggleModal } = useModals();
-  const [singleItem, setSingleItem] = useState<object>({});
+  const { data: session } = useSession();
+  const userRole = session?.user?.rol;
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [sortKey, setSortKey] = useState<SortKey>("resolutor");
   const [sortOrder, setSortOrder] = useState<SortOrder>("asc");
   const [tableRowData, setTableRowData] = useState<Array<Ticket>>([]);
   const [searchTerm, setSearchTerm] = useState("");
-  const [status, setStatus] = useState("NUEVOS");
+  const [selectsData, setSelectsData] = useState([]);
+  const { showNotification } = useNotification();
+  const setLoading = useLoadingStore((state) => state.setLoading);
   const [criterio, setCriterio] = useState({
     value: "general",
     label: "General",
   });
   const [termino, setTermino] = useState("");
+
+  useEffect(() => {
+    async function getDataSelects() {
+      setLoading(true);
+      try {
+        const result = await getAreas();
+        if (result.data && result?.status === 200) {
+          setSelectsData(result?.data?.areas);
+        }
+      } catch (error) {
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    getDataSelects();
+  }, []);
 
   const filteredAndSortedData = useMemo(() => {
     return tableRowData
@@ -95,30 +126,49 @@ export default function TableBusqueda() {
       setSortOrder("asc");
     }
   };
+
   const handleSearch = async () => {
+    setLoading(true);
     try {
       const result = await busquedaAvanzada(criterio.value, termino);
       if (result.status === 200 && result.data) {
-        console.log("Entra al if");
         setTableRowData(result.data);
       }
     } catch (error) {
+      showNotification(
+        "Aviso",
+        error?.response?.data?.message || "Respuesta inesperada del servidor",
+        "warning"
+      );
       setTableRowData([]);
-      console.log(error);
     } finally {
+      setLoading(false);
       setTermino("");
     }
-  };
-
-  const handlers = {
-    setSingleItem,
-    toggleModal,
   };
 
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = Math.min(startIndex + itemsPerPage, totalItems);
   const currentData = filteredAndSortedData.slice(startIndex, endIndex);
 
+  const baseOptions = [
+    { value: "general", label: "General" },
+    { value: "id", label: "Id" },
+    { value: "oficio", label: "Número de oficio" },
+    { value: "nccliente", label: "Nombre/correo cliente" },
+    { value: "ncresolutor", label: "Nombre/correo moderador/resolutor" },
+  ];
+
+  const options = useMemo(() => {
+    const copy = [...baseOptions];
+    if (userRole === "Administrador" || userRole === "Root") {
+      const exists = copy.some((opt) => opt.value === "area");
+      if (!exists) copy.push({ value: "area", label: "Área" });
+    }
+    return copy;
+  }, [userRole]);
+
+  console.log(session);
   return (
     <>
       <div className="col-span-2">
@@ -139,14 +189,32 @@ export default function TableBusqueda() {
             value={criterio}
           />
         </div>
-        <div className="flex flex-col">
-          <Label htmlFor="firstName">Término de Busqueda</Label>
-          <Input
-            placeholder="Ingresa el término de búsqueda"
-            onChange={(e) => setTermino(e.target.value)}
-            value={termino}
-          />
-        </div>
+        {criterio.value !== "area" ? (
+          <div className="flex flex-col">
+            <Label htmlFor="firstName">Término de Busqueda</Label>
+            <Input
+              placeholder="Ingresa el término de búsqueda"
+              onChange={(e) => setTermino(e.target.value)}
+              value={termino}
+            />
+          </div>
+        ) : (
+          <div className="col-span-1">
+            <Label htmlFor="area">Selecciona una opcion</Label>
+            <div>
+              <Select<Option, false>
+                placeholder="Selecciona una opción"
+                options={selectsData}
+                onChange={(selected) => {
+                  setTermino(selected?.value || "");
+                }}
+                className="basic-multi-select"
+                classNamePrefix="select"
+              />
+            </div>
+          </div>
+        )}
+
         <Button size="sm" className="w-full self-end" onClick={handleSearch}>
           Buscar
         </Button>
@@ -154,7 +222,7 @@ export default function TableBusqueda() {
       <div className="overflow-hidden rounded-xl bg-white dark:bg-white/[0.03]">
         <div className="flex flex-col gap-2 px-4 py-4 border border-b-0 border-gray-100 dark:border-white/[0.05] rounded-t-xl sm:flex-row sm:items-center sm:justify-between">
           <div className="flex items-center gap-3">
-            <span className="text-gray-500 dark:text-gray-400"> Show </span>
+            <span className="text-gray-500 dark:text-gray-400"> Mostrar </span>
             <div className="relative z-20 bg-transparent">
               <select
                 className="w-full py-2 pl-3 pr-8 text-sm text-gray-800 bg-transparent border border-gray-300 rounded-lg appearance-none dark:bg-dark-900 h-9 bg-none shadow-theme-xs placeholder:text-gray-400 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 dark:focus:border-brand-800"
@@ -190,7 +258,10 @@ export default function TableBusqueda() {
                 </svg>
               </span>
             </div>
-            <span className="text-gray-500 dark:text-gray-400"> entries </span>
+            <span className="text-gray-500 dark:text-gray-400">
+              {" "}
+              resultados{" "}
+            </span>
           </div>
 
           <div className="relative">
@@ -215,7 +286,7 @@ export default function TableBusqueda() {
               type="text"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              placeholder="Search..."
+              placeholder="Filtrar..."
               className="dark:bg-dark-900 h-11 w-full rounded-lg border border-gray-300 bg-transparent py-2.5 pl-11 pr-4 text-sm text-gray-800 shadow-theme-xs placeholder:text-gray-400 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 dark:focus:border-brand-800 xl:w-[300px]"
             />
           </div>
@@ -290,18 +361,26 @@ export default function TableBusqueda() {
                     <TableRow key={index}>
                       {/* iconos */}
                       <TableCell>
-                        <div className="flex justify-center">
+                        <div className="flex justify-center text-blue-600 underline">
                           <Tooltip content={"Ver Ticket"} theme="dark">
-                            <button
+                            {/* <button
                               onClick={() => {
-                                setSingleItem(item);
-                                toggleModal("ver", true);
-                                setStatus(item.Estado?.Estado);
+                                router.push(`/busqueda/${item.Id}`, {
+                                  scroll: false,
+                                });
                               }}
                               className="text-gray-500 hover:text-gray-800"
                             >
                               <EyeIcon />
-                            </button>
+                            </button> */}
+                            <a
+                              href={`/busqueda/${item.Id}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-gray-500 hover:text-gray-800"
+                            >
+                              <EyeIcon />
+                            </a>
                           </Tooltip>
                         </div>
                       </TableCell>
@@ -399,7 +478,6 @@ export default function TableBusqueda() {
           </div>
         </div>
       </div>
-      <AllModals ticket={singleItem} status={status} />
     </>
   );
 }
