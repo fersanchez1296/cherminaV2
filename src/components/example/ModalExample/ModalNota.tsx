@@ -32,6 +32,7 @@ const ModalNota = ({ open, handleToggleModalState, id, uuid }: Open) => {
 
   const handleSave = async (data: any) => {
     try {
+      console.log("Data", data);
       const result = await putNota(data, uuid);
 
       if (result.status === 200) {

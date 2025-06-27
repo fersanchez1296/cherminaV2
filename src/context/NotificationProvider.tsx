@@ -53,7 +53,7 @@ export const NotificationProvider = ({ children }: { children: ReactNode }) => {
       {children}
       {notification && (
         <>
-          {console.log("Mostrando notificación:", notification)}
+          {/* {console.log("Mostrando notificación:", notification)} */}
           <div className="fixed bottom-4 right-4 z-[99999]">
             <Notification
               title={notification.title}

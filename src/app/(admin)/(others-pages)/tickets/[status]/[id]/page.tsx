@@ -152,8 +152,8 @@ export default function TicketModal({
             </div>
             {data?.PendingReason && (
               <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200 dark:border-gray-800">
-                <h3 className="font-medium text-orange-500 text-theme-xl dark:text-white/90">
-                  data Pendiente:{" "}
+                <h3 className="font-medium text-red-600 text-theme-xl dark:text-white/90">
+                  Razón Pendiente:{" "}
                   <span className="text-base text-gray-800">
                     {data?.PendingReason}
                   </span>
@@ -361,21 +361,21 @@ export default function TicketModal({
                     <span className="text-gray-800 dark:text-white/90">
                       {(data?.Descripcion_cierre ||
                         data?.Respuesta_cierre_reasignado) && (
-                        <>
-                          <div className="flex flex-col gap-6 mb-9 mt-4 sm:flex-row sm:items-center sm:justify-between">
-                            <div className="sm:text-left">
-                              <span className="block mb-1 text-lg font-medium text-gray-900 dark:text-gray-400">
-                                Descripcion de Resolución
-                              </span>
-                              <span className="block mb-1 text-sm font-medium text-gray-500 dark:text-gray-400">
-                                {data?.Respuesta_cierre_reasignado ||
-                                  data?.Descripcion_cierre ||
-                                  ""}
-                              </span>
+                          <>
+                            <div className="flex flex-col gap-6 mb-9 mt-4 sm:flex-row sm:items-center sm:justify-between">
+                              <div className="sm:text-left">
+                                <span className="block mb-1 text-lg font-medium text-gray-900 dark:text-gray-400">
+                                  Descripcion de Resolución
+                                </span>
+                                <span className="block mb-1 text-sm font-medium text-gray-500 dark:text-gray-400">
+                                  {data?.Respuesta_cierre_reasignado ||
+                                    data?.Descripcion_cierre ||
+                                    ""}
+                                </span>
+                              </div>
                             </div>
-                          </div>
-                        </>
-                      )}
+                          </>
+                        )}
                     </span>
                   </div>
                 </div>
@@ -440,7 +440,7 @@ export default function TicketModal({
                   </span>
                 </div>
 
-                <div className="flex flex-col items-center gap-3 sm:flex-row">
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
                   {(data?.Files ?? []).length > 0 &&
                     data?.Files?.map((f) => {
                       const ext = getFileExtension(f.name);
@@ -448,7 +448,7 @@ export default function TicketModal({
                       return (
                         <div
                           key={f.name}
-                          className="relative hover:border-gray-300 dark:hover:border-white/[0.05] flex w-full cursor-pointer items-center gap-3 rounded-xl border border-gray-200 bg-white py-2.5 pl-3 pr-5 dark:border-gray-800 dark:bg-white/5 sm:w-auto"
+                          className="relative hover:border-gray-300 dark:hover:border-white/[0.05] flex cursor-pointer items-center gap-3 rounded-xl border border-gray-200 bg-white py-2.5 pl-3 pr-5 dark:border-gray-800 dark:bg-white/5"
                         >
                           <div className="w-full h-10 max-w-10">
                             <Image
@@ -484,6 +484,8 @@ export default function TicketModal({
                       );
                     })}
                 </div>
+
+
               </div>
 
               <div className="flex flex-col gap-6 mb-9 mt-4 sm:flex-col sm:items-center sm:justify-between">

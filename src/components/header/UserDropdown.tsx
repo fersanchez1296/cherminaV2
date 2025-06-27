@@ -19,7 +19,6 @@ export default function UserDropdown() {
     setIsOpen(false);
   }
 
-  console.log(session);
   return (
     <div className="relative">
       <button

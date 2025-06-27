@@ -187,7 +187,7 @@ const ModalEditar = ({ open, handleToggleModalState, ticket, uuid }: Open) => {
                     <Controller
                       name="NumeroRec_Oficio"
                       control={control}
-                      rules={{ required: "Este campo es obligatorio" }}
+                      //rules={{ required: "Este campo es obligatorio" }}
                       render={({ field, fieldState }) => (
                         <Input
                           {...field}
