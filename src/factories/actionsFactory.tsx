@@ -25,7 +25,7 @@ export const getActions = (
   userRole: string,
   status: string
 ) => {
-  console.log("este es el item", item);
+  //console.log("este es el item", item);
 
   const allActions = [
     // ver

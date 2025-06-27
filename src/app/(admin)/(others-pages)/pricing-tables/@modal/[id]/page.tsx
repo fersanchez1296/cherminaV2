@@ -136,7 +136,7 @@ export default function TicketModal({
             {data?.PendingReason && (
               <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200 dark:border-gray-800">
                 <h3 className="font-medium text-orange-500 text-theme-xl dark:text-white/90">
-                  data Pendiente:{" "}
+                  Razón Pendiente:{" "}
                   <span className="text-base text-gray-800">
                     {data?.PendingReason}
                   </span>

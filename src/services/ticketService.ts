@@ -142,8 +142,15 @@ export const putResolverTicket = async (
     });
   };
   formData.forEach((value, key) => {
-    console.log(`${key}:`, value);
+    if (value instanceof File) {
+      console.log(`FormData ${key}:`, value);
+      console.log(` -> Tipo: File (${value.type})`);
+    } else {
+      console.log(`FormData ${key}:`, value);
+      console.log(` -> Tipo: ${typeof value}`);
+    }
   });
+
   return await api.put(`tickets/resolver/${ticketId}`, formData, {
     headers: {
       "Content-Type": "multipart/form-data",
@@ -153,7 +160,7 @@ export const putResolverTicket = async (
 
 export const putContactoCliente = async (
   data: { cuerpoCorreo: string; Files?: File[]; emailsExtra: string },
-  ticketId: string
+  ticketId?: string
 ) => {
   const { cuerpoCorreo, emailsExtra } = data;
 

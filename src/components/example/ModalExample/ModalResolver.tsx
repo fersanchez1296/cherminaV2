@@ -7,7 +7,7 @@ import Label from "@/components/form/Label";
 import DropzoneComponent from "@/components/form/form-elements/DropZone";
 import Button from "@/components/ui/button/Button";
 import { useForm, Controller } from "react-hook-form";
-import { putResolverTicket } from "@/services/ticketService";
+import { putNota, putResolverTicket } from "@/services/ticketService";
 import { useNotification } from "@/context/NotificationProvider";
 interface Open {
   open: boolean;
@@ -23,14 +23,18 @@ const ModalResolver = ({ open, handleToggleModalState, id, uuid, vistoBueno }: O
   const form = useForm();
   const { handleSubmit, control, reset } = form;
   const callbackClose = () => {
-    reset();
     closeModal();
     handleToggleModalState("resolver", false);
   };
 
+  const clearFiles = () => {
+    reset();
+  };
+
   const handleSave = async (data: any) => {
     try {
-      const result = await putResolverTicket(data, uuid, vistoBueno);
+        
+      const result = await putResolverTicket(data, uuid, vistoBueno );
 
       if (result.status === 200) {
         showNotification(
@@ -68,15 +72,15 @@ const ModalResolver = ({ open, handleToggleModalState, id, uuid, vistoBueno }: O
         <div className="no-scrollbar relative w-full max-w-[700px] overflow-y-auto rounded-3xl bg-white p-4 dark:bg-gray-900 lg:p-11">
           <div className="px-2 pr-14">
             <h4 className="mb-2 text-2xl font-semibold text-gray-800 dark:text-white/90">
-              Resolver Ticket
+              Resolver ticket
             </h4>
           </div>
-          <form className="flex flex-col" onSubmit={handleSubmit(handleSave)}>
+          <form className="flex flex-col">
             <div className="custom-scrollbar h-[450px] overflow-y-auto px-2 pb-3">
               <div className="mt-7">
                 <div className="grid grid-cols-1 gap-x-6 gap-y-5 lg:grid-cols-2">
                   <div className="col-span-2">
-                    <Label>Descripcion de resolución</Label>
+                    <Label>Descripcion</Label>
                     <Controller
                       name="Respuesta_cierre_reasignado"
                       control={control}
@@ -101,8 +105,8 @@ const ModalResolver = ({ open, handleToggleModalState, id, uuid, vistoBueno }: O
               <Button size="sm" variant="outline" onClick={callbackClose}>
                 Cerrar
               </Button>
-              <Button size="sm" type="submit">
-                Guardar Ticket
+              <Button size="sm" onClick={handleSubmit(handleSave)}>
+                Guardar
               </Button>
             </div>
           </form>
