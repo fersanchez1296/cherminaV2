@@ -118,7 +118,6 @@ export const putResolverTicket = async (
   const formData = new FormData();
   const auxData = {
     Respuesta_cierre_reasignado: data.Respuesta_cierre_reasignado,
-    Files: data.Files,
     vistoBueno: vistoBueno,
   };
 
@@ -702,11 +701,14 @@ export const putEditar = async (
   },
   ticketId?: string
 ) => {
-  console.log("DATA", data);
   const formData = new FormData();
   const auxData = {
     Numero_Oficio: data.Numero_Oficio,
+    Medio: data.Medio,
+    Descripcion: data.Descripcion,
   };
+
+  console.log("este es el auxdata", auxData)
 
   Object.entries(auxData).forEach(([key, value]) => {
     if (value !== undefined && value !== null) {
@@ -727,6 +729,11 @@ export const putEditar = async (
       }
     });
   };
+
+  for (const pair of formData.entries()) {
+    console.log(`${pair[0]}:`, pair[1]);
+  }
+
   return await api.put(`tickets/editar/${ticketId}`, formData, {
     headers: {
       "Content-Type": "multipart/form-data",
