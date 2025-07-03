@@ -3,10 +3,9 @@
 import { MoreDotIcon } from "@/icons";
 import { ApexOptions } from "apexcharts";
 import dynamic from "next/dynamic";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { DropdownItem } from "../ui/dropdown/DropdownItem";
 import { Dropdown } from "../ui/dropdown/Dropdown";
-import { dashboardCelulas } from "@/services/dashboard";
 
 // Dynamically import the ReactApexChart component
 const ReactApexChart = dynamic(() => import("react-apexcharts"), {
@@ -14,46 +13,32 @@ const ReactApexChart = dynamic(() => import("react-apexcharts"), {
 });
 
 export default function FunnelChart() {
-  const [series, setSieres] = useState<{name: string, data: number[]}[] | []>([])
-  useEffect(() => {
-    async function fetchDashboard() {
-      try {
-        const result = await dashboardCelulas();
-        if(result) setSieres(result.data)
-      } catch (error) {
-        
-      }
-    }
-
-    fetchDashboard()
-  },[])
-
-  // const series = [
-  //   {
-  //     name: "Abiertos",
-  //     data: [44, 55, 41, 67, 22, 43, 55, 41],
-  //   },
-  //   {
-  //     name: "Reabiertos",
-  //     data: [13, 23, 20, 8, 13, 27, 13, 23],
-  //   },
-  //   {
-  //     name: "Revision",
-  //     data: [11, 17, 15, 15, 21, 14, 18, 20],
-  //   },
-  //   {
-  //     name: "Pendientes",
-  //     data: [21, 7, 25, 13, 22, 8, 18, 20],
-  //   },
-  //   {
-  //     name: "Resueltos",
-  //     data: [21, 7, 25, 13, 22, 8, 18, 20],
-  //   },
-  //   {
-  //     name: "Cerrados",
-  //     data: [21, 7, 25, 13, 22, 8, 18, 20],
-  //   },
-  // ];
+  const series = [
+    {
+      name: "Abiertos",
+      data: [44, 55, 41, 67, 22, 43, 55, 41],
+    },
+    {
+      name: "Reabiertos",
+      data: [13, 23, 20, 8, 13, 27, 13, 23],
+    },
+    {
+      name: "Revision",
+      data: [11, 17, 15, 15, 21, 14, 18, 20],
+    },
+    {
+      name: "Pendientes",
+      data: [21, 7, 25, 13, 22, 8, 18, 20],
+    },
+    {
+      name: "Resueltos",
+      data: [21, 7, 25, 13, 22, 8, 18, 20],
+    },
+    {
+      name: "Cerrados",
+      data: [21, 7, 25, 13, 22, 8, 18, 20],
+    },
+  ];
   const options: ApexOptions = {
     colors: ["#1e8449","#52be80","#f1c40f", "#f39c12", "#2471a3", "#b03a2e"],
     chart: {

@@ -20,7 +20,6 @@ import { busquedaAvanzada } from "@/services/dashboard";
 import { Ticket } from "@/common/interfaces/ticket.interface";
 import { EyeIcon } from "lucide-react";
 import { badgeColors } from "@/common/badgeColors/badgeColors";
-import { Controller, useForm } from "react-hook-form";
 import { useNotification } from "@/context/NotificationProvider";
 import { useLoadingStore } from "@/stores/loadingStore";
 import { useSession } from "next-auth/react";
@@ -65,6 +64,7 @@ const customStyles = {
 export default function TableBusqueda() {
   const { data: session } = useSession();
   const userRole = session?.user?.rol;
+  const userCelulas = session?.user?.celulas;
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [sortKey, setSortKey] = useState<SortKey>("resolutor");
@@ -159,16 +159,76 @@ export default function TableBusqueda() {
     { value: "ncresolutor", label: "Nombre/correo moderador/resolutor" },
   ];
 
+  const celulas = [
+    { value: "RRHH", label: "RRHH" },
+    { value: "SIC", label: "SIC" },
+    { value: "SIIF", label: "SIIF" },
+    { value: "WEB", label: "WEB" },
+    { value: "Servicios Médicos", label: "Servicios Médicos" },
+    { value: "Análisis de seguridad de sistemas y bases de datos", label: "Análisis de seguridad de sistemas y bases de datos" },
+    { value: "Saturno/IPETURNO", label: "Saturno/IPETURNO" },
+    { value: "Chermina/SOS desk", label: "Chermina/SOS desk" },
+  ]
+
   const options = useMemo(() => {
     const copy = [...baseOptions];
     if (userRole === "Administrador" || userRole === "Root") {
       const exists = copy.some((opt) => opt.value === "area");
       if (!exists) copy.push({ value: "area", label: "Área" });
     }
+    if ((userRole === "Moderador" || userRole === "PM") && userCelulas.length > 0) {
+      const exists = copy.some((opt) => opt.value === "celula");
+      if (!exists) copy.push({value: "celula", label: "Célula"});
+    }
     return copy;
   }, [userRole]);
 
-  console.log(session);
+  console.log("esta es la sesion",session);
+
+  const renderCriterioInput = () => {
+  switch (criterio.value) {
+    case "area":
+      return (
+        <div className="col-span-1">
+          <Label htmlFor="area">Selecciona una opción</Label>
+          <Select<Option, false>
+            placeholder="Selecciona una opción"
+            options={selectsData}
+            onChange={(selected) => setTermino(selected?.value || "")}
+            className="basic-multi-select"
+            classNamePrefix="select"
+          />
+        </div>
+      );
+
+    case "celula":
+      return (
+        <div className="col-span-1">
+          <Label htmlFor="area">Selecciona una opción</Label>
+          <Select<Option, false>
+            placeholder="Selecciona una opción"
+            options={celulas}
+            onChange={(selected) => setTermino(selected?.value || "")}
+            className="basic-multi-select"
+            classNamePrefix="select"
+          />
+        </div>
+      );
+
+    default:
+      return (
+        <div className="flex flex-col">
+          <Label htmlFor="termino">Término de Búsqueda</Label>
+          <Input
+            placeholder="Ingresa el término de búsqueda"
+            onChange={(e) => setTermino(e.target.value)}
+            value={termino}
+          />
+        </div>
+      );
+  }
+};
+
   return (
     <>
       <div className="col-span-2">
@@ -189,7 +249,7 @@ export default function TableBusqueda() {
             value={criterio}
           />
         </div>
-        {criterio.value !== "area" ? (
+        {/* {criterio.value !== "area" ? (
           <div className="flex flex-col">
             <Label htmlFor="firstName">Término de Busqueda</Label>
             <Input
@@ -213,7 +273,9 @@ export default function TableBusqueda() {
               />
             </div>
           </div>
-        )}
+        )} */}
+
+        {renderCriterioInput()}
 
         <Button size="sm" className="w-full self-end" onClick={handleSearch}>
           Buscar
