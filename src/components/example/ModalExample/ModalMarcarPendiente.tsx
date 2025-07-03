@@ -42,10 +42,11 @@ const ModalMarcarPendiente = ({
   const handleSave = async (data) => {
     try {
       const result = await putTicketPendiente(data, uuid);
+      console.log(result);
       if (result.status === 200) {
         showNotification(
           "Éxito",
-          result.data?.desc || "Operación exitosa",
+          result.data?.message || "Operación exitosa",
           "success"
         );
         reset();
@@ -53,7 +54,7 @@ const ModalMarcarPendiente = ({
       } else {
         showNotification(
           "Aviso",
-          result.data?.desc || "Respuesta inesperada del servidor",
+          result.data?.message || "Respuesta inesperada del servidor",
           "warning"
         );
       }
