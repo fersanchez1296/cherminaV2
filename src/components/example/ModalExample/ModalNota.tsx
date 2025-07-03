@@ -46,7 +46,7 @@ const ModalNota = ({ open, handleToggleModalState, id, uuid }: Open) => {
       } else {
         showNotification(
           "Aviso",
-          result.data?.desc || "Respuesta inesperada del servidor",
+          result.data?.message || "Respuesta inesperada del servidor",
           "warning"
         );
       }
