@@ -19,7 +19,7 @@ export function SocketProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     if (session?.user?.accessToken && !socket) {
-      const newSocket = io("http://localhost:4200", {
+      const newSocket = io("http://localhost:4700", {
         auth: {
           token: session.user.accessToken,
         },
