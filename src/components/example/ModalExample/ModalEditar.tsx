@@ -19,6 +19,7 @@ import Select from "react-select";
 import { Option } from "lucide-react";
 import TextArea from "@/components/form/input/TextArea";
 import { da } from "date-fns/locale";
+import { useLoadingStore } from "@/stores/loadingStore";
 interface Open {
   open: boolean;
   handleToggleModalState: (modal: string, boolState: boolean) => void;
@@ -61,6 +62,7 @@ const formatGroupLabel = (data: GroupedOption) => (
 );
 
 const ModalEditar = ({ open, handleToggleModalState, ticket, uuid }: Open) => {
+  const setLoading = useLoadingStore((state) => state.setLoading);
   const [medios, setMedios] = useState<Option[]>([]);
   const { showNotification } = useNotification();
   const { isOpen, closeModal, setOpen } = useModal();
@@ -82,6 +84,7 @@ const ModalEditar = ({ open, handleToggleModalState, ticket, uuid }: Open) => {
     fetchMedios(); // Llama a la función
   }, []);
   const handleSave = async (data: any) => {
+    setLoading(true);
     try {
       console.log("DATA", data);
       const result = await putEditar(data, uuid);
@@ -105,6 +108,8 @@ const ModalEditar = ({ open, handleToggleModalState, ticket, uuid }: Open) => {
       const message =
         err.response?.data?.desc || "Ocurrió un error inesperado.";
       showNotification("Error", message, "error");
+    } finally {
+      setLoading(false);
     }
   };
 

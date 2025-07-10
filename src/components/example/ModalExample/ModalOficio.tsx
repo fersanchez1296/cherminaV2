@@ -9,6 +9,7 @@ import { useForm, Controller } from "react-hook-form";
 import { putNota, putOficio, putReabrir } from "@/services/ticketService";
 import Input from "@/components/form/input/InputField";
 import { useNotification } from "@/context/NotificationProvider";
+import { useLoadingStore } from "@/stores/loadingStore";
 interface Open {
   open: boolean;
   handleToggleModalState: (modal: string, boolState: boolean) => void;
@@ -17,6 +18,7 @@ interface Open {
 }
 
 const ModalOficio = ({ open, handleToggleModalState, uuid }: Open) => {
+  const setLoading = useLoadingStore((state) => state.setLoading);
   const { showNotification } = useNotification();
   const { isOpen, closeModal, setOpen } = useModal();
   const form = useForm();
@@ -27,6 +29,7 @@ const ModalOficio = ({ open, handleToggleModalState, uuid }: Open) => {
   };
 
   const handleSave = async (data: any) => {
+    setLoading(true);
     try {
       const result = await putOficio(data, uuid);
 
@@ -50,6 +53,8 @@ const ModalOficio = ({ open, handleToggleModalState, uuid }: Open) => {
       const message =
         err.response?.data?.desc || "Ocurrió un error inesperado.";
       showNotification("Error", message, "error");
+    } finally {
+      setLoading(false);
     }
   };
 

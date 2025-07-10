@@ -14,6 +14,7 @@ import Form from "@/components/form/Form";
 import Input from "@/components/form/input/InputField";
 import { getCorreosCliente } from "@/services/ticketService";
 import { useNotification } from "@/context/NotificationProvider";
+import { useLoadingStore } from "@/stores/loadingStore";
 interface Open {
   open: boolean;
   handleToggleModalState: (modal: string, boolState: boolean) => void;
@@ -29,6 +30,7 @@ const ModalMarcarPendiente = ({
   uuid,
   nombreCliente,
 }: Open) => {
+  const setLoading = useLoadingStore((state) => state.setLoading);
   const { showNotification } = useNotification();
   const { isOpen, closeModal, setOpen } = useModal();
   const [cliente, setCliente] = useState<string>("");
@@ -39,7 +41,8 @@ const ModalMarcarPendiente = ({
     handleToggleModalState("pendiente", false);
   };
 
-  const handleSave = async (data) => {
+  const handleSave = async (data: any) => {
+    setLoading(true);
     try {
       const result = await putTicketPendiente(data, uuid);
       console.log(result);
@@ -59,8 +62,12 @@ const ModalMarcarPendiente = ({
         );
       }
     } catch (error) {
-      error.response?.data?.desc || "Ocurrió un error inesperado.";
+      const err = error as { response?: { data?: { desc?: string } } };
+      const message =
+        err.response?.data?.desc || "Ocurrió un error inesperado.";
       showNotification("Error", message, "error");
+    } finally {
+      setLoading(false);
     }
   };
 

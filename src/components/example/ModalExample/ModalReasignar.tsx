@@ -14,6 +14,7 @@ import Input from "@/components/form/input/InputField";
 import Select from "react-select";
 import Switch from "@/components/form/switch/Switch";
 import { useNotification } from "@/context/NotificationProvider";
+import { useLoadingStore } from "@/stores/loadingStore";
 // Interfaces para React Select
 interface Option {
   value: string;
@@ -66,6 +67,8 @@ const ModalReasignar = ({
   id,
   fechaResolucion,
 }: Open) => {
+
+  const setLoading = useLoadingStore((state) => state.setLoading);
   const { showNotification } = useNotification();
   const { isOpen, closeModal, setOpen } = useModal();
   const form = useForm();
@@ -79,6 +82,7 @@ const ModalReasignar = ({
   };
 
   const handleSave = async (data: any) => {
+    setLoading(true);
     try {
       const result = await putReasignar(data, id);
 
@@ -102,6 +106,8 @@ const ModalReasignar = ({
       const message =
         err.response?.data?.desc || "Ocurrió un error inesperado.";
       showNotification("Error", message, "error");
+    } finally {
+      setLoading(false);
     }
   };
 

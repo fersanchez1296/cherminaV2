@@ -9,12 +9,14 @@ import Button from "@/components/ui/button/Button";
 import { useForm, Controller } from "react-hook-form";
 import { putCerrarTicket } from "@/services/ticketService";
 import { useNotification } from "@/context/NotificationProvider";
+import { useLoadingStore } from "@/stores/loadingStore";
 interface Open {
   open: boolean;
   handleToggleModalState: (modal: string, boolState: boolean) => void;
   id?: string;
   uuid?: string;
   descripcionCierre?: string;
+  Resuelto_por?: string;
 }
 
 const ModalCerrarTicket = ({
@@ -23,7 +25,9 @@ const ModalCerrarTicket = ({
   id,
   uuid,
   descripcionCierre,
+  Resuelto_por,
 }: Open) => {
+  const setLoading = useLoadingStore((state) => state.setLoading);
   const { showNotification } = useNotification();
   const { isOpen, closeModal, setOpen } = useModal();
   const form = useForm();
@@ -34,8 +38,9 @@ const ModalCerrarTicket = ({
   };
 
   const handleSave = async (data: any) => {
+    setLoading(true);
     try {
-      const result = await putCerrarTicket(data, uuid);
+      const result = await putCerrarTicket(data, uuid, Resuelto_por);
 
       if (result.status === 200) {
         showNotification(
@@ -57,6 +62,8 @@ const ModalCerrarTicket = ({
       const message =
         err.response?.data?.desc || "Ocurrió un error inesperado.";
       showNotification("Error", message, "error");
+    } finally {
+      setLoading(false);
     }
   };
 

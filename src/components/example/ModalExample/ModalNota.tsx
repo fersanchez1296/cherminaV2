@@ -9,6 +9,7 @@ import Button from "@/components/ui/button/Button";
 import { useForm, Controller } from "react-hook-form";
 import { putNota } from "@/services/ticketService";
 import { useNotification } from "@/context/NotificationProvider";
+import { useLoadingStore } from "@/stores/loadingStore";
 interface Open {
   open: boolean;
   handleToggleModalState: (modal: string, boolState: boolean) => void;
@@ -17,6 +18,7 @@ interface Open {
 }
 
 const ModalNota = ({ open, handleToggleModalState, id, uuid }: Open) => {
+  const setLoading = useLoadingStore((state) => state.setLoading);
   const { showNotification } = useNotification();
   const { isOpen, closeModal, setOpen } = useModal();
   const form = useForm();
@@ -31,6 +33,7 @@ const ModalNota = ({ open, handleToggleModalState, id, uuid }: Open) => {
   };
 
   const handleSave = async (data: any) => {
+    setLoading(true);
     try {
       console.log("Data", data);
       const result = await putNota(data, uuid);
@@ -46,7 +49,7 @@ const ModalNota = ({ open, handleToggleModalState, id, uuid }: Open) => {
       } else {
         showNotification(
           "Aviso",
-          result.data?.message || "Respuesta inesperada del servidor",
+          result.data?.desc || "Respuesta inesperada del servidor",
           "warning"
         );
       }
@@ -55,6 +58,8 @@ const ModalNota = ({ open, handleToggleModalState, id, uuid }: Open) => {
       const message =
         err.response?.data?.desc || "Ocurrió un error inesperado.";
       showNotification("Error", message, "error");
+    } finally {
+      setLoading(false);
     }
   };
 

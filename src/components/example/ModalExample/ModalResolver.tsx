@@ -9,6 +9,7 @@ import Button from "@/components/ui/button/Button";
 import { useForm, Controller } from "react-hook-form";
 import { putNota, putResolverTicket } from "@/services/ticketService";
 import { useNotification } from "@/context/NotificationProvider";
+import { useLoadingStore } from "@/stores/loadingStore";
 interface Open {
   open: boolean;
   handleToggleModalState: (modal: string, boolState: boolean) => void;
@@ -18,6 +19,7 @@ interface Open {
 }
 
 const ModalResolver = ({ open, handleToggleModalState, id, uuid, vistoBueno }: Open) => {
+  const setLoading = useLoadingStore((state) => state.setLoading);
   const { showNotification } = useNotification();
   const { isOpen, closeModal, setOpen } = useModal();
   const form = useForm();
@@ -32,9 +34,9 @@ const ModalResolver = ({ open, handleToggleModalState, id, uuid, vistoBueno }: O
   };
 
   const handleSave = async (data: any) => {
+    setLoading(true);
     try {
-        
-      const result = await putResolverTicket(data, uuid, vistoBueno );
+      const result = await putResolverTicket(data, uuid, vistoBueno);
 
       if (result.status === 200) {
         showNotification(
@@ -56,6 +58,8 @@ const ModalResolver = ({ open, handleToggleModalState, id, uuid, vistoBueno }: O
       const message =
         err.response?.data?.desc || "Ocurrió un error inesperado.";
       showNotification("Error", message, "error");
+    } finally {
+      setLoading(false);
     }
   };
 
