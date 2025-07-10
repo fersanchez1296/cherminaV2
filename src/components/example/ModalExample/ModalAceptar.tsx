@@ -9,6 +9,7 @@ import { useForm, Controller } from "react-hook-form";
 import { putAceptarResolucion } from "@/services/ticketService";
 import Input from "@/components/form/input/InputField";
 import { useNotification } from "@/context/NotificationProvider";
+import { useLoadingStore } from "@/stores/loadingStore";
 interface Open {
   open: boolean;
   handleToggleModalState: (modal: string, boolState: boolean) => void;
@@ -28,6 +29,7 @@ const ModalAceptar = ({
   fechaResolucion,
   descripcion_resolucion,
 }: Open) => {
+  const setLoading = useLoadingStore((state) => state.setLoading);
   const { showNotification } = useNotification();
   const { isOpen, closeModal, setOpen } = useModal();
   const form = useForm();
@@ -40,6 +42,7 @@ const ModalAceptar = ({
     Nombre,
   };
   const handleSave = async () => {
+    setLoading(true);
     try {
       const result = await putAceptarResolucion(data, uuid);
 
@@ -63,6 +66,8 @@ const ModalAceptar = ({
       const message =
         err.response?.data?.desc || "Ocurrió un error inesperado.";
       showNotification("Error", message, "error");
+    } finally {
+      setLoading(false);
     }
   };
 

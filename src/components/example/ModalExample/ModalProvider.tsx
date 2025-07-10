@@ -61,6 +61,7 @@ export default function AllModals({ ticket, status }: Props) {
           uuid={ticket._id}
           resolutor={ticket.Reasignado_a?.[0]?.Nombre || ""}
           Nombre={ticket.Reasignado_a?.[0]?.Nombre || ""}
+          reasignado = {ticket.Reasignado_a?.[0]?._id}
           // descripcion_resolucion={ticket.Respuesta_cierre_reasignado}
           fechaResolucion={ticket.Fecha_hora_resolucion}
         />
@@ -90,6 +91,7 @@ export default function AllModals({ ticket, status }: Props) {
           id={ticket.Id}
           uuid={ticket._id}
           descripcionCierre={ticket.Respuesta_cierre_reasignado}
+          Resuelto_por = {ticket.Resuelto_por?._id}
         />
       )}
       {state["razonPendiente"] && (
@@ -123,6 +125,7 @@ export default function AllModals({ ticket, status }: Props) {
           handleToggleModalState={toggleModal}
           id={ticket.Id}
           uuid={ticket._id}
+          reasignado = {ticket.Reasignado_a?.[0]?._id}
         />
       )}
       {state["regresarMesa"] && (

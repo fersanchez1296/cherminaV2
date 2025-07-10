@@ -13,6 +13,7 @@ import Form from "@/components/form/Form";
 import Input from "@/components/form/input/InputField";
 import Select from "react-select";
 import { useNotification } from "@/context/NotificationProvider";
+import { useLoadingStore } from "@/stores/loadingStore";
 // Interfaces para React Select
 interface Option {
   value: string;
@@ -65,6 +66,7 @@ const ModalReabrir = ({
   uuid,
   fechaResolucion,
 }: Open) => {
+  const setLoading = useLoadingStore((state) => state.setLoading);
   const { isOpen, closeModal, setOpen } = useModal();
   const form = useForm();
   const { handleSubmit, control, reset } = form;
@@ -77,6 +79,7 @@ const ModalReabrir = ({
   };
 
   const handleSave = async (data: any) => {
+    setLoading(true);
     try {
       const result = await putReabrir(data, uuid);
 
@@ -100,6 +103,8 @@ const ModalReabrir = ({
       const message =
         err.response?.data?.desc || "Ocurrió un error inesperado.";
       showNotification("Error", message, "error");
+    } finally {
+      setLoading(false);
     }
   };
 

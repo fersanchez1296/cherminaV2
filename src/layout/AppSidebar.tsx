@@ -14,7 +14,7 @@ import {
   GridIcon,
   HorizontaLDots,
   // ListIcon,
-  //MailIcon,
+  MailIcon,
   // PageIcon,
   // PieChartIcon,
   // PlugInIcon,
@@ -973,6 +973,12 @@ const AppSidebar: React.FC = () => {
         "Soporte Técnico",
         "Dirección",
       ],
+    },
+    {
+      icon: <MailIcon />,
+      name: "Fila de correos",
+      path: "/fila-correos",
+      visible: ["Administrador", "Root"],
     },
     // {
     //   name: "Forms",

@@ -11,6 +11,7 @@ import { putRechazarResolucion } from "@/services/ticketService";
 import Input from "@/components/form/input/InputField";
 import DropzoneComponent from "@/components/form/form-elements/DropZone";
 import { useNotification } from "@/context/NotificationProvider";
+import { useLoadingStore } from "@/stores/loadingStore";
 interface Open {
   open: boolean;
   handleToggleModalState: (modal: string, boolState: boolean) => void;
@@ -19,6 +20,7 @@ interface Open {
   resolutor?: string;
   fechaResolucion?: string;
   Nombre?: string;
+  reasignado?: string;
 }
 
 const ModalRechazar = ({
@@ -29,7 +31,9 @@ const ModalRechazar = ({
   resolutor,
   fechaResolucion,
   Nombre,
+  reasignado,
 }: Open) => {
+  const setLoading = useLoadingStore((state) => state.setLoading);
   const { isOpen, closeModal, setOpen } = useModal();
   const form = useForm();
   const { showNotification } = useNotification();
@@ -44,8 +48,9 @@ const ModalRechazar = ({
       ...data,
       Nombre: Nombre,
     };
+    setLoading(true);
     try {
-      const result = await putRechazarResolucion(dataWithNombre, uuid);
+      const result = await putRechazarResolucion(dataWithNombre, uuid, reasignado);
 
       if (result.status === 200) {
         showNotification(
@@ -67,6 +72,8 @@ const ModalRechazar = ({
       const message =
         err.response?.data?.desc || "Ocurrió un error inesperado.";
       showNotification("Error", message, "error");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -107,18 +114,18 @@ const ModalRechazar = ({
                   <div className="col-span-2">
                     <Label>Resolutor</Label>
                     <Controller
-                    name="resolutor"
-                    control={control}
-                    render={({ field, fieldState }) => (
-                      <Input
-                        defaultValue={Nombre}
-                        disabled
-                        {...field}
-                        error={!!fieldState.error}
-                        hint={fieldState.error?.message}
-                      />
-                    )}
-                  />
+                      name="resolutor"
+                      control={control}
+                      render={({ field, fieldState }) => (
+                        <Input
+                          defaultValue={Nombre}
+                          disabled
+                          {...field}
+                          error={!!fieldState.error}
+                          hint={fieldState.error?.message}
+                        />
+                      )}
+                    />
                   </div>
                   <div className="col-span-2">
                     <Label>Fecha de resolución</Label>

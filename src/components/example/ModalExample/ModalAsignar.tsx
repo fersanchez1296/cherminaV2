@@ -13,6 +13,7 @@ import Form from "@/components/form/Form";
 import Input from "@/components/form/input/InputField";
 import Select from "react-select";
 import { useNotification } from "@/context/NotificationProvider";
+import { useLoadingStore } from "@/stores/loadingStore";
 // Interfaces para React Select
 interface Option {
   value: string;
@@ -72,12 +73,14 @@ const ModalAsignar = ({
   const { handleSubmit, control, reset } = form;
   const { showNotification } = useNotification();
   const [resolutores, setResolutores] = useState<GroupedOption[]>([]);
+  const setLoading = useLoadingStore((state) => state.setLoading);
 
   const callbackClose = () => {
     closeModal();
     handleToggleModalState("asignar", false);
   };
   const handleSave = async (data: any) => {
+    setLoading(true);
     try {
       data.Cliente = Cliente;
       const result = await putAsignar(data, id);
@@ -102,6 +105,8 @@ const ModalAsignar = ({
       const message =
         err.response?.data?.desc || "Ocurrió un error inesperado.";
       showNotification("Error", message, "error");
+    } finally {
+      setLoading(false);
     }
   };
 

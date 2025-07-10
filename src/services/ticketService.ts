@@ -198,11 +198,13 @@ export const getCorreosCliente = async (ticketId: string) => {
 
 export const putCerrarTicket = async (
   data: { Descripcion_cierre: string; Files?: File[] },
-  ticketId?: string
+  ticketId?: string,
+  Resuelto_por?: string
 ) => {
   const formData = new FormData();
   const auxData = {
     Descripcion_cierre: data.Descripcion_cierre,
+    Resuelto_por: Resuelto_por,
   };
 
   Object.entries(auxData).forEach(([key, value]) => {
@@ -331,12 +333,14 @@ export const putAceptarResolucion = async (
 
 export const putRechazarResolucion = async (
   data: { feedback: string; Nombre: string; Files?: File[] },
-  ticketId?: string
+  ticketId?: string,
+  reasignado?: string
 ) => {
   const formData = new FormData();
   const auxData = {
     feedback: data.feedback,
     Nombre: data.Nombre,
+    Reasignado_a: reasignado,
   };
 
   Object.entries(auxData).forEach(([key, value]) => {
@@ -367,11 +371,13 @@ export const putRechazarResolucion = async (
 
 export const putRegresarResolutor = async (
   data: { Descripcion_respuesta_cliente: string; Files?: File[]; },
-  ticketId?: string
+  ticketId?: string,
+  reasignado?: string
 ) => {
   const formData = new FormData();
   const auxData = {
     Descripcion_respuesta_cliente: data.Descripcion_respuesta_cliente,
+    Reasignado_a: reasignado,
   };
 
   Object.entries(auxData).forEach(([key, value]) => {
@@ -402,7 +408,7 @@ export const putRegresarResolutor = async (
 
 export const putTicketPendiente = async (
   data: { cuerpoCorreo: string; Files?: File[]; emailsExtra: string },
-  ticketId: string
+  ticketId?: string
 ) => {
   const { cuerpoCorreo, emailsExtra } = data;
 

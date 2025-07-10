@@ -9,11 +9,13 @@ import Button from "@/components/ui/button/Button";
 import { useForm, Controller } from "react-hook-form";
 import { putRegresarResolutor } from "@/services/ticketService";
 import { useNotification } from "@/context/NotificationProvider";
+import { useLoadingStore } from "@/stores/loadingStore";
 interface Open {
   open: boolean;
   handleToggleModalState: (modal: string, boolState: boolean) => void;
   uuid?: string;
   id?: string;
+  reasignado?: string;
 }
 
 const ModalRegresarResolutor = ({
@@ -21,7 +23,9 @@ const ModalRegresarResolutor = ({
   handleToggleModalState,
   id,
   uuid,
+  reasignado,
 }: Open) => {
+  const setLoading = useLoadingStore((state) => state.setLoading);
   const { isOpen, closeModal, setOpen } = useModal();
   const { showNotification } = useNotification();
   const form = useForm();
@@ -32,10 +36,9 @@ const ModalRegresarResolutor = ({
   };
 
   const handleSave = async (data: any) => {
+    setLoading(true);
     try {
-      const result = await putRegresarResolutor(data, uuid);
-      console.log("Result", result);
-      console.log(result);
+      const result = await putRegresarResolutor(data, uuid, reasignado);
       if (result.status === 200) {
         showNotification(
           "Exito",
@@ -56,6 +59,8 @@ const ModalRegresarResolutor = ({
       const message =
         err.response?.data?.desc || "Ocurrió un error inesperado.";
       showNotification("Error", message, "error");
+    } finally {
+      setLoading(false);
     }
   };
 

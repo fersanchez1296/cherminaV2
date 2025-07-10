@@ -10,6 +10,7 @@ import Button from "@/components/ui/button/Button";
 import { useForm, Controller } from "react-hook-form";
 import { putRegresarMesa } from "@/services/ticketService";
 import { useNotification } from "@/context/NotificationProvider";
+import { useLoadingStore } from "@/stores/loadingStore";
 interface Open {
   open: boolean;
   handleToggleModalState: (modal: string, boolState: boolean) => void;
@@ -23,6 +24,7 @@ const ModalRegresarMesa = ({
   id,
   uuid,
 }: Open) => {
+  const setLoading = useLoadingStore((state) => state.setLoading);
   const { isOpen, closeModal, setOpen } = useModal();
   const form = useForm();
   const { handleSubmit, control, reset } = form;
@@ -33,6 +35,7 @@ const ModalRegresarMesa = ({
   };
 
   const handleSave = async (data: any) => {
+    setLoading(true);
     try {
       const result = await putRegresarMesa(data, uuid);
       console.log(result);
@@ -56,6 +59,8 @@ const ModalRegresarMesa = ({
       const message =
         err.response?.data?.desc || "Ocurrió un error inesperado.";
       showNotification("Error", message, "error");
+    } finally {
+      setLoading(false);
     }
   };
 
