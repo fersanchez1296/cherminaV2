@@ -25,6 +25,11 @@ import {
   UsersGroupIcon,
   UsersIcon,
   SearchIcon,
+  Adjustments,
+  Building,
+  EnvelopeIcon,
+  BriefcaseIcon,
+  FolderIcon,
 } from "../icons/index";
 import SidebarWidget from "./SidebarWidget";
 type NavItem = {
@@ -34,6 +39,7 @@ type NavItem = {
   visible?: string[];
   new?: boolean;
   subItems?: {
+    icon?: React.ReactNode;
     name: string;
     path: string;
     pro?: boolean;
@@ -318,10 +324,66 @@ const AppSidebar: React.FC = () => {
           visible: ["Administrador", "Usuario", "Root", "Moderador", "Auditor"],
         },
         {
+          name: "Celulas",
+          path: "/celula",
+          new: true,
+          pro: true,
+          visible: ["Administrador", "Usuario", "Root", "Moderador", "Auditor"],
+        },
+        {
           name: "SaaS",
           path: "/saas",
           new: true,
           pro: true,
+          visible: ["Administrador", "Usuario", "Root", "Moderador", "Auditor"],
+        },
+      ],
+      visible: ["Administrador", "Usuario", "Root", "Moderador", "Auditor"],
+    },
+    {
+      icon: <Adjustments />,
+      name: "Catálogos",
+      subItems: [
+        {
+          icon: <Building />,
+          name: "Áreas",
+          path: "/areas",
+          visible: ["Administrador", "Usuario", "Root", "Moderador", "Auditor"],
+        },
+        {
+          icon: <Building />,
+          name: "Dependencias",
+          path: "/dependencias",
+          visible: ["Administrador", "Usuario", "Root", "Moderador", "Auditor"],
+        },
+        {
+          icon: <Building />,
+          name: "Direcciones Generales",
+          path: "/direccionesGenerales",
+          visible: ["Administrador", "Usuario", "Root", "Moderador", "Auditor"],
+        },
+        {
+          icon: <Building />,
+          name: "Direcciones de Área",
+          path: "/direccionesAreas",
+          visible: ["Administrador", "Usuario", "Root", "Moderador", "Auditor"],
+        },
+        {
+          icon: <FolderIcon />,
+          name: "Servicio",
+          path: "/catalogoservicio",
+          visible: ["Administrador", "Usuario", "Root", "Moderador", "Auditor"],
+        },
+        {
+          icon: <EnvelopeIcon />,
+          name: "Medios de Contacto",
+          path: "/medios",
+          visible: ["Administrador", "Usuario", "Root", "Moderador", "Auditor"],
+        },
+        {
+          icon: <BriefcaseIcon />,
+          name: "Puestos de trabajo",
+          path: "/puestos",
           visible: ["Administrador", "Usuario", "Root", "Moderador", "Auditor"],
         },
       ],
@@ -681,6 +743,15 @@ const AppSidebar: React.FC = () => {
                                   : "menu-dropdown-item-inactive"
                               }`}
                             >
+                            <span
+                              className={`${
+                                isActive(subItem.path)
+                                  ? "menu-item-icon-active"
+                                  : "menu-item-icon-inactive"
+                              }`}
+                            >
+                            {subItem.icon}
+                            </span>
                               {subItem.name}
                               <span className="flex items-center gap-1 ml-auto">
                                 {subItem.new && (

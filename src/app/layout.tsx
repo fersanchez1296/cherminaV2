@@ -8,6 +8,7 @@ import SessionAuthProvider from "../context/SessionAuthProvider";
 import { ModalProvider } from "@/context/ModalManager";
 import { NotificationProvider } from "@/context/NotificationProvider";
 import { LoaderOverlay } from "@/components/loaderOverlay/LoaderOverlay";
+import { SocketProvider } from "@/context/SocketProvider";
 const outfit = Outfit({
   subsets: ["latin"],
 });
@@ -21,14 +22,16 @@ export default function RootLayout({
     <html lang="en">
       <body className={`${outfit.className} dark:bg-gray-900`}>
         <SessionAuthProvider>
-          <NotificationProvider>
-            <ThemeProvider>
-              <LoaderOverlay/>
-              <ModalProvider>
-                <SidebarProvider>{children}</SidebarProvider>
-              </ModalProvider>
-            </ThemeProvider>
-          </NotificationProvider>
+          <SocketProvider>
+            <NotificationProvider>
+              <ThemeProvider>
+                <LoaderOverlay />
+                <ModalProvider>
+                  <SidebarProvider>{children}</SidebarProvider>
+                </ModalProvider>
+              </ThemeProvider>
+            </NotificationProvider>
+          </SocketProvider>
         </SessionAuthProvider>
       </body>
     </html>

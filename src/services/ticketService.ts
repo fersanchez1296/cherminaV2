@@ -750,3 +750,71 @@ export const putEditar = async (
 export const getAreas = async () => {
   return await api.get("tickets/areas")
 }
+
+export const updateAreas = async (_id: string, data: { area: string }) => {
+  return await api.put(`tickets/areas/${_id}`, data);
+}
+
+export const createAreas = async (data: { area: string }) => {
+  return await api.post(`tickets/areas`, data);
+}
+
+export const getDependencias = async () => {
+  return await api.get("tickets/dependencias")
+}
+
+export const updateDependencias = async (_id: string, data: { dependencia: string }) => {
+  return await api.put(`tickets/dependencias/${_id}`, data);
+}
+
+export const createDependencias = async (data: { dependencia: string }) => {
+  return await api.post(`tickets/dependencias`, data);
+}
+
+export const getDGenerales = async () => {
+  return await api.get("tickets/dgenerales")
+}
+
+export const updateDGenerales = async (_id: string, data: { dgeneral: string }) => {
+  return await api.put(`tickets/dgenerales/${_id}`, data);
+}
+
+export const createDGenerales = async (data: { dgeneral: string }) => {
+  return await api.post(`tickets/dgenerales`, data);
+}
+
+export const getDAreas = async () => {
+  return await api.get("tickets/dareas")
+}
+
+export const updateDAreas = async (_id: string, data: { darea: string }) => {
+  return await api.put(`tickets/dareas/${_id}`, data);
+}
+
+export const createDAreas = async (data: { darea: string }) => {
+  return await api.post(`tickets/dareas`, data);
+}
+
+export const updateMedios = async (_id: string, data: { darea: string }) => {
+  return await api.put(`tickets/medios/${_id}`, data);
+}
+
+export const createMedios = async (data: { darea: string }) => {
+  return await api.post(`tickets/medios`, data);
+}
+
+export const getPuestos = async () => {
+  return await api.get("tickets/puestos")
+}
+
+export const updatePuestos = async (_id: string, data: { puesto: string }) => {
+  return await api.put(`tickets/puestos/${_id}`, data);
+}
+
+export const createPuestos = async (data: { puesto: string }) => {
+  return await api.post(`tickets/puestos`, data);
+}
+
+export const getCatalogo = async () => {
+  return await api.get("tickets/catalogoservicio")
+}

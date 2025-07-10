@@ -70,7 +70,13 @@ import UsersIcon from "./users.svg";
 import BookOpenIcon from "./book-open.svg";
 import SearchIcon from "./search.svg";
 import AnnotationIcon from "./annotation.svg";
+import Adjustments from "./adjustments.svg"
+import Building from "./building.svg"
+import BriefcaseIcon from "./briefcase.svg"
 export {
+  BriefcaseIcon,
+  Building,
+  Adjustments,
   AnnotationIcon,
   SearchIcon,
   BookOpenIcon,
