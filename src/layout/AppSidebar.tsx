@@ -30,6 +30,7 @@ import {
   EnvelopeIcon,
   BriefcaseIcon,
   FolderIcon,
+  BugIcon,
 } from "../icons/index";
 import SidebarWidget from "./SidebarWidget";
 type NavItem = {
@@ -38,6 +39,7 @@ type NavItem = {
   path?: string;
   visible?: string[];
   new?: boolean;
+  allowedAreas: string[];
   subItems?: {
     icon?: React.ReactNode;
     name: string;
@@ -45,6 +47,7 @@ type NavItem = {
     pro?: boolean;
     new?: boolean;
     visible?: string[];
+    allowedAreas: string[];
   }[];
 };
 
@@ -267,6 +270,7 @@ const AppSidebar: React.FC = () => {
   const role = session?.user?.rol;
   const { isExpanded, isMobileOpen, isHovered, setIsHovered } = useSidebar();
   const pathname = usePathname();
+  const userAreas = session?.user?.allowedAreas || [];
   const navItems: NavItem[] = [
     {
       icon: <UserCircleIcon />,
@@ -274,6 +278,19 @@ const AppSidebar: React.FC = () => {
       path: "/profile",
       new: true,
       visible: ["Administrador", "Usuario", "Root", "Moderador", "Auditor"],
+      allowedAreas: [
+        "Arquitectura de Software",
+        "Auditoría de TI",
+        "DC-CCTV",
+        "DC-Infraestructura",
+        "DC-Redes y Telecomunicaciones",
+        "DC-Telefonía",
+        "Desarrollo",
+        "Mesa de Servicio",
+        "Planeación",
+        "Soporte Técnico",
+        "Dirección",
+      ],
     },
     {
       icon: <CalenderIcon />,
@@ -281,12 +298,38 @@ const AppSidebar: React.FC = () => {
       path: "/calendar",
       new: true,
       visible: ["Administrador", "Usuario", "Root", "Moderador", "Auditor"],
+      allowedAreas: [
+        "Arquitectura de Software",
+        "Auditoría de TI",
+        "DC-CCTV",
+        "DC-Infraestructura",
+        "DC-Redes y Telecomunicaciones",
+        "DC-Telefonía",
+        "Desarrollo",
+        "Mesa de Servicio",
+        "Planeación",
+        "Soporte Técnico",
+        "Dirección",
+      ],
     },
     {
       icon: <SearchIcon />,
       name: "Búsqueda avanzada",
       path: "/busqueda-avanzada",
       visible: ["Administrador", "Root", "Moderador", "Auditor"],
+      allowedAreas: [
+        "Arquitectura de Software",
+        "Auditoría de TI",
+        "DC-CCTV",
+        "DC-Infraestructura",
+        "DC-Redes y Telecomunicaciones",
+        "DC-Telefonía",
+        "Desarrollo",
+        "Mesa de Servicio",
+        "Planeación",
+        "Soporte Técnico",
+        "Dirección",
+      ],
     },
     {
       icon: <GridIcon />,
@@ -297,24 +340,76 @@ const AppSidebar: React.FC = () => {
           path: "/dashboard",
           pro: false,
           visible: ["Administrador", "Usuario", "Root", "Moderador", "Auditor"],
+          allowedAreas: [
+            "Arquitectura de Software",
+            "Auditoría de TI",
+            "DC-CCTV",
+            "DC-Infraestructura",
+            "DC-Redes y Telecomunicaciones",
+            "DC-Telefonía",
+            "Desarrollo",
+            "Mesa de Servicio",
+            "Planeación",
+            "Soporte Técnico",
+            "Dirección",
+          ],
         },
         {
           name: "Analytics",
           path: "/analytics",
           pro: true,
           visible: ["Administrador", "Usuario", "Root", "Moderador", "Auditor"],
+          allowedAreas: [
+            "Arquitectura de Software",
+            "Auditoría de TI",
+            "DC-CCTV",
+            "DC-Infraestructura",
+            "DC-Redes y Telecomunicaciones",
+            "DC-Telefonía",
+            "Desarrollo",
+            "Mesa de Servicio",
+            "Planeación",
+            "Soporte Técnico",
+            "Dirección",
+          ],
         },
         {
           name: "Marketing",
           path: "/marketing",
           pro: true,
           visible: ["Administrador", "Usuario", "Root", "Moderador", "Auditor"],
+          allowedAreas: [
+            "Arquitectura de Software",
+            "Auditoría de TI",
+            "DC-CCTV",
+            "DC-Infraestructura",
+            "DC-Redes y Telecomunicaciones",
+            "DC-Telefonía",
+            "Desarrollo",
+            "Mesa de Servicio",
+            "Planeación",
+            "Soporte Técnico",
+            "Dirección",
+          ],
         },
         {
           name: "CRM",
           path: "/crm",
           pro: true,
           visible: ["Administrador", "Usuario", "Root", "Moderador", "Auditor"],
+          allowedAreas: [
+            "Arquitectura de Software",
+            "Auditoría de TI",
+            "DC-CCTV",
+            "DC-Infraestructura",
+            "DC-Redes y Telecomunicaciones",
+            "DC-Telefonía",
+            "Desarrollo",
+            "Mesa de Servicio",
+            "Planeación",
+            "Soporte Técnico",
+            "Dirección",
+          ],
         },
         {
           name: "Stocks",
@@ -322,6 +417,19 @@ const AppSidebar: React.FC = () => {
           new: true,
           pro: true,
           visible: ["Administrador", "Usuario", "Root", "Moderador", "Auditor"],
+          allowedAreas: [
+            "Arquitectura de Software",
+            "Auditoría de TI",
+            "DC-CCTV",
+            "DC-Infraestructura",
+            "DC-Redes y Telecomunicaciones",
+            "DC-Telefonía",
+            "Desarrollo",
+            "Mesa de Servicio",
+            "Planeación",
+            "Soporte Técnico",
+            "Dirección",
+          ],
         },
         {
           name: "Celulas",
@@ -329,6 +437,7 @@ const AppSidebar: React.FC = () => {
           new: true,
           pro: true,
           visible: ["Administrador", "Usuario", "Root", "Moderador", "Auditor"],
+          allowedAreas: ["Desarrollo", "Arquitectura de Software"],
         },
         {
           name: "SaaS",
@@ -336,9 +445,35 @@ const AppSidebar: React.FC = () => {
           new: true,
           pro: true,
           visible: ["Administrador", "Usuario", "Root", "Moderador", "Auditor"],
+          allowedAreas: [
+            "Arquitectura de Software",
+            "Auditoría de TI",
+            "DC-CCTV",
+            "DC-Infraestructura",
+            "DC-Redes y Telecomunicaciones",
+            "DC-Telefonía",
+            "Desarrollo",
+            "Mesa de Servicio",
+            "Planeación",
+            "Soporte Técnico",
+            "Dirección",
+          ],
         },
       ],
       visible: ["Administrador", "Usuario", "Root", "Moderador", "Auditor"],
+      allowedAreas: [
+        "Arquitectura de Software",
+        "Auditoría de TI",
+        "DC-CCTV",
+        "DC-Infraestructura",
+        "DC-Redes y Telecomunicaciones",
+        "DC-Telefonía",
+        "Desarrollo",
+        "Mesa de Servicio",
+        "Planeación",
+        "Soporte Técnico",
+        "Dirección",
+      ],
     },
     {
       icon: <Adjustments />,
@@ -349,51 +484,168 @@ const AppSidebar: React.FC = () => {
           name: "Áreas",
           path: "/areas",
           visible: ["Administrador", "Usuario", "Root", "Moderador", "Auditor"],
+          allowedAreas: [
+            "Arquitectura de Software",
+            "Auditoría de TI",
+            "DC-CCTV",
+            "DC-Infraestructura",
+            "DC-Redes y Telecomunicaciones",
+            "DC-Telefonía",
+            "Desarrollo",
+            "Mesa de Servicio",
+            "Planeación",
+            "Soporte Técnico",
+            "Dirección",
+          ],
         },
         {
           icon: <Building />,
           name: "Dependencias",
           path: "/dependencias",
           visible: ["Administrador", "Usuario", "Root", "Moderador", "Auditor"],
+          allowedAreas: [
+            "Arquitectura de Software",
+            "Auditoría de TI",
+            "DC-CCTV",
+            "DC-Infraestructura",
+            "DC-Redes y Telecomunicaciones",
+            "DC-Telefonía",
+            "Desarrollo",
+            "Mesa de Servicio",
+            "Planeación",
+            "Soporte Técnico",
+            "Dirección",
+          ],
         },
         {
           icon: <Building />,
           name: "Direcciones Generales",
           path: "/direccionesGenerales",
           visible: ["Administrador", "Usuario", "Root", "Moderador", "Auditor"],
+          allowedAreas: [
+            "Arquitectura de Software",
+            "Auditoría de TI",
+            "DC-CCTV",
+            "DC-Infraestructura",
+            "DC-Redes y Telecomunicaciones",
+            "DC-Telefonía",
+            "Desarrollo",
+            "Mesa de Servicio",
+            "Planeación",
+            "Soporte Técnico",
+            "Dirección",
+          ],
         },
         {
           icon: <Building />,
           name: "Direcciones de Área",
           path: "/direccionesAreas",
           visible: ["Administrador", "Usuario", "Root", "Moderador", "Auditor"],
+          allowedAreas: [
+            "Arquitectura de Software",
+            "Auditoría de TI",
+            "DC-CCTV",
+            "DC-Infraestructura",
+            "DC-Redes y Telecomunicaciones",
+            "DC-Telefonía",
+            "Desarrollo",
+            "Mesa de Servicio",
+            "Planeación",
+            "Soporte Técnico",
+            "Dirección",
+          ],
         },
         {
           icon: <FolderIcon />,
           name: "Servicio",
           path: "/catalogoservicio",
           visible: ["Administrador", "Usuario", "Root", "Moderador", "Auditor"],
+          allowedAreas: [
+            "Arquitectura de Software",
+            "Auditoría de TI",
+            "DC-CCTV",
+            "DC-Infraestructura",
+            "DC-Redes y Telecomunicaciones",
+            "DC-Telefonía",
+            "Desarrollo",
+            "Mesa de Servicio",
+            "Planeación",
+            "Soporte Técnico",
+            "Dirección",
+          ],
         },
         {
           icon: <EnvelopeIcon />,
           name: "Medios de Contacto",
           path: "/medios",
           visible: ["Administrador", "Usuario", "Root", "Moderador", "Auditor"],
+          allowedAreas: [
+            "Arquitectura de Software",
+            "Auditoría de TI",
+            "DC-CCTV",
+            "DC-Infraestructura",
+            "DC-Redes y Telecomunicaciones",
+            "DC-Telefonía",
+            "Desarrollo",
+            "Mesa de Servicio",
+            "Planeación",
+            "Soporte Técnico",
+            "Dirección",
+          ],
         },
         {
           icon: <BriefcaseIcon />,
           name: "Puestos de trabajo",
           path: "/puestos",
           visible: ["Administrador", "Usuario", "Root", "Moderador", "Auditor"],
+          allowedAreas: [
+            "Arquitectura de Software",
+            "Auditoría de TI",
+            "DC-CCTV",
+            "DC-Infraestructura",
+            "DC-Redes y Telecomunicaciones",
+            "DC-Telefonía",
+            "Desarrollo",
+            "Mesa de Servicio",
+            "Planeación",
+            "Soporte Técnico",
+            "Dirección",
+          ],
         },
       ],
-      visible: ["Administrador", "Usuario", "Root", "Moderador", "Auditor"],
+      visible: ["Administrador", "Root"],
+      allowedAreas: [
+        "Arquitectura de Software",
+        "Auditoría de TI",
+        "DC-CCTV",
+        "DC-Infraestructura",
+        "DC-Redes y Telecomunicaciones",
+        "DC-Telefonía",
+        "Desarrollo",
+        "Mesa de Servicio",
+        "Planeación",
+        "Soporte Técnico",
+        "Dirección",
+      ],
     },
     {
       icon: <FileCirclePlusIcon />,
       name: "Crear Ticket",
       path: "/crear-ticket",
       visible: ["Administrador", "Root"],
+      allowedAreas: [
+        "Arquitectura de Software",
+        "Auditoría de TI",
+        "DC-CCTV",
+        "DC-Infraestructura",
+        "DC-Redes y Telecomunicaciones",
+        "DC-Telefonía",
+        "Desarrollo",
+        "Mesa de Servicio",
+        "Planeación",
+        "Soporte Técnico",
+        "Dirección",
+      ],
     },
     {
       name: "Tickets",
@@ -403,54 +655,161 @@ const AppSidebar: React.FC = () => {
           name: "Nuevos",
           path: "/tickets/nuevo",
           visible: ["Administrador", "Root", "Moderador"],
+          allowedAreas: [
+            "Arquitectura de Software",
+            "Auditoría de TI",
+            "DC-CCTV",
+            "DC-Infraestructura",
+            "DC-Redes y Telecomunicaciones",
+            "DC-Telefonía",
+            "Desarrollo",
+            "Mesa de Servicio",
+            "Planeación",
+            "Soporte Técnico",
+            "Dirección",
+          ],
         },
         {
           name: "En curso",
           path: "/tickets/curso",
           visible: ["Administrador", "Usuario", "Root", "Moderador"],
+          allowedAreas: [
+            "Arquitectura de Software",
+            "Auditoría de TI",
+            "DC-CCTV",
+            "DC-Infraestructura",
+            "DC-Redes y Telecomunicaciones",
+            "DC-Telefonía",
+            "Desarrollo",
+            "Mesa de Servicio",
+            "Planeación",
+            "Soporte Técnico",
+            "Dirección",
+          ],
         },
         {
           name: "Reabiertos",
           path: "/tickets/reabierto",
           visible: ["Administrador", "Usuario", "Root", "Moderador"],
+          allowedAreas: [
+            "Arquitectura de Software",
+            "Auditoría de TI",
+            "DC-CCTV",
+            "DC-Infraestructura",
+            "DC-Redes y Telecomunicaciones",
+            "DC-Telefonía",
+            "Desarrollo",
+            "Mesa de Servicio",
+            "Planeación",
+            "Soporte Técnico",
+            "Dirección",
+          ],
         },
         {
           name: "Pendientes",
           path: "/tickets/pendiente",
           visible: ["Administrador", "Usuario", "Root", "Moderador"],
+          allowedAreas: [
+            "Arquitectura de Software",
+            "Auditoría de TI",
+            "DC-CCTV",
+            "DC-Infraestructura",
+            "DC-Redes y Telecomunicaciones",
+            "DC-Telefonía",
+            "Desarrollo",
+            "Mesa de Servicio",
+            "Planeación",
+            "Soporte Técnico",
+            "Dirección",
+          ],
         },
         {
           name: "Revisión",
           path: "/tickets/revision",
           visible: ["Administrador", "Usuario", "Root", "Moderador"],
+          allowedAreas: [
+            "Arquitectura de Software",
+            "Auditoría de TI",
+            "DC-CCTV",
+            "DC-Infraestructura",
+            "DC-Redes y Telecomunicaciones",
+            "DC-Telefonía",
+            "Desarrollo",
+            "Mesa de Servicio",
+            "Planeación",
+            "Soporte Técnico",
+            "Dirección",
+          ],
         },
         {
           name: "Mesa de servicio",
           path: "/tickets/mesaServicio",
           visible: ["Administrador", "Root"],
+          allowedAreas: [
+            "Arquitectura de Software",
+            "Auditoría de TI",
+            "DC-CCTV",
+            "DC-Infraestructura",
+            "DC-Redes y Telecomunicaciones",
+            "DC-Telefonía",
+            "Desarrollo",
+            "Mesa de Servicio",
+            "Planeación",
+            "Soporte Técnico",
+            "Dirección",
+          ],
         },
         {
           name: "Resueltos",
           path: "/tickets/resuelto",
           visible: ["Administrador", "Usuario", "Root", "Moderador"],
+          allowedAreas: [
+            "Arquitectura de Software",
+            "Auditoría de TI",
+            "DC-CCTV",
+            "DC-Infraestructura",
+            "DC-Redes y Telecomunicaciones",
+            "DC-Telefonía",
+            "Desarrollo",
+            "Mesa de Servicio",
+            "Planeación",
+            "Soporte Técnico",
+            "Dirección",
+          ],
         },
         {
           name: "Cerrados",
           path: "/tickets/cerrado",
           visible: ["Administrador", "Usuario", "Root", "Moderador"],
+          allowedAreas: [
+            "Arquitectura de Software",
+            "Auditoría de TI",
+            "DC-CCTV",
+            "DC-Infraestructura",
+            "DC-Redes y Telecomunicaciones",
+            "DC-Telefonía",
+            "Desarrollo",
+            "Mesa de Servicio",
+            "Planeación",
+            "Soporte Técnico",
+            "Dirección",
+          ],
         },
-        // {
-        //   name: "List",
-        //   path: "/task-list",
-        //   visible: ["Administrador", "Usuario", "Root", "Moderador", "Auditor"],
-        // },
-        // {
-        //   name: "Kanban",
-        //   path: "/task-kanban",
-        //   visible: ["Administrador", "Usuario", "Root", "Moderador", "Auditor"],
-        // },
       ],
       visible: ["Administrador", "Usuario", "Root", "Moderador"],
+      allowedAreas: [
+        "Arquitectura de Software",
+        "Auditoría de TI",
+        "DC-CCTV",
+        "DC-Infraestructura",
+        "DC-Redes y Telecomunicaciones",
+        "DC-Telefonía",
+        "Desarrollo",
+        "Mesa de Servicio",
+        "Planeación",
+        "Soporte Técnico",
+        "Dirección",
+      ],
     },
     {
       name: "Tareas",
@@ -461,18 +820,57 @@ const AppSidebar: React.FC = () => {
           path: "/tareas/nuevo",
           new: true,
           visible: ["Administrador", "Usuario", "Root", "Moderador", "Auditor"],
+          allowedAreas: [
+            "Arquitectura de Software",
+            "Auditoría de TI",
+            "DC-CCTV",
+            "DC-Infraestructura",
+            "DC-Redes y Telecomunicaciones",
+            "DC-Telefonía",
+            "Desarrollo",
+            "Mesa de Servicio",
+            "Planeación",
+            "Soporte Técnico",
+            "Dirección",
+          ],
         },
         {
           name: "En curso",
           path: "/tareas/curso",
           new: true,
           visible: ["Administrador", "Usuario", "Root", "Moderador", "Auditor"],
+          allowedAreas: [
+            "Arquitectura de Software",
+            "Auditoría de TI",
+            "DC-CCTV",
+            "DC-Infraestructura",
+            "DC-Redes y Telecomunicaciones",
+            "DC-Telefonía",
+            "Desarrollo",
+            "Mesa de Servicio",
+            "Planeación",
+            "Soporte Técnico",
+            "Dirección",
+          ],
         },
         {
           name: "Resueltas",
           path: "/tareas/resuelto",
           new: true,
           visible: ["Administrador", "Usuario", "Root", "Moderador", "Auditor"],
+          allowedAreas: [
+            "Arquitectura de Software",
+            "Auditoría de TI",
+            "DC-CCTV",
+            "DC-Infraestructura",
+            "DC-Redes y Telecomunicaciones",
+            "DC-Telefonía",
+            "Desarrollo",
+            "Mesa de Servicio",
+            "Planeación",
+            "Soporte Técnico",
+            "Dirección",
+          ],
         },
         // {
         //   name: "List",
@@ -486,24 +884,95 @@ const AppSidebar: React.FC = () => {
         // },
       ],
       visible: ["Administrador", "Usuario", "Root", "Moderador", "Auditor"],
+      allowedAreas: [
+        "Arquitectura de Software",
+        "Auditoría de TI",
+        "DC-CCTV",
+        "DC-Infraestructura",
+        "DC-Redes y Telecomunicaciones",
+        "DC-Telefonía",
+        "Desarrollo",
+        "Mesa de Servicio",
+        "Planeación",
+        "Soporte Técnico",
+        "Dirección",
+      ],
     },
     {
       icon: <UsersGroupIcon />,
       name: "Celulas",
       path: "/celulas",
       visible: ["Moderador", "Auditor", "Root"],
+      allowedAreas: [
+        "Arquitectura de Software",
+        "Auditoría de TI",
+        "DC-CCTV",
+        "DC-Infraestructura",
+        "DC-Redes y Telecomunicaciones",
+        "DC-Telefonía",
+        "Desarrollo",
+        "Mesa de Servicio",
+        "Planeación",
+        "Soporte Técnico",
+        "Dirección",
+      ],
     },
     {
       icon: <UsersGroupIcon />,
       name: "Usuarios",
       path: "/usuarios",
       visible: ["Administrador", "Root"],
+      allowedAreas: [
+        "Arquitectura de Software",
+        "Auditoría de TI",
+        "DC-CCTV",
+        "DC-Infraestructura",
+        "DC-Redes y Telecomunicaciones",
+        "DC-Telefonía",
+        "Desarrollo",
+        "Mesa de Servicio",
+        "Planeación",
+        "Soporte Técnico",
+        "Dirección",
+      ],
     },
     {
       icon: <UsersIcon />,
       name: "Clientes",
       path: "/clientes",
       visible: ["Administrador", "Root"],
+      allowedAreas: [
+        "Arquitectura de Software",
+        "Auditoría de TI",
+        "DC-CCTV",
+        "DC-Infraestructura",
+        "DC-Redes y Telecomunicaciones",
+        "DC-Telefonía",
+        "Desarrollo",
+        "Mesa de Servicio",
+        "Planeación",
+        "Soporte Técnico",
+        "Dirección",
+      ],
+    },
+    {
+      icon: <BugIcon />,
+      name: "Logs",
+      path: "/logs",
+      visible: ["Root"],
+      allowedAreas: [
+        "Arquitectura de Software",
+        "Auditoría de TI",
+        "DC-CCTV",
+        "DC-Infraestructura",
+        "DC-Redes y Telecomunicaciones",
+        "DC-Telefonía",
+        "Desarrollo",
+        "Mesa de Servicio",
+        "Planeación",
+        "Soporte Técnico",
+        "Dirección",
+      ],
     },
     // {
     //   name: "Forms",
@@ -611,13 +1080,20 @@ const AppSidebar: React.FC = () => {
     //   visible: ["Administrador", "Usuario", "Root", "Moderador", "Auditor"],
     // },
   ];
+  console.log(session);
   const renderMenuItems = (
     navItems: NavItem[],
     menuType: "main" | "support" | "others"
   ) => (
     <ul className="flex flex-col gap-4">
       {navItems.map((nav, index) => {
-        if (nav.visible?.includes(role)) {
+        const isVisibleByRole = nav.visible?.includes(role as string);
+        const hasAreaRestriction = !!nav.allowedAreas;
+        const isVisibleByArea =
+          !hasAreaRestriction ||
+          nav.allowedAreas.some((area) => userAreas.includes(area));
+
+        if (isVisibleByRole && isVisibleByArea) {
           return (
             <li key={nav.name}>
               {nav.subItems ? (
@@ -650,7 +1126,7 @@ const AppSidebar: React.FC = () => {
                       {nav.new && (
                         <span
                           className={`ml-1 ${
-                            isActive(nav.path)
+                            isActive(nav.path as string)
                               ? "menu-dropdown-badge-active"
                               : "menu-dropdown-badge-inactive"
                           } menu-dropdown-badge`}
@@ -726,7 +1202,7 @@ const AppSidebar: React.FC = () => {
                 >
                   <ul className="mt-2 space-y-1 ml-9">
                     {nav.subItems.map((subItem) => {
-                      if (subItem.visible?.includes(role)) {
+                      if (subItem.visible?.includes(role as string)) {
                         return (
                           <li key={subItem.name}>
                             <Link
@@ -737,15 +1213,15 @@ const AppSidebar: React.FC = () => {
                                   : "menu-dropdown-item-inactive"
                               }`}
                             >
-                            <span
-                              className={`${
-                                isActive(subItem.path)
-                                  ? "menu-item-icon-active"
-                                  : "menu-item-icon-inactive"
-                              }`}
-                            >
-                            {subItem.icon}
-                            </span>
+                              <span
+                                className={`${
+                                  isActive(subItem.path)
+                                    ? "menu-item-icon-active"
+                                    : "menu-item-icon-inactive"
+                                }`}
+                              >
+                                {subItem.icon}
+                              </span>
                               {subItem.name}
                               <span className="flex items-center gap-1 ml-auto">
                                 {subItem.new && (
@@ -807,10 +1283,10 @@ const AppSidebar: React.FC = () => {
         menuType === "main"
           ? navItems
           : menuType === "support"
-          ? // ? supportItems
-            []
-          : // : othersItems;
-            [];
+            ? // ? supportItems
+              []
+            : // : othersItems;
+              [];
       items.forEach((nav, index) => {
         if (nav.subItems) {
           nav.subItems.forEach((subItem) => {
@@ -868,8 +1344,8 @@ const AppSidebar: React.FC = () => {
           isExpanded || isMobileOpen
             ? "w-[290px]"
             : isHovered
-            ? "w-[290px]"
-            : "w-[90px]"
+              ? "w-[290px]"
+              : "w-[90px]"
         }
         ${isMobileOpen ? "translate-x-0" : "-translate-x-full"}
         lg:translate-x-0`}

@@ -15,7 +15,6 @@ export default function NotificationDropdown() {
     if (!socket) return;
     const audio = new Audio("/sounds/notification.mp3");
     socket.on("nueva-notificacion", (data) => {
-      console.log("este es el data", data)
       setNotifications((prev) => [data, ...prev]);
       setNotifying(true);
       audio.play().catch((e) => console.warn("Error al reproducir sonido:", e)); 
@@ -109,7 +108,7 @@ export default function NotificationDropdown() {
           )}
         </ul>
         <Link
-          href="/"
+          href="/tabs"
           className="block px-4 py-2 mt-3 text-sm font-medium text-center text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-100 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700"
         >
           Ver todas las notificaciones

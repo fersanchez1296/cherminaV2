@@ -9,6 +9,8 @@ import { EventInput, EventContentArg } from "@fullcalendar/core";
 import { useModal } from "@/hooks/useModal";
 import { Modal } from "@/components/ui/modal/index";
 import { getCalendarEvents } from "@/services/calendarService";
+import Button from "@/components/ui/button/Button";
+import { useRouter } from "next/navigation";
 interface CalendarEvent extends EventInput {
   extendedProps?: {
     calendar: string;
@@ -32,7 +34,7 @@ const Calendar: React.FC = () => {
   const [eventData, setEvenetData] = useState<data>();
   const [calendarEvents, setCalendarEvents] = useState<Array<data>>([]);
   const calendarRef = useRef<FullCalendar>(null);
-
+const router = useRouter();
   const calendarsEvents: { [key: string]: string } = {
     Baja: "success",
     Media: "warning",
@@ -118,6 +120,9 @@ const Calendar: React.FC = () => {
           <p className="text-gray-600 dark:text-gray-300">
             <strong>Descripcion:</strong> {eventData?.Descripcion}
           </p>
+          <Button size="sm" className="w-full sm:w-auto mt-5" onClick={() => router.push(`/busqueda/${eventData?.Id}`, { scroll: false })}>
+            Ver ticket Completo
+          </Button>
         </div>
       </Modal>
     </>

@@ -7,17 +7,7 @@ declare module "next-auth" {
       token: string;
       name: string;
       rol: string;
+      allowedAreas: string[];
     };
   }
 }
-
-// declare module "next-auth" {
-//   interface Session {
-//     user: {
-//       email: string;
-//       token: string;
-//       name: string;
-//       Rol: { Rol: string };
-//     };
-//   }
-// }

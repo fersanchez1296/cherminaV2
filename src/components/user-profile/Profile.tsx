@@ -1,11 +1,17 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import UserAddressCard from "@/components/user-profile/UserAddressCard";
 import UserInfoCard from "@/components/user-profile/UserInfoCard";
 import UserMetaCard from "@/components/user-profile/UserMetaCard";
 import { getProfileInfo } from "@/services/profileService";
 import { data } from "./intrface";
+import { useLoadingStore } from "@/stores/loadingStore";
+import { useNotification } from "@/context/NotificationProvider";
+import { Button } from "../ui/button";
+import { useRouter } from "next/navigation";
 const ProfileComponent = () => {
+  const setLoading = useLoadingStore((state) => state.setLoading);
+  const { showNotification } = useNotification();
+  const router = useRouter()
   const [profileData, setProfileData] = useState<data>({
     profile: {
       _id: "",
@@ -22,20 +28,38 @@ const ProfileComponent = () => {
         codigoPostal: "",
       },
       Extension: "",
-      Puesto: "",
+      Puesto: { Puesto: "" },
       Telefono: "",
       Ubicacion: "",
     },
   });
 
+  const fetchProfileData = async () => {
+    try {
+      setLoading(true);
+      const result = await getProfileInfo();
+      if (result.data) setProfileData(result.data);
+    } catch (error) {
+      const message =
+        error.response?.data?.desc || "Ocurrió un error inesperado.";
+      showNotification("Error", message, "error");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
-    getProfileInfo().then((p) => setProfileData(p.data));
+    fetchProfileData();
   }, []);
+
   return (
     <>
       <UserMetaCard profile={profileData} />
-      <UserInfoCard profile={profileData} />
-      <UserAddressCard profile={profileData} />
+      <UserInfoCard profile={profileData} onProfileUpdated={fetchProfileData} />
+      {/* <UserAddressCard profile={profileData} /> */}
+      <Button size="sm" variant={"warning"} onClick={() => router.push("change-password")}>
+        Cambiar Contraseña
+      </Button>
     </>
   );
 };

@@ -8,48 +8,35 @@ import {
   TableHeader,
   TableRow,
 } from "../../../ui/table";
-import { AngleDownIcon, AngleUpIcon, EditIcon } from "../../../../icons";
+import {
+  AngleDownIcon,
+  AngleUpIcon,
+} from "../../../../icons";
 import PaginationWithButton from "./PaginationWithButton";
-import { useModal } from "@/hooks/useModal";
-import { Modal } from "@/components/ui/modal/index";
-import { Tooltip } from "@/components/ui/tooltip/Tooltip";
-import Button from "@/components/ui/button/Button";
-import FormularioAreas from "@/components/form/example-form/FormularioAreas";
-import { getAreas } from "@/services/ticketService";
-type SortKey = "label";
+import { getLogs } from "@/services/logsService";
+type SortKey = "Id" | "Log" | "Fecha_hora_log";
 type SortOrder = "asc" | "desc";
 
 interface data {
-  label: string;
-  value: string;
+  Id: string;
+  Log: string;
+  Fecha_hora_log: string;
 }
 
-export default function TableAreas() {
+export default function TableLogs() {
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(5);
-  const [sortKey, setSortKey] = useState<SortKey>("label");
+  const [sortKey, setSortKey] = useState<SortKey>("Id");
   const [sortOrder, setSortOrder] = useState<SortOrder>("asc");
   const [searchTerm, setSearchTerm] = useState("");
-  const { isOpen, openModal, closeModal } = useModal();
   const [tableRowData, setTableRowData] = useState<Array<data>>([]);
-  const [singleItem, setSingleItem] = useState<data>();
-  const [isEdit, setIsEdit] = useState<boolean>(false);
-  const [isCreate, setIsCreate] = useState<boolean>(false);
-  const [disabled, setDisabled] = useState<boolean>(false);
 
-  const fetchData = async () => {
-    try {
-      const result = await getAreas();
-      if (result) {
-        setTableRowData(result.data.areas);
-      }
-    } catch {
-      setTableRowData([]);
-    }
+  const fetchLogs = () => {
+    getLogs().then((res) => setTableRowData(res.data));
   };
 
   useEffect(() => {
-    fetchData();
+    fetchLogs();
   }, []);
 
   const filteredAndSortedData = useMemo(() => {
@@ -87,23 +74,6 @@ export default function TableAreas() {
   const currentData = filteredAndSortedData.slice(startIndex, endIndex);
   return (
     <>
-      <div className="flex gap-3 my-3">
-        <Button
-          size="sm"
-          onClick={() => {
-            openModal();
-            setIsEdit(false);
-            setDisabled(false);
-            setIsCreate(true);
-            setSingleItem(undefined);
-          }}
-        >
-          Registrar Área
-        </Button>
-        <Button size="sm" variant="outline">
-          Actualizar
-        </Button>
-      </div>
       <div className="overflow-hidden rounded-xl bg-white dark:bg-white/[0.03]">
         <div className="flex flex-col gap-2 px-4 py-4 border border-b-0 border-gray-100 dark:border-white/[0.05] rounded-t-xl sm:flex-row sm:items-center sm:justify-between">
           <div className="flex items-center gap-3">
@@ -182,83 +152,67 @@ export default function TableAreas() {
             <Table>
               <TableHeader className="border-t border-gray-100 dark:border-white/[0.05]">
                 <TableRow>
-                  <TableCell
-                    isHeader
-                    className="px-4 py-3 border border-gray-100 dark:border-white/[0.05] w-1"
-                  >
-                    <div className="flex items-center justify-center cursor-pointer">
-                      <p className="font-medium text-gray-700 text-theme-xs dark:text-gray-400">
-                        Acciones
-                      </p>
-                    </div>
-                  </TableCell>
-                  {[{ key: "Nombre", label: "Nombre" }].map(
-                    ({ key, label }) => (
-                      <TableCell
-                        key={key}
-                        isHeader
-                        className="px-4 py-3 border border-gray-100 dark:border-white/[0.05]"
+                  {[
+                    { key: "ticketId", label: "TicketId" },
+                    { key: "log", label: "Log" },
+                    { key: "fecha", label: "Fecha" },
+                  ].map(({ key, label }) => (
+                    <TableCell
+                      key={key}
+                      isHeader
+                      className="px-4 py-3 border border-gray-100 dark:border-white/[0.05]"
+                    >
+                      <div
+                        className="flex items-center justify-between cursor-pointer"
+                        onClick={() => handleSort(key as SortKey)}
                       >
-                        <div
-                          className="flex items-center justify-between cursor-pointer"
-                          onClick={() => handleSort(key as SortKey)}
-                        >
-                          <p className="font-medium text-gray-700 text-theme-xs dark:text-gray-400">
-                            {label}
-                          </p>
-                          <button className="flex flex-col gap-0.5">
-                            <AngleUpIcon
-                              className={`text-gray-300 dark:text-gray-700 ${
-                                sortKey === key && sortOrder === "asc"
-                                  ? "text-brand-500"
-                                  : ""
-                              }`}
-                            />
-                            <AngleDownIcon
-                              className={`text-gray-300 dark:text-gray-700 ${
-                                sortKey === key && sortOrder === "desc"
-                                  ? "text-brand-500"
-                                  : ""
-                              }`}
-                            />
-                          </button>
-                        </div>
-                      </TableCell>
-                    )
-                  )}
+                        <p className="font-medium text-gray-700 text-theme-xs dark:text-gray-400">
+                          {label}
+                        </p>
+                        <button className="flex flex-col gap-0.5">
+                          <AngleUpIcon
+                            className={`text-gray-300 dark:text-gray-700 ${
+                              sortKey === key && sortOrder === "asc"
+                                ? "text-brand-500"
+                                : ""
+                            }`}
+                          />
+                          <AngleDownIcon
+                            className={`text-gray-300 dark:text-gray-700 ${
+                              sortKey === key && sortOrder === "desc"
+                                ? "text-brand-500"
+                                : ""
+                            }`}
+                          />
+                        </button>
+                      </div>
+                    </TableCell>
+                  ))}
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {currentData.map((item, index) => (
                   <TableRow key={index}>
-                    {/* iconos */}
-                    <TableCell className="px-7 py-4 font-normal text-gray-800 border border-gray-100 dark:border-white/[0.05] text-theme-sm dark:text-white/90 whitespace-nowrap">
-                      <div className="flex items-center w-full gap-2">
-                        <Tooltip
-                          content="Editar Área"
-                          position="top"
-                          theme="dark"
-                        >
-                          <button
-                            className="text-gray-500 hover:text-gray-800 dark:text-gray-400 dark:hover:text-white/90"
-                            onClick={() => {
-                              openModal();
-                              setIsEdit(!false);
-                              setDisabled(!true);
-                              setIsCreate(false);
-                              setSingleItem(item);
-                            }}
-                          >
-                            <EditIcon />
-                          </button>
-                        </Tooltip>
-                      </div>
-                    </TableCell>
-                    <TableCell className="px-4 py-4 border border-gray-100 dark:border-white/[0.05] dark:text-white/90 whitespace-nowrap">
+                    {/* cliente */}
+                    <TableCell className="px-4 py-4 border border-gray-100 dark:border-white/[0.05] dark:text-white/90 whitespace-nowrap w-1">
                       <div className="flex gap-3">
                         <div>
                           <p className="block font-medium text-gray-800 text-theme-sm dark:text-white/90">
-                            {item.label}
+                            {item.Id}
+                          </p>
+                        </div>
+                      </div>
+                    </TableCell>
+                    {/* id */}
+                    <TableCell className="px-4 py-4 font-normal text-gray-800 border border-gray-100 dark:border-white/[0.05] text-theme-sm dark:text-white/90 whitespace-nowrap">
+                      {item.Log}
+                    </TableCell>
+                    {/* estado */}
+                    <TableCell className="px-4 py-4 font-normal text-gray-800 border border-gray-100 dark:border-white/[0.05] text-theme-sm dark:text-white/90 whitespace-nowrap">
+                      <div className="flex gap-3">
+                        <div>
+                          <p className="block font-medium text-gray-800 text-theme-sm dark:text-white/90">
+                            {item.Fecha_hora_log}
                           </p>
                         </div>
                       </div>
@@ -288,19 +242,6 @@ export default function TableAreas() {
           </div>
         </div>
       </div>
-
-      <Modal isOpen={isOpen} onClose={closeModal} className="max-w-[700px] m-4">
-        <div className="no-scrollbar relative w-full max-w-[700px] max-h-[90vh] overflow-y-auto rounded-3xl bg-white p-4 dark:bg-gray-900 lg:p-4">
-          <FormularioAreas
-            area={singleItem ?? { value: "", label: "" }}
-            disabled={disabled}
-            isEdit={isEdit}
-            isCreate={isCreate}
-            onSuccess={fetchData}
-            closeModal={closeModal}
-          />
-        </div>
-      </Modal>
     </>
   );
 }

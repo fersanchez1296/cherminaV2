@@ -20,7 +20,7 @@ export default function ListWithCheckbox() {
   };
 
   return (
-    <div className="rounded-lg border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03] sm:w-fit">
+    <div className="rounded-lg border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03] sm:w-full">
       <ul className="flex flex-col">
         {[
           "Lorem ipsum dolor sit amet",

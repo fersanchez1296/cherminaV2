@@ -1,47 +1,36 @@
-// src/middleware.ts
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { getToken } from "next-auth/jwt";
 
-// Define las rutas protegidas por rol
-const protectedRoutes = {
-  Root: ["/usuarios", "/clientes"],
-  Admin: [],
-  User: [],
+const routeRoles: Record<string, string[]> = {
+  "/usuarios": ["Root"],
+  "/clientes": ["Root"],
+  "/tickets/nuevo": ["Root", "Moderador", "Administrador"],
 };
 
-// Middleware principal
 export async function middleware(request: NextRequest) {
   const token = await getToken({
     req: request,
     secret: process.env.NEXTAUTH_SECRET,
   });
 
+  const path = request.nextUrl.pathname;
+  const userRole = token?.rol;
+
   // Si no hay token, redirige al login
   if (!token) {
     return NextResponse.redirect(new URL("/", request.url));
   }
 
-  // nest
-  const userRole = token?.user?.rol;
-  const path = request.nextUrl.pathname;
+  const allowedRoles = routeRoles[path];
 
-  for (const [role, routes] of Object.entries(protectedRoutes)) {
-    if (routes.some((route) => path.startsWith(route))) {
-      if (userRole !== role) {
-        return NextResponse.redirect(new URL("/not-found", request.url));
-      }
-    }
+  if (allowedRoles && !allowedRoles.includes(userRole as string)) {
+    return NextResponse.redirect(new URL("/not-found", request.url));
   }
 
   return NextResponse.next();
 }
 
-// Define las rutas donde se aplica el middleware
 export const config = {
-  matcher: [
-    //"/usuarios/:path*",
-    //"/clientes/:path*",
-    "/tickets/:path*",
-  ],
+  matcher: ["/usuarios/:path*", "/clientes/:path*", "/tickets/:path*"],
 };
