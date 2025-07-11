@@ -6,12 +6,45 @@ import Button from "../ui/button/Button";
 import Input from "../form/input/InputField";
 import Label from "../form/Label";
 import { data } from "./intrface";
-export default function UserInfoCard({profile}: data) {
+import { Controller, useForm } from "react-hook-form";
+import { useNotification } from "@/context/NotificationProvider";
+import { useLoadingStore } from "@/stores/loadingStore";
+import { updateProfileInfo } from "@/services/profileService";
+import { useSession } from "next-auth/react";
+
+export default function UserInfoCard({
+  profile,
+  onProfileUpdated,
+}: {
+  profile: data;
+  onProfileUpdated: () => void;
+}) {
   const { isOpen, openModal, closeModal } = useModal();
-  const handleSave = () => {
-    // Handle save logic here
-    console.log("Saving changes...");
-    closeModal();
+  const { handleSubmit, control } = useForm();
+  const { showNotification } = useNotification();
+  const setLoading = useLoadingStore((state) => state.setLoading);
+  const { data: session } = useSession();
+  const id = session?.user?.userId;
+  const handleSave = async (data: Partial<data>) => {
+    try {
+      setLoading(true);
+      const result = await updateProfileInfo(id, data);
+      if (result.data && result.status === 200) {
+        showNotification(
+          "Éxito",
+          result.data?.message || "Operación exitosa",
+          "success"
+        );
+        closeModal();
+        onProfileUpdated();
+      }
+    } catch (error) {
+      const message =
+        error.response?.data?.desc || "Ocurrió un error inesperado.";
+      showNotification("Error", message, "error");
+    } finally {
+      setLoading(false);
+    }
   };
   return (
     <div className="p-5 border border-gray-200 rounded-2xl dark:border-gray-800 lg:p-6">
@@ -42,7 +75,7 @@ export default function UserInfoCard({profile}: data) {
 
             <div>
               <p className="mb-2 text-xs leading-normal text-gray-500 dark:text-gray-400">
-                Telefono
+                Teléfono
               </p>
               <p className="text-sm font-medium text-gray-800 dark:text-white/90">
                 {profile?.Telefono}
@@ -51,11 +84,54 @@ export default function UserInfoCard({profile}: data) {
 
             <div>
               <p className="mb-2 text-xs leading-normal text-gray-500 dark:text-gray-400">
-                Puesto
+                Extensión
               </p>
               <p className="text-sm font-medium text-gray-800 dark:text-white/90">
-                {profile?.Puesto}
+                {profile?.Extension}
               </p>
+            </div>
+
+            <div>
+              <p className="mb-2 text-xs leading-normal text-gray-500 dark:text-gray-400">
+                Ubicación
+              </p>
+              <p className="text-sm font-medium text-gray-800 dark:text-white/90">
+                {profile?.Ubicacion}
+              </p>
+            </div>
+          </div>
+          <div className="pt-5">
+            <h4 className="text-lg font-semibold text-gray-800 dark:text-white/90 lg:mb-6">
+              Direccion
+            </h4>
+
+            <div className="grid grid-cols-1 gap-4 lg:grid-cols-2 lg:gap-7 2xl:gap-x-32">
+              <div>
+                <p className="mb-2 text-xs leading-normal text-gray-500 dark:text-gray-400">
+                  País
+                </p>
+                <p className="text-sm font-medium text-gray-800 dark:text-white/90">
+                  {profile.Direccion?.Pais}
+                </p>
+              </div>
+
+              <div>
+                <p className="mb-2 text-xs leading-normal text-gray-500 dark:text-gray-400">
+                  Ciudad/Estado
+                </p>
+                <p className="text-sm font-medium text-gray-800 dark:text-white/90">
+                  {profile.Direccion?.Ciudad}
+                </p>
+              </div>
+
+              <div>
+                <p className="mb-2 text-xs leading-normal text-gray-500 dark:text-gray-400">
+                  Codigo Postal
+                </p>
+                <p className="text-sm font-medium text-gray-800 dark:text-white/90">
+                  {profile.Direccion?.codigoPostal}
+                </p>
+              </div>
             </div>
           </div>
         </div>
@@ -93,7 +169,7 @@ export default function UserInfoCard({profile}: data) {
               Actualiza tus datos para mantener tu perfil actualizado
             </p>
           </div>
-          <form className="flex flex-col">
+          <form className="flex flex-col" onSubmit={handleSubmit(handleSave)}>
             <div className="custom-scrollbar h-[450px] overflow-y-auto px-2 pb-3">
               <div className="mt-7">
                 <h5 className="mb-5 text-lg font-medium text-gray-800 dark:text-white/90 lg:mb-6">
@@ -103,32 +179,86 @@ export default function UserInfoCard({profile}: data) {
                 <div className="grid grid-cols-1 gap-x-6 gap-y-5 lg:grid-cols-2">
                   <div className="col-span-2 lg:col-span-2">
                     <Label>Nombre completo</Label>
-                    <Input type="text" defaultValue="Musharof" />
+                    <Controller
+                      name="Nombre"
+                      control={control}
+                      rules={{ required: "Este campo es obligatorio" }}
+                      defaultValue={profile?.Nombre || ""}
+                      render={({ field, fieldState }) => (
+                        <Input
+                          type="text"
+                          id="nombre"
+                          placeholder="Ingresa tu nombre"
+                          defaultValue={profile?.Nombre || ""}
+                          {...field}
+                          error={!!fieldState.error}
+                          hint={fieldState.error?.message}
+                        />
+                      )}
+                    />
                   </div>
 
                   <div className="col-span-2 lg:col-span-1">
-                    <Label>Direccion de correo</Label>
-                    <Input type="text" defaultValue="randomuser@pimjo.com" />
+                    <Label>Teléfono</Label>
+                    <Controller
+                      name="Telefono"
+                      control={control}
+                      rules={{ required: "Este campo es obligatorio" }}
+                      defaultValue={profile?.Telefono || ""}
+                      render={({ field, fieldState }) => (
+                        <Input
+                          type="text"
+                          id="telefono"
+                          placeholder="Ingresa tu teléfono"
+                          defaultValue={profile?.Telefono || ""}
+                          {...field}
+                          error={!!fieldState.error}
+                          hint={fieldState.error?.message}
+                        />
+                      )}
+                    />
                   </div>
 
                   <div className="col-span-2 lg:col-span-1">
-                    <Label>Telefono</Label>
-                    <Input type="text" defaultValue="+09 363 398 46" />
+                    <Label>Extensión</Label>
+                    <Controller
+                      name="Extension"
+                      control={control}
+                      rules={{ required: "Este campo es obligatorio" }}
+                      defaultValue={profile?.Extension || ""}
+                      render={({ field, fieldState }) => (
+                        <Input
+                          type="text"
+                          id="extension"
+                          placeholder="Ingresa tu extensión telefónica"
+                          defaultValue={profile?.Extension || ""}
+                          {...field}
+                          error={!!fieldState.error}
+                          hint={fieldState.error?.message}
+                        />
+                      )}
+                    />
                   </div>
 
-                  <div className="col-span-2 lg:col-span-1">
-                    <Label>Extension</Label>
-                    <Input type="text" defaultValue="+09 363 398 46" />
-                  </div>
-
-                  <div className="col-span-2 lg:col-span-1">
-                    <Label>Ubicacion</Label>
-                    <Input type="text" defaultValue="+09 363 398 46" />
-                  </div>
-
-                  <div className="col-span-2">
-                    <Label>Puesto</Label>
-                    <Input type="text" defaultValue="Team Manager" />
+                  <div className="col-span-2 lg:col-span-2">
+                    <Label>Ubicación</Label>
+                    <Controller
+                      name="Ubicacion"
+                      control={control}
+                      rules={{ required: "Este campo es obligatorio" }}
+                      defaultValue={profile?.Ubicacion || ""}
+                      render={({ field, fieldState }) => (
+                        <Input
+                          type="text"
+                          id="ubicacion"
+                          placeholder="Ingresa tu ubicación"
+                          defaultValue={profile?.Ubicacion || ""}
+                          {...field}
+                          error={!!fieldState.error}
+                          hint={fieldState.error?.message}
+                        />
+                      )}
+                    />
                   </div>
                 </div>
               </div>
@@ -137,8 +267,8 @@ export default function UserInfoCard({profile}: data) {
               <Button size="sm" variant="outline" onClick={closeModal}>
                 Cerrar
               </Button>
-              <Button size="sm" onClick={handleSave}>
-                Guardar Cambios
+              <Button size="sm" type="submit">
+                Guardar Información
               </Button>
             </div>
           </form>

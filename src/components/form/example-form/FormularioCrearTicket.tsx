@@ -68,12 +68,21 @@ export default function FormularioCrearTicket() {
   const [categoria, setCategoria] = useState("");
   const [descripcion, setDescripcion] = useState("");
   const [tiempo, setTiempo] = useState("");
-  const form = useForm();
+  const form = useForm({
+    defaultValues: {
+      Medio: null,
+      Subcategoria: null,
+      Asignado_a: null,
+      NumeroRec_Oficio: "",
+      Descripcion: "",
+      Cliente: "",
+    },
+  });
   const { handleSubmit, control, setValue, reset } = form;
   const [resolutores, setResolutores] = useState<GroupedOption[]>([]);
   const [medios, setMedios] = useState<Option[]>([]);
   const [subcategoria, setSubcategoria] = useState([]);
-  const [clienteId, setClienteId] = useState();
+  const [clienteId, setClienteId] = useState({});
   const [cliente, setCliente] = useState("");
   const { showNotification } = useNotification();
 
@@ -118,10 +127,20 @@ export default function FormularioCrearTicket() {
     }
   };
 
+  const handleResetOtherFields = () => {
+    setTipo_incidencia("");
+    setCategoria("");
+    setServicio("");
+    setArea("");
+    setTiempo("");
+    setDescripcion("");
+    setCliente("");
+    setClienteId("");
+  };
+
   const handleSave = async (data) => {
     try {
       const result = await postCrearTicket(data);
-      console.log(result);
       if (result.status === 201) {
         showNotification(
           "Exito",
@@ -129,6 +148,7 @@ export default function FormularioCrearTicket() {
           "success"
         );
         reset();
+        handleResetOtherFields();
       } else {
         showNotification(
           "Aviso",
@@ -179,7 +199,7 @@ export default function FormularioCrearTicket() {
                 id="firstName"
                 placeholder="Ingresa el nombre completo o correo del cliente"
                 className="w-full"
-                value={cliente}
+                defaultValue={cliente}
                 onChange={(e) => setCliente(e.target.value)}
               />
             </div>
@@ -375,7 +395,14 @@ export default function FormularioCrearTicket() {
           </div>
 
           <div className="flex gap-3">
-            <Button size="sm" variant="outline">
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={() => {
+                reset();
+                handleResetOtherFields();
+              }}
+            >
               Borrar Formulario
             </Button>
             <Button size="sm" type="submit">

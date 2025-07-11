@@ -38,7 +38,6 @@ export const updateUsuario = async (userId: string, data: any) => {
     formatedData.Direccion_General = data.Direccion_General.value;
   }
 
-  console.log(formatedData)
   return await api.patch(`users/editar/${userId}`, formatedData);
 };
 
@@ -64,3 +63,8 @@ export const postUsuario = async (data: any) => {
 
   return await api.post(`users/`, formatedData);
 };
+
+export const changePassword = async (userId: string, data: { Password: string, newPassword: string }) => {
+  console.log(data)
+  return await api.patch(`users/changepassword/${userId}`, { Password: data.Password, newPassword: data.newPassword })
+}

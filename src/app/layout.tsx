@@ -9,6 +9,7 @@ import { ModalProvider } from "@/context/ModalManager";
 import { NotificationProvider } from "@/context/NotificationProvider";
 import { LoaderOverlay } from "@/components/loaderOverlay/LoaderOverlay";
 import { SocketProvider } from "@/context/SocketProvider";
+import { RouteChangeLoader } from "@/components/routeChangeLoader/RouteChangeLoader";
 const outfit = Outfit({
   subsets: ["latin"],
 });
@@ -21,6 +22,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${outfit.className} dark:bg-gray-900`}>
+        <RouteChangeLoader />
         <SessionAuthProvider>
           <SocketProvider>
             <NotificationProvider>

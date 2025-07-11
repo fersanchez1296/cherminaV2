@@ -18,7 +18,7 @@ export interface data {
       codigoPostal: string;
     };
     Extension: string;
-    Puesto: string;
+    Puesto: {Puesto: string};
     Telefono: string;
     Ubicacion: string;
   };

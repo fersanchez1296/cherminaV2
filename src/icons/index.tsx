@@ -73,7 +73,13 @@ import AnnotationIcon from "./annotation.svg";
 import Adjustments from "./adjustments.svg"
 import Building from "./building.svg"
 import BriefcaseIcon from "./briefcase.svg"
+import FolderOpenIcon from "./folder-open.svg"
+import BellActiveAltIcon from "./bell-active-alt.svg"
+import BugIcon from "./bug.svg"
 export {
+  BugIcon,
+  BellActiveAltIcon,
+  FolderOpenIcon,
   BriefcaseIcon,
   Building,
   Adjustments,

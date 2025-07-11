@@ -9,8 +9,9 @@ import { useForm, Controller } from "react-hook-form";
 import { useNotification } from "@/context/NotificationProvider";
 import { useLoadingStore } from "@/stores/loadingStore";
 import { createAreas, updateAreas } from "@/services/ticketService";
+import { AxiosError } from "axios";
 interface userProps {
-  area: {value: string, label: string};
+  area: { value: string; label: string };
   disabled: boolean;
   isEdit?: boolean;
   isCreate?: boolean;
@@ -27,15 +28,15 @@ export default function FormularioAreas({
   closeModal,
 }: userProps) {
   const [areaId, setAreaId] = useState("");
-  const { handleSubmit, control } = useForm();
+  const { handleSubmit, control } = useForm<{ area: string }>();
   const { showNotification } = useNotification();
   const setLoading = useLoadingStore((state) => state.setLoading);
 
-    useEffect(() => {
-        if(area) setAreaId(area.value)
-    },[])
+  useEffect(() => {
+    if (area) setAreaId(area.value);
+  }, []);
 
-  const onSubmit = async (data) => {
+  const onSubmit = async (data: { area: string; }) => {
     try {
       setLoading(true);
       if (isCreate) {
@@ -78,9 +79,11 @@ export default function FormularioAreas({
           );
         }
       }
-    } catch (error) {
-      const message =
-        error.response?.data?.desc || "Ocurrió un error inesperado.";
+    } catch (error: unknown) {
+      let message = "Ocurrió un error inesperado.";
+      if (error instanceof AxiosError && error.response?.data?.desc) {
+        message = error.response.data.desc;
+      }
       showNotification("Error", message, "error");
     } finally {
       setLoading(false);
@@ -90,11 +93,7 @@ export default function FormularioAreas({
   return (
     <ComponentCard
       title={
-        isCreate
-          ? "Crear Área"
-          : isEdit
-          ? "Editar Área"
-          : area?.label || "Área"
+        isCreate ? "Crear Área" : isEdit ? "Editar Área" : area?.label || "Área"
       }
     >
       <Form onSubmit={handleSubmit(onSubmit)}>
