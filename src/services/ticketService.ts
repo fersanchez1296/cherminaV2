@@ -1,4 +1,4 @@
-import api from "@/lib/axios";
+import getApi from "@/lib/axios";
 
 interface Categorizacion {
   _id: string;
@@ -31,6 +31,7 @@ interface GroupedOption {
 }
 
 export const getTickets = async (estado: string) => {
+  const api = await getApi();
   let estadoTicket = "";
   switch (estado) {
     case "curso":
@@ -64,10 +65,12 @@ export const getTickets = async (estado: string) => {
 };
 
 export const getTicket = async (id: string) => {
+  const api = await getApi();
   return await api.get(`tickets/${id}`);
 };
 
 export const getMedios = async () => {
+  const api = await getApi();
   return await api.get(`tickets/medios`);
 };
 
@@ -75,6 +78,7 @@ export const putNota = async (
   data: { Descripcion: string; Files?: File[] },
   ticketId?: string
 ) => {
+  const api = await getApi();
   const formData = new FormData();
   const auxData = {
     Nota: data.Descripcion,
@@ -114,6 +118,7 @@ export const putResolverTicket = async (
   ticketId?: string,
   vistoBueno?: string
 ) => {
+  const api = await getApi();
   const formData = new FormData();
   const auxData = {
     Respuesta_cierre_reasignado: data.Respuesta_cierre_reasignado,
@@ -160,6 +165,7 @@ export const putContactoCliente = async (
   data: { cuerpoCorreo: string; Files?: File[]; emailsExtra: string },
   ticketId?: string
 ) => {
+  const api = await getApi();
   const { cuerpoCorreo, emailsExtra } = data;
 
   const emailsArray = emailsExtra
@@ -192,6 +198,7 @@ export const putContactoCliente = async (
 };
 
 export const getCorreosCliente = async (ticketId: string) => {
+  const api = await getApi();
   return await api.get(`tickets/correos/${ticketId}`);
 };
 
@@ -200,6 +207,7 @@ export const putCerrarTicket = async (
   ticketId?: string,
   Resuelto_por?: string
 ) => {
+  const api = await getApi();
   const formData = new FormData();
   const auxData = {
     Descripcion_cierre: data.Descripcion_cierre,
@@ -236,6 +244,7 @@ export const putRazonPendiente = async (
   data: { PendingReason: string },
   ticketId?: string
 ) => {
+  const api = await getApi();
   const formData = new FormData();
   const auxData = {
     PendingReason: data.PendingReason,
@@ -256,6 +265,7 @@ export const putRegresarMesa = async (
   data: { descripcion_retorno: string; Files?: File[] },
   ticketId?: string
 ) => {
+  const api = await getApi();
   const formData = new FormData();
   const auxData = {
     descripcion_retorno: data.descripcion_retorno,
@@ -291,6 +301,7 @@ export const putRegresarModerador = async (
   data: { descripcion_retorno: string; Files?: File[] },
   ticketId?: string
 ) => {
+  const api = await getApi();
   const formData = new FormData();
   const auxData = {
     descripcion_retorno: data.descripcion_retorno,
@@ -326,6 +337,7 @@ export const putAceptarResolucion = async (
   data: { Nombre: string },
   ticketId?: string
 ) => {
+  const api = await getApi();
   const Nombre = data.Nombre;
   return await api.put(`tickets/resolver/aceptar/${ticketId}`, { Nombre });
 };
@@ -335,6 +347,7 @@ export const putRechazarResolucion = async (
   ticketId?: string,
   reasignado?: string
 ) => {
+  const api = await getApi();
   const formData = new FormData();
   const auxData = {
     feedback: data.feedback,
@@ -409,6 +422,7 @@ export const putTicketPendiente = async (
   data: { cuerpoCorreo: string; Files?: File[]; emailsExtra: string },
   ticketId?: string
 ) => {
+  const api = await getApi();
   const { cuerpoCorreo, emailsExtra } = data;
 
   const emailsArray = emailsExtra
@@ -441,6 +455,7 @@ export const putTicketPendiente = async (
 };
 
 export const getResolutores = async (): Promise<GroupedOption[]> => {
+  const api = await getApi();
   try {
     const response = await api.get("tickets/reabrir/fields");
     const moderadores = response.data.moderadores;
@@ -469,6 +484,7 @@ export const putAsignar = async (
   },
   ticketId?: string
 ) => {
+  const api = await getApi();
   const formData = new FormData();
   const auxData = {
     Asignado_a: data.Asignado_a?.value,
@@ -514,6 +530,7 @@ export const putReasignar = async (
   },
   ticketId?: string
 ) => {
+  const api = await getApi();
   const formData = new FormData();
   const auxData = {
     Reasignado_a: data.Reasignado_a?.value,
@@ -556,6 +573,7 @@ export const putReabrir = async (
   },
   ticketId?: string
 ) => {
+  const api = await getApi();
   const formData = new FormData();
   const auxData = {
     Asignado_a: data.Asignado_a?.value,
@@ -589,6 +607,7 @@ export const putReabrir = async (
 };
 
 export const getSelectsCrearTicket = async (): Promise<SelectsCrearTicket> => {
+  const api = await getApi();
   try {
     const response = await api.get("tickets/crear/getInfoSelects");
     const groupedOptions: GroupedOption[] = response.data.resolutores;
@@ -618,6 +637,7 @@ export const postCrearTicket = async (data: {
   tiempo: number;
   Files?: File[];
 }) => {
+  const api = await getApi();
   const formData = new FormData();
   const auxData = {
     Asignado_a: data.Asignado_a?.value,
@@ -656,6 +676,7 @@ export const postCrearTicket = async (data: {
 };
 
 export const getTicketByParameter = async (parameter: string) => {
+  const api = await getApi();
   return await api.post(`tickets/buscar/${parameter}`);
 };
 
@@ -666,6 +687,7 @@ export const putOficio = async (
   },
   ticketId?: string
 ) => {
+  const api = await getApi();
   const formData = new FormData();
   const auxData = {
     Numero_Oficio: data.Numero_Oficio,
@@ -706,6 +728,7 @@ export const putEditar = async (
   },
   ticketId?: string
 ) => {
+  const api = await getApi();
   const formData = new FormData();
   const auxData = {
     Numero_Oficio: data.Numero_Oficio,
@@ -747,82 +770,102 @@ export const putEditar = async (
 };
 
 export const getAreas = async () => {
+  const api = await getApi();
   return await api.get("tickets/areas")
 }
 
 export const updateAreas = async (_id: string, data: { area: string }) => {
+  const api = await getApi();
   return await api.put(`tickets/areas/${_id}`, data);
 }
 
 export const createAreas = async (data: { area: string }) => {
+  const api = await getApi();
   return await api.post(`tickets/areas`, data);
 }
 
 export const getDependencias = async () => {
+  const api = await getApi();
   return await api.get("tickets/dependencias")
 }
 
 export const updateDependencias = async (_id: string, data: { dependencia: string }) => {
+  const api = await getApi();
   return await api.put(`tickets/dependencias/${_id}`, data);
 }
 
 export const createDependencias = async (data: { dependencia: string }) => {
+  const api = await getApi();
   return await api.post(`tickets/dependencias`, data);
 }
 
 export const getDGenerales = async () => {
+  const api = await getApi();
   return await api.get("tickets/dgenerales")
 }
 
 export const updateDGenerales = async (_id: string, data: { dgeneral: string }) => {
+  const api = await getApi();
   return await api.put(`tickets/dgenerales/${_id}`, data);
 }
 
 export const createDGenerales = async (data: { dgeneral: string }) => {
+  const api = await getApi();
   return await api.post(`tickets/dgenerales`, data);
 }
 
 export const getDAreas = async () => {
+  const api = await getApi();
   return await api.get("tickets/dareas")
 }
 
 export const updateDAreas = async (_id: string, data: { darea: string }) => {
+  const api = await getApi();
   return await api.put(`tickets/dareas/${_id}`, data);
 }
 
 export const createDAreas = async (data: { darea: string }) => {
+  const api = await getApi();
   return await api.post(`tickets/dareas`, data);
 }
 
 export const updateMedios = async (_id: string, data: { medio: string }) => {
+  const api = await getApi();
   return await api.put(`tickets/medios/${_id}`, data);
 }
 
 export const createMedios = async (data: { medio: string }) => {
+  const api = await getApi();
   return await api.post(`tickets/medios`, data);
 }
 
 export const getPuestos = async () => {
+  const api = await getApi();
   return await api.get("tickets/puestos")
 }
 
 export const updatePuestos = async (_id: string, data: { puesto: string }) => {
+  const api = await getApi();
   return await api.put(`tickets/puestos/${_id}`, data);
 }
 
 export const createPuestos = async (data: { puesto: string }) => {
+  const api = await getApi();
   return await api.post(`tickets/puestos`, data);
 }
 
 export const getCatalogo = async () => {
+  const api = await getApi();
   return await api.get("tickets/catalogoservicio")
 }
 
 export const getCelulas = async () => {
+  const api = await getApi();
   return await api.get("tickets/getcelulas")
 }
 
 export const cambiarcelulaticket = async (id: string, data: { celula: { label: string, value: string } }) => {
+  const api = await getApi();
   const formatedCelula = [data.celula.value];
   return await api.put(`tickets/cambiarticketcelula/${id}`, { formatedCelula })
 }

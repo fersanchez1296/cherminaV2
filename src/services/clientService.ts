@@ -1,15 +1,18 @@
-import api from "@/lib/axios";
+import getApi from "@/lib/axios";
 
 export const getClients = async () => {
+  const api = await getApi();
   return await api.get("clients/");
 };
 
 export const getInfoSelectsClientes = async () => {
+  const api = await getApi();
   const res = await api.get("clients/selectData");
   return res.data;
 };
 
 export const postCrearCliente = async (data: object) => {
+  const api = await getApi();
   const formatedData = {
     ...data,
   }
@@ -29,6 +32,7 @@ export const postCrearCliente = async (data: object) => {
 };
 
 export const updateCliente = async (clientId: string, data: object) => {
+  const api = await getApi();
   const formatedData = {
     ...data,
     Direccion_General: data.Direccion_General.value,

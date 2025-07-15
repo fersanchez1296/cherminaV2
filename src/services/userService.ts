@@ -1,4 +1,4 @@
-import api from "@/lib/axios";
+import getApi from "@/lib/axios";
 
 interface userProps {
   Ubicacion: string;
@@ -29,23 +29,28 @@ interface userFormatedProps {
 
 // obtener todos los usuarios
 export const getUsers = async () => {
+  const api = await getApi();
   return await api.get("users/");
 };
 
 export const getUsersCelulas = async () => {
+  const api = await getApi();
   return await api.get("users/celulas");
 };
 
 // actualizar el estado de un usuario <activo/inactivo>
 export const updateEstadoUsuario = async (estado: boolean, userId: string) => {
+  const api = await getApi();
   return await api.patch(`users/estado/${userId}`, { estado });
 };
 
 export const getInfoSelectsUsuario = async () => {
+  const api = await getApi();
   return await api.get("users/getInfoSelectsUsuarios");
 };
 
 export const updateUsuario = async (userId: string, data: userProps) => {
+  const api = await getApi();
   const formatedData: userFormatedProps = {
     Ubicacion: data.Ubicacion,
     Direccion: data.Direccion,
@@ -75,6 +80,7 @@ export const updateUsuario = async (userId: string, data: userProps) => {
 
 
 export const postUsuario = async (data: userProps) => {
+  const api = await getApi();
   const formatedData: userFormatedProps = {
     Ubicacion: data.Ubicacion,
     Direccion: data.Direccion,
@@ -104,6 +110,6 @@ export const postUsuario = async (data: userProps) => {
 
 
 export const changePassword = async (userId: string, data: { Password: string, newPassword: string }) => {
-  console.log(data)
+  const api = await getApi();
   return await api.patch(`users/changepassword/${userId}`, { Password: data.Password, newPassword: data.newPassword })
 }

@@ -1,6 +1,7 @@
-import api from "@/lib/axios";
+import getApi from "@/lib/axios";
 
 export const downloadFile = async (filename: string) => {
+    const api = await getApi();
     try {
         const response = await api.get(`files/uploads/${filename}`, {
             responseType: 'blob',
@@ -24,6 +25,7 @@ export const downloadFile = async (filename: string) => {
 };
 
 export const downloadExcel = async () => {
+    const api = await getApi();
     try {
         const response = await api.get(`tickets/export/excel`, {
             responseType: 'blob',
