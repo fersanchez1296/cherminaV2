@@ -20,7 +20,7 @@ export default function FunnelChart() {
       try {
         const result = await dashboardCelulas();
         if(result) setSieres(result.data)
-      } catch (error) {
+      } catch{
         
       }
     }

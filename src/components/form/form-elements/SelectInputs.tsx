@@ -3,7 +3,6 @@ import React, { useState } from "react";
 import ComponentCard from "../../common/ComponentCard";
 import Label from "../Label";
 import Select from "../Select";
-import MultiSelect from "../MultiSelect";
 
 export default function SelectInputs() {
   const options = [
@@ -39,12 +38,6 @@ export default function SelectInputs() {
           />
         </div>
         <div className="relative">
-          <MultiSelect
-            label="Multiple Select Options"
-            options={multiOptions}
-            defaultSelected={["1", "3"]}
-            onChange={(values) => setSelectedValues(values)}
-          />
           <p className="sr-only">
             Selected Values: {selectedValues.join(", ")}
           </p>
