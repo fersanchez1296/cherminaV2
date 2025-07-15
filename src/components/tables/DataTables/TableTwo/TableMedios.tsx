@@ -8,39 +8,26 @@ import {
   TableHeader,
   TableRow,
 } from "../../../ui/table";
-import {
-  AngleDownIcon,
-  AngleUpIcon,
-  EditIcon,
-} from "../../../../icons";
+import { AngleDownIcon, AngleUpIcon, EditIcon } from "../../../../icons";
 import PaginationWithButton from "./PaginationWithButton";
 import { useModal } from "@/hooks/useModal";
 import { Modal } from "@/components/ui/modal/index";
 import { Tooltip } from "@/components/ui/tooltip/Tooltip";
 import Button from "@/components/ui/button/Button";
-import { getUsers, updateEstadoUsuario } from "@/services/userService";
-import { useLoadingStore } from "@/stores/loadingStore";
-import { useNotification } from "@/context/NotificationProvider";
 import { getMedios } from "@/services/ticketService";
 import FormularioMedios from "@/components/form/example-form/FormularioMedios";
-type SortKey = "Nombre";
+type SortKey = "label";
 type SortOrder = "asc" | "desc";
 
 interface data {
-  Area: Array<{ _id: string; Area: string }>;
-  Nombre: string;
-  Correo: string;
-  Rol: object;
-  Tickets_resueltos: object;
-  Username: string;
-  _id: string;
-  isActive: boolean;
+  label: string;
+  value: string;
 }
 
 export default function TableMedios() {
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(5);
-  const [sortKey, setSortKey] = useState<SortKey>("Nombre");
+  const [sortKey, setSortKey] = useState<SortKey>("label");
   const [sortOrder, setSortOrder] = useState<SortOrder>("asc");
   const [searchTerm, setSearchTerm] = useState("");
   const { isOpen, openModal, closeModal } = useModal();
@@ -49,18 +36,16 @@ export default function TableMedios() {
   const [isEdit, setIsEdit] = useState<boolean>(false);
   const [isCreate, setIsCreate] = useState<boolean>(false);
   const [disabled, setDisabled] = useState<boolean>(false);
-  const setLoading = useLoadingStore((state) => state.setLoading);
-  const { showNotification } = useNotification();
 
-  const fetchData = async() => {
+  const fetchData = async () => {
     try {
-     const result = await getMedios();
-     console.log(result)
-    if(result){
-        setTableRowData(result.data)
-    }
-    } catch (error) {
-        setTableRowData([])
+      const result = await getMedios();
+      console.log(result);
+      if (result) {
+        setTableRowData(result.data);
+      }
+    } catch {
+      setTableRowData([]);
     }
   };
 
@@ -101,31 +86,6 @@ export default function TableMedios() {
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = Math.min(startIndex + itemsPerPage, totalItems);
   const currentData = filteredAndSortedData.slice(startIndex, endIndex);
-  const handleChangeEstadoUsuario = async (estado: boolean, userId: string) => {
-    try {
-      setLoading(true);
-      const result = await updateEstadoUsuario(estado, userId);
-      if (result.status === 200) {
-        showNotification(
-          "Éxito",
-          result.data?.message || "Operación exitosa",
-          "success"
-        );
-      } else {
-        showNotification(
-          "Aviso",
-          result.data?.desc || "Respuesta inesperada del servidor",
-          "warning"
-        );
-      }
-    } catch (error) {
-      const message =
-        error.response?.data?.desc || "Ocurrió un error inesperado.";
-      showNotification("Error", message, "error");
-    } finally {
-      setLoading(false);
-    }
-  };
   return (
     <>
       <div className="flex gap-3 my-3">
@@ -233,40 +193,40 @@ export default function TableMedios() {
                       </p>
                     </div>
                   </TableCell>
-                  {[
-                    { key: "Nombre", label: "Nombre" },
-                  ].map(({ key, label }) => (
-                    <TableCell
-                      key={key}
-                      isHeader
-                      className="px-4 py-3 border border-gray-100 dark:border-white/[0.05]"
-                    >
-                      <div
-                        className="flex items-center justify-between cursor-pointer"
-                        onClick={() => handleSort(key as SortKey)}
+                  {[{ key: "Nombre", label: "Nombre" }].map(
+                    ({ key, label }) => (
+                      <TableCell
+                        key={key}
+                        isHeader
+                        className="px-4 py-3 border border-gray-100 dark:border-white/[0.05]"
                       >
-                        <p className="font-medium text-gray-700 text-theme-xs dark:text-gray-400">
-                          {label}
-                        </p>
-                        <button className="flex flex-col gap-0.5">
-                          <AngleUpIcon
-                            className={`text-gray-300 dark:text-gray-700 ${
-                              sortKey === key && sortOrder === "asc"
-                                ? "text-brand-500"
-                                : ""
-                            }`}
-                          />
-                          <AngleDownIcon
-                            className={`text-gray-300 dark:text-gray-700 ${
-                              sortKey === key && sortOrder === "desc"
-                                ? "text-brand-500"
-                                : ""
-                            }`}
-                          />
-                        </button>
-                      </div>
-                    </TableCell>
-                  ))}
+                        <div
+                          className="flex items-center justify-between cursor-pointer"
+                          onClick={() => handleSort(key as SortKey)}
+                        >
+                          <p className="font-medium text-gray-700 text-theme-xs dark:text-gray-400">
+                            {label}
+                          </p>
+                          <button className="flex flex-col gap-0.5">
+                            <AngleUpIcon
+                              className={`text-gray-300 dark:text-gray-700 ${
+                                sortKey === key && sortOrder === "asc"
+                                  ? "text-brand-500"
+                                  : ""
+                              }`}
+                            />
+                            <AngleDownIcon
+                              className={`text-gray-300 dark:text-gray-700 ${
+                                sortKey === key && sortOrder === "desc"
+                                  ? "text-brand-500"
+                                  : ""
+                              }`}
+                            />
+                          </button>
+                        </div>
+                      </TableCell>
+                    )
+                  )}
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -334,7 +294,7 @@ export default function TableMedios() {
       <Modal isOpen={isOpen} onClose={closeModal} className="max-w-[700px] m-4">
         <div className="no-scrollbar relative w-full max-w-[700px] max-h-[90vh] overflow-y-auto rounded-3xl bg-white p-4 dark:bg-gray-900 lg:p-4">
           <FormularioMedios
-            medio={singleItem}
+            medio={singleItem ?? { label: "", value: "" }}
             disabled={disabled}
             isEdit={isEdit}
             isCreate={isCreate}

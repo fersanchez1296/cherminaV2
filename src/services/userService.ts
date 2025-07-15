@@ -1,5 +1,32 @@
 import api from "@/lib/axios";
 
+interface userProps {
+  Ubicacion: string;
+  Direccion: { Pais: string; Ciudad: string; codigoPostal: string };
+  Nombre: string;
+  Telefono: string;
+  Extension: string;
+  Celula?: { value: string; label: string }[];
+  Area?: { value: string; label: string }[];
+  Rol?: { value: string; label: string };
+  Puesto?: { value: string; label: string };
+  Direccion_General?: { label: string; value: string };
+}
+
+interface userFormatedProps {
+  Ubicacion: string;
+  Direccion: { Pais: string; Ciudad: string; codigoPostal: string };
+  Nombre: string;
+  Telefono: string;
+  Extension: string;
+  Celula?: string[];
+  Area?: string[];
+  Rol?: string;
+  Puesto?: string;
+  Direccion_General?: string;
+}
+
+
 // obtener todos los usuarios
 export const getUsers = async () => {
   return await api.get("users/");
@@ -18,15 +45,20 @@ export const getInfoSelectsUsuario = async () => {
   return await api.get("users/getInfoSelectsUsuarios");
 };
 
-export const updateUsuario = async (userId: string, data: any) => {
-  const formatedData = {
-    ...data,
-  }
+export const updateUsuario = async (userId: string, data: userProps) => {
+  const formatedData: userFormatedProps = {
+    Ubicacion: data.Ubicacion,
+    Direccion: data.Direccion,
+    Nombre: data.Nombre,
+    Telefono: data.Telefono,
+    Extension: data.Extension,
+  };
+  
   if (data.Celula) {
-    formatedData.Celula = data.Celula.map((c) => c.value)
+    formatedData.Celula = data.Celula.map((c) => c.value);
   }
   if (data.Area) {
-    formatedData.Area = data.Area.map((c) => c.value)
+    formatedData.Area = data.Area.map((c) => c.value);
   }
   if (data.Rol) {
     formatedData.Rol = data.Rol.value;
@@ -41,15 +73,21 @@ export const updateUsuario = async (userId: string, data: any) => {
   return await api.patch(`users/editar/${userId}`, formatedData);
 };
 
-export const postUsuario = async (data: any) => {
-  const formatedData = {
-    ...data,
-  }
+
+export const postUsuario = async (data: userProps) => {
+  const formatedData: userFormatedProps = {
+    Ubicacion: data.Ubicacion,
+    Direccion: data.Direccion,
+    Nombre: data.Nombre,
+    Telefono: data.Telefono,
+    Extension: data.Extension,
+  };
+
   if (data.Celula) {
-    formatedData.Celula = data.Celula.map((c) => c.value)
+    formatedData.Celula = data.Celula.map((c) => c.value);
   }
   if (data.Area) {
-    formatedData.Area = data.Area.map((c) => c.value)
+    formatedData.Area = data.Area.map((a) => a.value);
   }
   if (data.Rol) {
     formatedData.Rol = data.Rol.value;
@@ -63,6 +101,7 @@ export const postUsuario = async (data: any) => {
 
   return await api.post(`users/`, formatedData);
 };
+
 
 export const changePassword = async (userId: string, data: { Password: string, newPassword: string }) => {
   console.log(data)

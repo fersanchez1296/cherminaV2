@@ -21,6 +21,7 @@ import ModalReabrir from "@/components/example/ModalExample/ModalReabrir";
 import ModalOficio from "@/components/example/ModalExample/ModalOficio";
 import { Ticket } from "@/common/interfaces/ticket.interface";
 import ModalEditar from "./ModalEditar";
+import ModalCambiarTicketCelula from "./ModalCambiarTicketCelula";
 
 interface Props {
   ticket: Partial<Ticket>;
@@ -180,6 +181,14 @@ export default function AllModals({ ticket, status }: Props) {
       )}
       {state["editar"] && (
         <ModalEditar
+          open
+          handleToggleModalState={toggleModal}
+          ticket={ticket}
+          uuid={ticket._id}
+        />
+      )}
+      {state["cambiarCelula"] && (
+        <ModalCambiarTicketCelula
           open
           handleToggleModalState={toggleModal}
           ticket={ticket}

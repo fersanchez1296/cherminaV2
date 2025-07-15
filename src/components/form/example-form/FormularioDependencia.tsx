@@ -8,9 +8,13 @@ import Button from "../../ui/button/Button";
 import { useForm, Controller } from "react-hook-form";
 import { useNotification } from "@/context/NotificationProvider";
 import { useLoadingStore } from "@/stores/loadingStore";
-import {  createDependencias, updateDependencias } from "@/services/ticketService";
+import {
+  createDependencias,
+  updateDependencias,
+} from "@/services/ticketService";
+import { AxiosError } from "axios";
 interface userProps {
-  dependencia: {value: string, label: string};
+  dependencia: { value: string; label: string };
   disabled: boolean;
   isEdit?: boolean;
   isCreate?: boolean;
@@ -27,15 +31,15 @@ export default function FormularioDependencias({
   closeModal,
 }: userProps) {
   const [areaId, setAreaId] = useState("");
-  const { handleSubmit, control } = useForm();
+  const { handleSubmit, control } = useForm<{ dependencia: string }>();
   const { showNotification } = useNotification();
   const setLoading = useLoadingStore((state) => state.setLoading);
 
-    useEffect(() => {
-        if(dependencia) setAreaId(dependencia.value)
-    },[])
+  useEffect(() => {
+    if (dependencia) setAreaId(dependencia.value);
+  }, []);
 
-  const onSubmit = async (data) => {
+  const onSubmit = async (data: { dependencia: string }) => {
     try {
       setLoading(true);
       if (isCreate) {
@@ -78,9 +82,11 @@ export default function FormularioDependencias({
           );
         }
       }
-    } catch (error) {
-      const message =
-        error.response?.data?.desc || "Ocurrió un error inesperado.";
+    } catch (error: unknown) {
+      let message = "Ocurrió un error inesperado.";
+      if (error instanceof AxiosError && error.response?.data?.desc) {
+        message = error.response.data.desc;
+      }
       showNotification("Error", message, "error");
     } finally {
       setLoading(false);
@@ -93,8 +99,8 @@ export default function FormularioDependencias({
         isCreate
           ? "Crear Dependencia"
           : isEdit
-          ? "Editar Dependencia"
-          : dependencia?.label || "Dependencia"
+            ? "Editar Dependencia"
+            : dependencia?.label || "Dependencia"
       }
     >
       <Form onSubmit={handleSubmit(onSubmit)}>

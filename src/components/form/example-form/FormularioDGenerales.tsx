@@ -8,9 +8,10 @@ import Button from "../../ui/button/Button";
 import { useForm, Controller } from "react-hook-form";
 import { useNotification } from "@/context/NotificationProvider";
 import { useLoadingStore } from "@/stores/loadingStore";
-import {  createDGenerales, updateDGenerales } from "@/services/ticketService";
+import { createDGenerales, updateDGenerales } from "@/services/ticketService";
+import { AxiosError } from "axios";
 interface userProps {
-  dgeneral: {value: string, label: string};
+  dgeneral: { value: string; label: string };
   disabled: boolean;
   isEdit?: boolean;
   isCreate?: boolean;
@@ -27,15 +28,15 @@ export default function FormularioDGenerales({
   closeModal,
 }: userProps) {
   const [areaId, setAreaId] = useState("");
-  const { handleSubmit, control } = useForm();
+  const { handleSubmit, control } = useForm<{ dgeneral: string }>();
   const { showNotification } = useNotification();
   const setLoading = useLoadingStore((state) => state.setLoading);
 
-    useEffect(() => {
-        if(dgeneral) setAreaId(dgeneral.value)
-    },[])
+  useEffect(() => {
+    if (dgeneral) setAreaId(dgeneral.value);
+  }, []);
 
-  const onSubmit = async (data) => {
+  const onSubmit = async (data: { dgeneral: string }) => {
     try {
       setLoading(true);
       if (isCreate) {
@@ -79,8 +80,10 @@ export default function FormularioDGenerales({
         }
       }
     } catch (error) {
-      const message =
-        error.response?.data?.desc || "Ocurrió un error inesperado.";
+      let message = "Ocurrió un error inesperado.";
+      if (error instanceof AxiosError && error.response?.data?.desc) {
+        message = error.response.data.desc;
+      }
       showNotification("Error", message, "error");
     } finally {
       setLoading(false);
@@ -93,8 +96,8 @@ export default function FormularioDGenerales({
         isCreate
           ? "Crear Dirección General"
           : isEdit
-          ? "Editar Dirección General"
-          : dgeneral?.label || "Dirección General"
+            ? "Editar Dirección General"
+            : dgeneral?.label || "Dirección General"
       }
     >
       <Form onSubmit={handleSubmit(onSubmit)}>

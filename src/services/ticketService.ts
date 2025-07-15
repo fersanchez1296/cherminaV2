@@ -1,5 +1,4 @@
 import api from "@/lib/axios";
-import { da } from "date-fns/locale";
 
 interface Categorizacion {
   _id: string;
@@ -446,9 +445,9 @@ export const getResolutores = async (): Promise<GroupedOption[]> => {
     const response = await api.get("tickets/reabrir/fields");
     const moderadores = response.data.moderadores;
 
-    const groupedOptions: GroupedOption[] = moderadores.map((mod: any) => ({
+    const groupedOptions: GroupedOption[] = moderadores.map((mod: { area: { area: string }, resolutores: { _id: string, Nombre: string }[] }) => ({
       label: mod.area.area,
-      options: mod.resolutores.map((res: any) => ({
+      options: mod.resolutores.map((res: {_id: string, Nombre: string}) => ({
         value: res._id,
         label: res.Nombre,
       })),
@@ -466,7 +465,7 @@ export const putAsignar = async (
     Asignado_a: { label: string; value: string };
     Nota?: string[];
     Files?: File[];
-    Cliente?: any;
+    Cliente?: {_id: string};
   },
   ticketId?: string
 ) => {
@@ -474,7 +473,7 @@ export const putAsignar = async (
   const auxData = {
     Asignado_a: data.Asignado_a?.value,
     Nota: data.Nota,
-    Cliente: data.Cliente._id,
+    Cliente: data?.Cliente?._id,
   };
 
   Object.entries(auxData).forEach(([key, value]) => {
@@ -795,11 +794,11 @@ export const createDAreas = async (data: { darea: string }) => {
   return await api.post(`tickets/dareas`, data);
 }
 
-export const updateMedios = async (_id: string, data: { darea: string }) => {
+export const updateMedios = async (_id: string, data: { medio: string }) => {
   return await api.put(`tickets/medios/${_id}`, data);
 }
 
-export const createMedios = async (data: { darea: string }) => {
+export const createMedios = async (data: { medio: string }) => {
   return await api.post(`tickets/medios`, data);
 }
 
@@ -817,4 +816,13 @@ export const createPuestos = async (data: { puesto: string }) => {
 
 export const getCatalogo = async () => {
   return await api.get("tickets/catalogoservicio")
+}
+
+export const getCelulas = async () => {
+  return await api.get("tickets/getcelulas")
+}
+
+export const cambiarcelulaticket = async (id: string, data: { celula: { label: string, value: string } }) => {
+  const formatedCelula = [data.celula.value];
+  return await api.put(`tickets/cambiarticketcelula/${id}`, { formatedCelula })
 }

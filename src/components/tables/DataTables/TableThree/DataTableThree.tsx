@@ -10,8 +10,6 @@ import {
 import {
   AngleDownIcon,
   AngleUpIcon,
-  PencilIcon,
-  TrashBinIcon,
   EyeIcon,
   EnvelopeIcon,
   CheckLineIcon,
@@ -214,9 +212,8 @@ const tableRowData = [
 type SortKey = "name" | "position" | "location" | "age" | "date" | "salary";
 type SortOrder = "asc" | "desc";
 
-export default function DataTableThree() {
+export default function DataTableThree() {cle
   //utilizado para acceder a los tickets
-  const { status } = useParams();
   const [isChecked, setIsChecked] = useState(false);
   const [sortKey, setSortKey] = useState<SortKey>("name");
   const [sortOrder, setSortOrder] = useState<SortOrder>("asc");

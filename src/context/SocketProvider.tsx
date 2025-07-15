@@ -1,6 +1,6 @@
 "use client";
 
-import React, { createContext, useContext, useEffect, useState } from "react";
+import React, { createContext, useContext, useEffect, useRef, useState } from "react";
 import { useSession } from "next-auth/react";
 import { io, Socket } from "socket.io-client";
 
@@ -15,10 +15,11 @@ export const useSocket = () => useContext(SocketContext);
 
 export function SocketProvider({ children }: { children: React.ReactNode }) {
   const { data: session } = useSession();
+  const socketRef = useRef<Socket | null>(null); // <--- usamos una ref para evitar el bucle
   const [socket, setSocket] = useState<Socket | null>(null);
 
   useEffect(() => {
-    if (session?.user?.accessToken && !socket) {
+    if (session?.user?.accessToken && !socketRef.current) {
       const newSocket = io("http://localhost:4700", {
         auth: {
           token: session.user.accessToken,
@@ -33,14 +34,19 @@ export function SocketProvider({ children }: { children: React.ReactNode }) {
         console.log("🔴 Desconectado del servidor de sockets");
       });
 
+      socketRef.current = newSocket;
       setSocket(newSocket);
-
-      return () => {
-        newSocket.disconnect();
-        setSocket(null);
-      };
     }
-  }, [session]);
+
+    return () => {
+      if (socketRef.current) {
+        socketRef.current.disconnect();
+        console.log("🔌 Socket desconectado");
+        socketRef.current = null;
+        setSocket(null);
+      }
+    };
+  }, [session]); // solo depende de session, como debe ser
 
   return (
     <SocketContext.Provider value={{ socket }}>

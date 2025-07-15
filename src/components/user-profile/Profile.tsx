@@ -8,10 +8,11 @@ import { useLoadingStore } from "@/stores/loadingStore";
 import { useNotification } from "@/context/NotificationProvider";
 import { Button } from "../ui/button";
 import { useRouter } from "next/navigation";
+import { AxiosError } from "axios";
 const ProfileComponent = () => {
   const setLoading = useLoadingStore((state) => state.setLoading);
   const { showNotification } = useNotification();
-  const router = useRouter()
+  const router = useRouter();
   const [profileData, setProfileData] = useState<data>({
     profile: {
       _id: "",
@@ -40,8 +41,10 @@ const ProfileComponent = () => {
       const result = await getProfileInfo();
       if (result.data) setProfileData(result.data);
     } catch (error) {
-      const message =
-        error.response?.data?.desc || "Ocurrió un error inesperado.";
+      let message = "Ocurrió un error inesperado.";
+      if (error instanceof AxiosError && error.response?.data?.desc) {
+        message = error.response.data.desc;
+      }
       showNotification("Error", message, "error");
     } finally {
       setLoading(false);
@@ -54,10 +57,36 @@ const ProfileComponent = () => {
 
   return (
     <>
-      <UserMetaCard profile={profileData} />
+      <UserMetaCard
+        profile={
+          profileData.profile ?? {
+            _id: "",
+            Nombre: "",
+            Correo: "",
+            isActive: false,
+            Area: [{ _id: "", Area: "" }],
+            Username: "",
+            Direccion_General: { Direccion_General: "" },
+            Dependencia: { Dependencia: "" },
+            Direccion: {
+              Pais: "",
+              Ciudad: "",
+              codigoPostal: "",
+            },
+            Extension: "",
+            Puesto: { Puesto: "" },
+            Telefono: "",
+            Ubicacion: "",
+          }
+        }
+      />
       <UserInfoCard profile={profileData} onProfileUpdated={fetchProfileData} />
       {/* <UserAddressCard profile={profileData} /> */}
-      <Button size="sm" variant={"warning"} onClick={() => router.push("change-password")}>
+      <Button
+        size="sm"
+        variant={"warning"}
+        onClick={() => router.push("change-password")}
+      >
         Cambiar Contraseña
       </Button>
     </>

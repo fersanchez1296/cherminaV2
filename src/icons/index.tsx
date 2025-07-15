@@ -76,7 +76,9 @@ import BriefcaseIcon from "./briefcase.svg"
 import FolderOpenIcon from "./folder-open.svg"
 import BellActiveAltIcon from "./bell-active-alt.svg"
 import BugIcon from "./bug.svg"
+import ArrowUpDownIcon from "./arrow-up-down.svg"
 export {
+  ArrowUpDownIcon,
   BugIcon,
   BellActiveAltIcon,
   FolderOpenIcon,

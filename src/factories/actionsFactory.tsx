@@ -1,6 +1,5 @@
 import { Ticket } from "@/common/interfaces/ticket.interface";
 import {
-  EyeIcon,
   EnvelopeIcon,
   CheckLineIcon,
   DocumentPlusIcon,
@@ -17,45 +16,25 @@ import {
   ClockArrowIcon,
   ForwardIcon,
   AnnotationIcon,
+  ArrowUpDownIcon,
 } from "@/icons";
+
+interface TicketHandlers {
+  toggleModal: (modalName: string, value: boolean) => void;
+  setSingleItem: (item: Partial<Ticket>) => void;
+  setTicketId: (id: string | undefined) => void;
+  setFechaResolucionSLA: (fecha: string | undefined) => void;
+}
+
 
 export const getActions = (
   item: Partial<Ticket>,
-  handlers: any,
+  handlers: TicketHandlers,
   userRole: string,
   status: string
 ) => {
-  //console.log("este es el item", item);
 
   const allActions = [
-    // ver
-    // {
-    //   icon: () => <EyeIcon />,
-    //   tooltip: "Ver",
-    //   onClick: () => {
-    //     handlers.toggleModal("ver", true);
-    //     handlers.setSingleItem(item);
-    //   },
-    //   visible: ["Administrador", "Root", "Moderador", "Usuario"],
-    //   estados: [
-    //     "CERRADOS",
-    //     "ABIERTOS",
-    //     "NUEVOS",
-    //     "PENDIENTES",
-    //     "REABIERTOS",
-    //     "RESUELTOS",
-    //     "REVISION",
-    //     "STANDBY",
-    //     "cerrado",
-    //     "curso",
-    //     "nuevo",
-    //     "pendiente",
-    //     "reabierto",
-    //     "resuelto",
-    //     "revision",
-    //     "mesaServicio",
-    //   ],
-    // },
     // nota
     {
       icon: () => <AnnotationIcon />,
@@ -65,6 +44,34 @@ export const getActions = (
         handlers.setSingleItem(item);
       },
       visible: ["Administrador", "Root", "Moderador", "Usuario"],
+      estados: [
+        "CERRADOS",
+        "ABIERTOS",
+        "NUEVOS",
+        "PENDIENTES",
+        "REABIERTOS",
+        "RESUELTOS",
+        "REVISION",
+        "STANDBY",
+        "cerrado",
+        "curso",
+        "nuevo",
+        "pendiente",
+        "reabierto",
+        "resuelto",
+        "revision",
+        "mesaServicio",
+      ],
+    },
+    //mover ticket de celula
+    {
+      icon: () => <ArrowUpDownIcon />,
+      tooltip: "Cambiar ticket de célula",
+      onClick: () => {
+        handlers.toggleModal("cambiarCelula", true);
+        handlers.setSingleItem(item);
+      },
+      visible: ["Moderador","Usuario"],
       estados: [
         "CERRADOS",
         "ABIERTOS",

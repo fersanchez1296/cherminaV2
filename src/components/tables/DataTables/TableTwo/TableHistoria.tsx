@@ -8,60 +8,36 @@ import {
   TableHeader,
   TableRow,
 } from "../../../ui/table";
-import {
-  AngleDownIcon,
-  AngleUpIcon,
-  EyeIcon,
-  EditIcon,
-} from "../../../../icons";
+import { AngleDownIcon, AngleUpIcon } from "../../../../icons";
 import PaginationWithButton from "./PaginationWithButton";
-import { useModal } from "@/hooks/useModal";
-import { Modal } from "@/components/ui/modal/index";
-import { Tooltip } from "@/components/ui/tooltip/Tooltip";
-import Button from "@/components/ui/button/Button";
-import { getCatalogo } from "@/services/ticketService";
-import FormularioCatalogo from "@/components/form/example-form/FormularioCatalogo";
-type SortKey =
-  | "Subcategoria"
-  | "Categoría"
-  | "Servicio"
-  | "Prioridad"
-  | "Tipo"
-  | "Descripcion_prioridad"
-  | "Equipo";
-type SortOrder = "asc" | "desc";
-
-interface data {
-  Subcategoria: string;
-  Categoría: string;
-  Servicio: string;
-  Prioridad: number;
-  Tipo: string;
-  Descripcion_prioridad: string;
-  _id: string;
-  Equipo: { _id: string; Area: string };
+interface HistoriaItem {
+  Nombre: {
+    Nombre: string;
+  };
+  Titulo: string;
+  Mensaje: string;
+  Fecha: string;
+  stopper?: boolean;
 }
 
-export default function TableCatalogo() {
+type SortKey = "Nombre" | "Titulo" | "Mensaje" | "Fecha";
+type SortOrder = "asc" | "desc";
+
+export default function TableHistoria({ historia }: { historia: HistoriaItem[] }) {
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(5);
-  const [sortKey, setSortKey] = useState<SortKey>("Subcategoria");
+  const [sortKey, setSortKey] = useState<SortKey>();
   const [sortOrder, setSortOrder] = useState<SortOrder>("asc");
   const [searchTerm, setSearchTerm] = useState("");
-  const { isOpen, openModal, closeModal } = useModal();
-  const [tableRowData, setTableRowData] = useState<Array<data>>([]);
-  const [singleItem, setSingleItem] = useState<data>();
-  const [isEdit, setIsEdit] = useState<boolean>(false);
-  const [isCreate, setIsCreate] = useState<boolean>(false);
-  const [disabled, setDisabled] = useState<boolean>(false);
-
-  const fetchClients = () => {
-    getCatalogo().then((res) => setTableRowData(res.data));
-  };
+  const [tableRowData, setTableRowData] = useState<Array<HistoriaItem>>([]);
 
   useEffect(() => {
-    fetchClients();
-  }, []);
+    if (Array.isArray(historia)) {
+      setTableRowData(historia);
+    } else {
+      setTableRowData([]); // o puedes no setear nada
+    }
+  }, [historia]);
 
   const filteredAndSortedData = useMemo(() => {
     return tableRowData
@@ -96,25 +72,9 @@ export default function TableCatalogo() {
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = Math.min(startIndex + itemsPerPage, totalItems);
   const currentData = filteredAndSortedData.slice(startIndex, endIndex);
+
   return (
     <>
-      <div className="flex gap-3 my-3">
-        <Button
-          size="sm"
-          onClick={() => {
-            openModal();
-            setIsEdit(false);
-            setDisabled(false);
-            setIsCreate(true);
-            setSingleItem(undefined);
-          }}
-        >
-          Registrar Catálogo
-        </Button>
-        <Button size="sm" variant="outline">
-          Actualizar
-        </Button>
-      </div>
       <div className="overflow-hidden rounded-xl bg-white dark:bg-white/[0.03]">
         <div className="flex flex-col gap-2 px-4 py-4 border border-b-0 border-gray-100 dark:border-white/[0.05] rounded-t-xl sm:flex-row sm:items-center sm:justify-between">
           <div className="flex items-center gap-3">
@@ -182,7 +142,7 @@ export default function TableCatalogo() {
               type="text"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              placeholder="Filtrar resultados..."
+              placeholder="Buscar..."
               className="dark:bg-dark-900 h-11 w-full rounded-lg border border-gray-300 bg-transparent py-2.5 pl-11 pr-4 text-sm text-gray-800 shadow-theme-xs placeholder:text-gray-400 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 dark:focus:border-brand-800 xl:w-[300px]"
             />
           </div>
@@ -193,24 +153,11 @@ export default function TableCatalogo() {
             <Table>
               <TableHeader className="border-t border-gray-100 dark:border-white/[0.05]">
                 <TableRow>
-                  <TableCell
-                    isHeader
-                    className="px-4 py-3 border border-gray-100 dark:border-white/[0.05]"
-                  >
-                    <div className="flex items-center justify-between cursor-pointer">
-                      <p className="font-medium text-gray-700 text-theme-xs dark:text-gray-400">
-                        Acciones
-                      </p>
-                    </div>
-                  </TableCell>
                   {[
-                    { key: "Subcategoria", label: "Subcategoría" },
-                    { key: "Categoria", label: "Categoría" },
-                    { key: "Servicio", label: "Servicio" },
-                    { key: "Tipo", label: "Tipo" },
-                    { key: "Area", label: "Area" },
-                    { key: "Descripcion", label: "Descripcion Prioridad" },
-                    { key: "Tiempo", label: "Tiempo en horas" },
+                    { key: "Nombre", label: "Nombre" },
+                    { key: "Titulo", label: "Titulo" },
+                    { key: "Mensaje", label: "Mensaje" },
+                    { key: "Fecha", label: "Fecha de entrada" },
                   ].map(({ key, label }) => (
                     <TableCell
                       key={key}
@@ -248,101 +195,48 @@ export default function TableCatalogo() {
               <TableBody>
                 {currentData.map((item, index) => (
                   <TableRow key={index}>
-                    {/* iconos */}
-                    <TableCell className="px-4 py-4 font-normal text-gray-800 border border-gray-100 dark:border-white/[0.05] text-theme-sm dark:text-white/90 whitespace-nowrap">
-                      <div className="flex items-center w-full gap-2">
-                        <Tooltip content="Ver" position="top" theme="dark">
-                          <button
-                            className="text-gray-500 hover:text-gray-800 dark:text-gray-400 dark:hover:text-white/90"
-                            onClick={() => {
-                              openModal();
-                              setIsEdit(false);
-                              setDisabled(true);
-                              setIsCreate(false);
-                              setSingleItem(item);
-                            }}
-                          >
-                            <EyeIcon />
-                          </button>
-                        </Tooltip>
-                        <Tooltip
-                          content="Editar Ticket"
-                          position="top"
-                          theme="dark"
-                        >
-                          <button
-                            className="text-gray-500 hover:text-gray-800 dark:text-gray-400 dark:hover:text-white/90"
-                            onClick={() => {
-                              openModal();
-                              setIsEdit(!false);
-                              setDisabled(!true);
-                              setIsCreate(false);
-                              setSingleItem(item);
-                            }}
-                          >
-                            <EditIcon />
-                          </button>
-                        </Tooltip>
-                      </div>
-                    </TableCell>
-                    {/* subcategoria */}
-                    <TableCell className="px-4 py-4 font-normal text-gray-800 border border-gray-100 dark:border-white/[0.05] text-theme-sm dark:text-white/90 whitespace-nowrap">
-                      <div className="flex gap-3">
-                        <div>
-                          <p className="block font-medium text-gray-800 text-theme-sm dark:text-white/90">
-                            {item.Subcategoria}
-                          </p>
-                        </div>
-                      </div>
-                    </TableCell>
-                    {/* categoria */}
-                    <TableCell className="px-4 py-4 font-normal text-gray-800 border border-gray-100 dark:border-white/[0.05] text-theme-sm dark:text-white/90 whitespace-nowrap">
-                      {item["Categoría"]}
-                    </TableCell>
-                    {/* servicio */}
+                    {/* Nombre */}
                     <TableCell className="px-4 py-4 border border-gray-100 dark:border-white/[0.05] dark:text-white/90 whitespace-nowrap">
                       <div className="flex gap-3">
                         <div>
                           <p className="block font-medium text-gray-800 text-theme-sm dark:text-white/90">
-                            {item.Servicio}
+                            {item?.Nombre?.Nombre}
                           </p>
                         </div>
                       </div>
                     </TableCell>
-
-                    {/* prioridad */}
+                    {/* Titulo */}
                     <TableCell className="px-4 py-4 font-normal text-gray-800 border border-gray-100 dark:border-white/[0.05] text-theme-sm dark:text-white/90 whitespace-nowrap">
                       <div className="flex gap-3">
                         <div>
                           <p className="block font-medium text-gray-800 text-theme-sm dark:text-white/90">
-                            {item.Tipo}
+                            {item.Titulo}
                           </p>
                         </div>
                       </div>
                     </TableCell>
+                    {/* Mensaje */}
                     <TableCell className="px-4 py-4 font-normal text-gray-800 border border-gray-100 dark:border-white/[0.05] text-theme-sm dark:text-white/90 whitespace-nowrap">
                       <div className="flex gap-3">
                         <div>
                           <p className="block font-medium text-gray-800 text-theme-sm dark:text-white/90">
-                            {item?.Equipo?.Area}
+                            <span
+                              className={`${
+                                item.stopper ? "text-red-500" : "text-gray-500"
+                              }`}
+                            >
+                              {item.Mensaje}
+                            </span>
                           </p>
                         </div>
                       </div>
                     </TableCell>
+                    {/* Fecha */}
                     <TableCell className="px-4 py-4 font-normal text-gray-800 border border-gray-100 dark:border-white/[0.05] text-theme-sm dark:text-white/90 whitespace-nowrap">
                       <div className="flex gap-3">
                         <div>
                           <p className="block font-medium text-gray-800 text-theme-sm dark:text-white/90">
-                            {item?.Descripcion_prioridad}
-                          </p>
-                        </div>
-                      </div>
-                    </TableCell>
-                    <TableCell className="px-4 py-4 font-normal text-gray-800 border border-gray-100 dark:border-white/[0.05] text-theme-sm dark:text-white/90 whitespace-nowrap">
-                      <div className="flex gap-3">
-                        <div>
-                          <p className="block font-medium text-gray-800 text-theme-sm dark:text-white/90">
-                            {item?.Prioridad}
+                            {item.Fecha}
                           </p>
                         </div>
                       </div>
@@ -372,30 +266,6 @@ export default function TableCatalogo() {
           </div>
         </div>
       </div>
-
-      <Modal isOpen={isOpen} onClose={closeModal} className="max-w-[700px] m-4">
-        <div className="no-scrollbar relative w-full max-w-[700px] max-h-[90vh] overflow-y-auto rounded-3xl bg-white p-4 dark:bg-gray-900 lg:p-4">
-          <FormularioCatalogo
-            catalogo={
-              singleItem ?? {
-                _id: "",
-                Subcategoria: "",
-                Categoría: "",
-                Servicio: "",
-                Tipo: "",
-                Descripcion_prioridad: "",
-                Prioridad: 0,
-                Area: { _id: "", Area: "" },
-              }
-            }
-            disabled={disabled}
-            isEdit={isEdit}
-            isCreate={isCreate}
-            onSuccess={fetchClients}
-            closeModal={closeModal}
-          />
-        </div>
-      </Modal>
     </>
   );
 }

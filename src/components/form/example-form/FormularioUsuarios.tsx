@@ -7,7 +7,6 @@ import Input from "../input/InputField";
 // import Select from "../Select";
 import TextArea from "../input/TextArea";
 import Button from "../../ui/button/Button";
-import PhoneInput from "../group-input/PhoneInput";
 import Select from "react-select";
 import {
   getInfoSelectsUsuario,
@@ -15,7 +14,6 @@ import {
   updateUsuario,
 } from "@/services/userService";
 import { useForm, Controller } from "react-hook-form";
-import { postCrearCliente } from "@/services/clientService";
 import { Usuario } from "@/common/interfaces/user.interface";
 import { useNotification } from "@/context/NotificationProvider";
 import { useLoadingStore } from "@/stores/loadingStore";
@@ -215,7 +213,7 @@ export default function FormularioUsuarios({
           <div className="col-span-1">
             <Label htmlFor="extension">Extensión</Label>
             <Controller
-              name="Extension"
+              name="c"
               control={control}
               rules={{ required: "Este campo es obligatorio" }}
               defaultValue={usuario?.Extension || ""}

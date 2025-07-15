@@ -17,6 +17,7 @@ import Image from "next/image";
 import AllModals from "@/components/example/ModalExample/ModalProvider";
 import { Button } from "@/components/ui/button";
 import { downloadFile } from "@/services/files";
+import TableHistoria from "@/components/tables/DataTables/TableTwo/TableHistoria";
 export default function TicketModal({
   params,
 }: {
@@ -361,21 +362,21 @@ export default function TicketModal({
                     <span className="text-gray-800 dark:text-white/90">
                       {(data?.Descripcion_cierre ||
                         data?.Respuesta_cierre_reasignado) && (
-                          <>
-                            <div className="flex flex-col gap-6 mb-9 mt-4 sm:flex-row sm:items-center sm:justify-between">
-                              <div className="sm:text-left">
-                                <span className="block mb-1 text-lg font-medium text-gray-900 dark:text-gray-400">
-                                  Descripcion de Resolución
-                                </span>
-                                <span className="block mb-1 text-sm font-medium text-gray-500 dark:text-gray-400">
-                                  {data?.Respuesta_cierre_reasignado ||
-                                    data?.Descripcion_cierre ||
-                                    ""}
-                                </span>
-                              </div>
+                        <>
+                          <div className="flex flex-col gap-6 mb-9 mt-4 sm:flex-row sm:items-center sm:justify-between">
+                            <div className="sm:text-left">
+                              <span className="block mb-1 text-lg font-medium text-gray-900 dark:text-gray-400">
+                                Descripcion de Resolución
+                              </span>
+                              <span className="block mb-1 text-sm font-medium text-gray-500 dark:text-gray-400">
+                                {data?.Respuesta_cierre_reasignado ||
+                                  data?.Descripcion_cierre ||
+                                  ""}
+                              </span>
                             </div>
-                          </>
-                        )}
+                          </div>
+                        </>
+                      )}
                     </span>
                   </div>
                 </div>
@@ -484,8 +485,6 @@ export default function TicketModal({
                       );
                     })}
                 </div>
-
-
               </div>
 
               <div className="flex flex-col gap-6 mb-9 mt-4 sm:flex-col sm:items-center sm:justify-between">
@@ -494,8 +493,8 @@ export default function TicketModal({
                     Historia del Ticket
                   </span>
                 </div>
-                <div className="">
-                  <InvoiceHistoria historia={data?.Historia_ticket} />
+                <div className="w-full">
+                  <TableHistoria historia={data?.Historia_ticket}/>
                 </div>
               </div>
             </div>

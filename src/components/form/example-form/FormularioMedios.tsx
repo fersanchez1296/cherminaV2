@@ -9,8 +9,9 @@ import { useForm, Controller } from "react-hook-form";
 import { useNotification } from "@/context/NotificationProvider";
 import { useLoadingStore } from "@/stores/loadingStore";
 import { createMedios, updateMedios } from "@/services/ticketService";
+import { AxiosError } from "axios";
 interface userProps {
-  medio: {value: string, label: string};
+  medio: { value: string; label: string };
   disabled: boolean;
   isEdit?: boolean;
   isCreate?: boolean;
@@ -27,15 +28,15 @@ export default function FormularioMedios({
   closeModal,
 }: userProps) {
   const [areaId, setAreaId] = useState("");
-  const { handleSubmit, control } = useForm();
+  const { handleSubmit, control } = useForm<{ medio: string }>();
   const { showNotification } = useNotification();
   const setLoading = useLoadingStore((state) => state.setLoading);
 
-    useEffect(() => {
-        if(medio) setAreaId(medio.value)
-    },[])
+  useEffect(() => {
+    if (medio) setAreaId(medio.value);
+  }, []);
 
-  const onSubmit = async (data) => {
+  const onSubmit = async (data: { medio: string }) => {
     try {
       setLoading(true);
       if (isCreate) {
@@ -79,8 +80,10 @@ export default function FormularioMedios({
         }
       }
     } catch (error) {
-      const message =
-        error.response?.data?.desc || "Ocurrió un error inesperado.";
+      let message = "Ocurrió un error inesperado.";
+      if (error instanceof AxiosError && error.response?.data?.desc) {
+        message = error.response.data.desc;
+      }
       showNotification("Error", message, "error");
     } finally {
       setLoading(false);
@@ -93,8 +96,8 @@ export default function FormularioMedios({
         isCreate
           ? "Crear Medio de Contacto"
           : isEdit
-          ? "Editar Medio de Contacto"
-          : medio?.label || "Medio de Contacto"
+            ? "Editar Medio de Contacto"
+            : medio?.label || "Medio de Contacto"
       }
     >
       <Form onSubmit={handleSubmit(onSubmit)}>

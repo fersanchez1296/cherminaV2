@@ -40,7 +40,7 @@ export default function DataTableTwo({ status }: props) {
       try {
         const res = await getTickets(status);
         setTableRowData(res.data);
-      } catch (error) {
+      } catch {
         showNotification("Error", "Error al cargar tickets", "error");
       } finally {
         setLoading(false);
@@ -140,7 +140,10 @@ export default function DataTableTwo({ status }: props) {
                 </svg>
               </span>
             </div>
-            <span className="text-gray-500 dark:text-gray-400"> resultados </span>
+            <span className="text-gray-500 dark:text-gray-400">
+              {" "}
+              resultados{" "}
+            </span>
           </div>
 
           <div className="relative">
@@ -239,25 +242,14 @@ export default function DataTableTwo({ status }: props) {
                         <div className="flex justify-center text-blue-600 underline">
                           <Tooltip content={"Ver Ticket"} theme="dark">
                             <button
-                              // onClick={() => {
-                              //   setSingleItem(item);
-                              //   //toggleModal("ver", true);
-                              // }}
                               onClick={() => {
-                                router.push(
-                                  `/tickets/${status}/${item.Id}`,
-                                  { scroll: false }
-                                );
+                                router.push(`/tickets/${status}/${item.Id}`, {
+                                  scroll: false,
+                                });
                               }}
                               className="text-gray-500 hover:text-gray-800"
                             >
-                              {/* <Link
-                                href={`/tickets/${status}/${item.Id}`}
-                                scroll={false}
-                                className="text-blue-600 underline"
-                              > */}
-                                <EyeIcon />
-                              {/* </Link> */}
+                              <EyeIcon />
                             </button>
                           </Tooltip>
                         </div>

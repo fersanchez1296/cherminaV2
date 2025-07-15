@@ -24,6 +24,7 @@ import { useNotification } from "@/context/NotificationProvider";
 import { useLoadingStore } from "@/stores/loadingStore";
 import { useSession } from "next-auth/react";
 import { getAreas } from "@/services/ticketService";
+import { AxiosError } from "axios";
 type SortKey =
   | "resolutor"
   | "cliente"
@@ -36,22 +37,9 @@ type SortKey =
   | "Tipo";
 type SortOrder = "asc" | "desc";
 
-// const options = [
-//   { value: "general", label: "General" },
-//   { value: "id", label: "Id" },
-//   { value: "oficio", label: "Número de oficio" },
-//   { value: "nccliente", label: "Nombre/correo cliente" },
-//   { value: "ncresolutor", label: "Nombre moderador/resolutor" },
-// ];
-
 interface Option {
   value: string;
   label: string;
-}
-
-interface GroupedOption {
-  label: string;
-  options: Option[];
 }
 
 const customStyles = {
@@ -88,7 +76,7 @@ export default function TableBusqueda() {
         if (result.data && result?.status === 200) {
           setSelectsData(result?.data?.areas);
         }
-      } catch (error) {
+      } catch {
       } finally {
         setLoading(false);
       }
@@ -135,11 +123,11 @@ export default function TableBusqueda() {
         setTableRowData(result.data);
       }
     } catch (error) {
-      showNotification(
-        "Aviso",
-        error?.response?.data?.message || "Respuesta inesperada del servidor",
-        "warning"
-      );
+      let message = "Ocurrió un error inesperado.";
+      if (error instanceof AxiosError && error.response?.data?.desc) {
+        message = error.response.data.desc;
+      }
+      showNotification("Error", message, "error");
       setTableRowData([]);
     } finally {
       setLoading(false);
@@ -165,10 +153,13 @@ export default function TableBusqueda() {
     { value: "SIIF", label: "SIIF" },
     { value: "WEB", label: "WEB" },
     { value: "Servicios Médicos", label: "Servicios Médicos" },
-    { value: "Análisis de seguridad de sistemas y bases de datos", label: "Análisis de seguridad de sistemas y bases de datos" },
+    {
+      value: "Análisis de seguridad de sistemas y bases de datos",
+      label: "Análisis de seguridad de sistemas y bases de datos",
+    },
     { value: "Saturno/IPETURNO", label: "Saturno/IPETURNO" },
     { value: "Chermina/SOS desk", label: "Chermina/SOS desk" },
-  ]
+  ];
 
   const options = useMemo(() => {
     const copy = [...baseOptions];
@@ -176,58 +167,61 @@ export default function TableBusqueda() {
       const exists = copy.some((opt) => opt.value === "area");
       if (!exists) copy.push({ value: "area", label: "Área" });
     }
-    if ((userRole === "Moderador" || userRole === "PM") && userCelulas.length > 0) {
+    if (
+      (userRole === "Moderador" || userRole === "PM") &&
+      userCelulas.length > 0
+    ) {
       const exists = copy.some((opt) => opt.value === "celula");
-      if (!exists) copy.push({value: "celula", label: "Célula"});
+      if (!exists) copy.push({ value: "celula", label: "Célula" });
     }
     return copy;
   }, [userRole]);
 
-  console.log("esta es la sesion",session);
+  console.log("esta es la sesion", session);
 
   const renderCriterioInput = () => {
-  switch (criterio.value) {
-    case "area":
-      return (
-        <div className="col-span-1">
-          <Label htmlFor="area">Selecciona una opción</Label>
-          <Select<Option, false>
-            placeholder="Selecciona una opción"
-            options={selectsData}
-            onChange={(selected) => setTermino(selected?.value || "")}
-            className="basic-multi-select"
-            classNamePrefix="select"
-          />
-        </div>
-      );
+    switch (criterio.value) {
+      case "area":
+        return (
+          <div className="col-span-1">
+            <Label htmlFor="area">Selecciona una opción</Label>
+            <Select<Option, false>
+              placeholder="Selecciona una opción"
+              options={selectsData}
+              onChange={(selected) => setTermino(selected?.value || "")}
+              className="basic-multi-select"
+              classNamePrefix="select"
+            />
+          </div>
+        );
 
-    case "celula":
-      return (
-        <div className="col-span-1">
-          <Label htmlFor="area">Selecciona una opción</Label>
-          <Select<Option, false>
-            placeholder="Selecciona una opción"
-            options={celulas}
-            onChange={(selected) => setTermino(selected?.value || "")}
-            className="basic-multi-select"
-            classNamePrefix="select"
-          />
-        </div>
-      );
+      case "celula":
+        return (
+          <div className="col-span-1">
+            <Label htmlFor="area">Selecciona una opción</Label>
+            <Select<Option, false>
+              placeholder="Selecciona una opción"
+              options={celulas}
+              onChange={(selected) => setTermino(selected?.value || "")}
+              className="basic-multi-select"
+              classNamePrefix="select"
+            />
+          </div>
+        );
 
-    default:
-      return (
-        <div className="flex flex-col">
-          <Label htmlFor="termino">Término de Búsqueda</Label>
-          <Input
-            placeholder="Ingresa el término de búsqueda"
-            onChange={(e) => setTermino(e.target.value)}
-            value={termino}
-          />
-        </div>
-      );
-  }
-};
+      default:
+        return (
+          <div className="flex flex-col">
+            <Label htmlFor="termino">Término de Búsqueda</Label>
+            <Input
+              placeholder="Ingresa el término de búsqueda"
+              onChange={(e) => setTermino(e.target.value)}
+              value={termino}
+            />
+          </div>
+        );
+    }
+  };
 
   return (
     <>
@@ -249,34 +243,7 @@ export default function TableBusqueda() {
             value={criterio}
           />
         </div>
-        {/* {criterio.value !== "area" ? (
-          <div className="flex flex-col">
-            <Label htmlFor="firstName">Término de Busqueda</Label>
-            <Input
-              placeholder="Ingresa el término de búsqueda"
-              onChange={(e) => setTermino(e.target.value)}
-              value={termino}
-            />
-          </div>
-        ) : (
-          <div className="col-span-1">
-            <Label htmlFor="area">Selecciona una opcion</Label>
-            <div>
-              <Select<Option, false>
-                placeholder="Selecciona una opción"
-                options={selectsData}
-                onChange={(selected) => {
-                  setTermino(selected?.value || "");
-                }}
-                className="basic-multi-select"
-                classNamePrefix="select"
-              />
-            </div>
-          </div>
-        )} */}
-
         {renderCriterioInput()}
-
         <Button size="sm" className="w-full self-end" onClick={handleSearch}>
           Buscar
         </Button>
@@ -425,16 +392,6 @@ export default function TableBusqueda() {
                       <TableCell>
                         <div className="flex justify-center text-blue-600 underline">
                           <Tooltip content={"Ver Ticket"} theme="dark">
-                            {/* <button
-                              onClick={() => {
-                                router.push(`/busqueda/${item.Id}`, {
-                                  scroll: false,
-                                });
-                              }}
-                              className="text-gray-500 hover:text-gray-800"
-                            >
-                              <EyeIcon />
-                            </button> */}
                             <a
                               href={`/busqueda/${item.Id}`}
                               target="_blank"

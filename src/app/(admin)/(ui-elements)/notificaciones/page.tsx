@@ -10,7 +10,7 @@ export const metadata: Metadata = {
   // other metadata
 };
 
-export default function Tabs() {
+export default function Notificaciones() {
   return (
     <div>
       <div className="space-y-5 sm:space-y-6">

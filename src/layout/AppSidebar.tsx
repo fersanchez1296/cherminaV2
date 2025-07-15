@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useRef, useCallback, useState } from "react";
+import React, { useEffect, useRef, useCallback, useState, useMemo } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
@@ -271,7 +271,7 @@ const AppSidebar: React.FC = () => {
   const { isExpanded, isMobileOpen, isHovered, setIsHovered } = useSidebar();
   const pathname = usePathname();
   const userAreas = session?.user?.allowedAreas || [];
-  const navItems: NavItem[] = [
+  const navItems: NavItem[] = useMemo(() =>[
     {
       icon: <UserCircleIcon />,
       name: "Perfil",
@@ -979,6 +979,19 @@ const AppSidebar: React.FC = () => {
       name: "Fila de correos",
       path: "/fila-correos",
       visible: ["Administrador", "Root"],
+      allowedAreas: [
+        "Arquitectura de Software",
+        "Auditoría de TI",
+        "DC-CCTV",
+        "DC-Infraestructura",
+        "DC-Redes y Telecomunicaciones",
+        "DC-Telefonía",
+        "Desarrollo",
+        "Mesa de Servicio",
+        "Planeación",
+        "Soporte Técnico",
+        "Dirección",
+      ],
     },
     // {
     //   name: "Forms",
@@ -1085,7 +1098,7 @@ const AppSidebar: React.FC = () => {
     //   ],
     //   visible: ["Administrador", "Usuario", "Root", "Moderador", "Auditor"],
     // },
-  ];
+  ], []);
   console.log(session);
   const renderMenuItems = (
     navItems: NavItem[],
@@ -1312,7 +1325,7 @@ const AppSidebar: React.FC = () => {
     if (!submenuMatched) {
       setOpenSubmenu(null);
     }
-  }, [pathname, isActive]);
+  }, [pathname, isActive, navItems]);
 
   useEffect(() => {
     // Set the height of the submenu items when the submenu is opened

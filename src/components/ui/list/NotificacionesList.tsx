@@ -3,8 +3,13 @@ import React, { useEffect, useState } from "react";
 import Checkbox from "../../form/input/Checkbox";
 import { getNotificaciones, marcarLeida } from "@/services/notificaciones";
 import { useLoadingStore } from "@/stores/loadingStore";
-import UnOrderedList from "./UnorderedList";
-import NotificacionesLeidas from "./NotificacionesLeidas";
+
+interface NotificationItem {
+  leido: boolean;
+  mensaje: string;
+  createdAt: string;
+  _id: string;
+}
 
 export default function NotificacionesList({
   userId,
@@ -30,7 +35,7 @@ export default function NotificacionesList({
     }
   };
 
-  const [notificaciones, setNotificaciones] = useState([]);
+  const [notificaciones, setNotificaciones] = useState<NotificationItem[]>([]);
 
   const fetchNotifications = async () => {
     try {
@@ -57,7 +62,9 @@ export default function NotificacionesList({
             >
               <div className="flex items-center gap-2">
                 {item.leido ? (
-                  <span className="text-sm text-gray-500 dark:text-gray-400">{item.mensaje}</span>
+                  <span className="text-sm text-gray-500 dark:text-gray-400">
+                    {item.mensaje} - {item.createdAt}
+                  </span>
                 ) : (
                   <>
                     <Checkbox
@@ -69,7 +76,7 @@ export default function NotificacionesList({
                       htmlFor={id} // Use the same id for the label
                       className="flex items-center text-sm text-gray-500 cursor-pointer select-none dark:text-gray-400"
                     >
-                      {item.mensaje}
+                      {item.mensaje} - {item.createdAt}
                     </label>
                   </>
                 )}

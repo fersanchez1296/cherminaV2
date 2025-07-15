@@ -9,6 +9,7 @@ import { useForm, Controller } from "react-hook-form";
 import { useNotification } from "@/context/NotificationProvider";
 import { useLoadingStore } from "@/stores/loadingStore";
 import {  createDAreas, updateDAreas } from "@/services/ticketService";
+import { AxiosError } from "axios";
 interface userProps {
   darea: {value: string, label: string};
   disabled: boolean;
@@ -27,7 +28,7 @@ export default function FormularioDAreas({
   closeModal,
 }: userProps) {
   const [areaId, setAreaId] = useState("");
-  const { handleSubmit, control } = useForm();
+  const { handleSubmit, control } = useForm<{darea: string}>();
   const { showNotification } = useNotification();
   const setLoading = useLoadingStore((state) => state.setLoading);
 
@@ -35,7 +36,7 @@ export default function FormularioDAreas({
         if(darea) setAreaId(darea.value)
     },[])
 
-  const onSubmit = async (data) => {
+  const onSubmit = async (data: {darea: string}) => {
     try {
       setLoading(true);
       if (isCreate) {
@@ -79,8 +80,10 @@ export default function FormularioDAreas({
         }
       }
     } catch (error) {
-      const message =
-        error.response?.data?.desc || "Ocurrió un error inesperado.";
+      let message = "Ocurrió un error inesperado.";
+      if (error instanceof AxiosError && error.response?.data?.desc) {
+        message = error.response.data.desc;
+      }
       showNotification("Error", message, "error");
     } finally {
       setLoading(false);

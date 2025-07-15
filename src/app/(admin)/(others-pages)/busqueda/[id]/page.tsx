@@ -7,7 +7,6 @@ import { useRouter } from "next/navigation";
 import { use, useEffect, useState } from "react";
 import InvoiceOficio from "@/components/invoice/InvoiceOficio";
 import InvoiceCategoria from "@/components/invoice/InvoiceCategoria";
-import InvoiceHistoria from "@/components/invoice/InvoiceHistoria";
 import { Ticket } from "@/common/interfaces/ticket.interface";
 import { useModals } from "@/context/ModalManager";
 import { useSession } from "next-auth/react";
@@ -17,12 +16,14 @@ import Image from "next/image";
 import AllModals from "@/components/example/ModalExample/ModalProvider";
 import { Button } from "@/components/ui/button";
 import { downloadFile } from "@/services/files";
+import TableHistoria from "@/components/tables/DataTables/TableTwo/TableHistoria";
+import { AxiosError } from "axios";
 export default function TicketModal({
   params,
 }: {
   params: Promise<{ id: string }>;
 }) {
-  const [singleItem, setSingleItem] = useState();
+  const [setSingleItem] = useState();
   const [status, setStatus] = useState();
   const { data: session } = useSession();
   const { id } = use(params);
@@ -31,7 +32,7 @@ export default function TicketModal({
   const router = useRouter();
   const setLoading = useLoadingStore((state) => state.setLoading);
   const { showNotification } = useNotification();
-  const [data, setData] = useState<Ticket>();
+  const [data, setData] = useState<Partial<Ticket>>();
   const handleClose = () => {
     router.back();
   };
@@ -63,7 +64,11 @@ export default function TicketModal({
           showNotification("Error", "Error al cargar tickets", "error");
         }
       } catch (error) {
-        showNotification("Error", error?.response?.data?.message, "error");
+        let message = "Ocurrió un error inesperado.";
+        if (error instanceof AxiosError && error.response?.data?.message) {
+          message = error.response.data.desc;
+        }
+        showNotification("Error", message, "error");
         router.back();
       } finally {
         setLoading(false);
@@ -298,54 +303,50 @@ export default function TicketModal({
                     </span>
 
                     <span className="block text-sm text-gray-500 dark:text-gray-400">
-                      3332080340 <span className="text-gray-700">Ext:</span>
-                      1364
+                      <span className="text-gray-700">Teléfono:</span>
+                      {(data?.Asignado_a ?? [])[0]?.Telefono || ""}{" "}
+                      <span className="text-gray-700">Ext:</span>
+                      {(data?.Asignado_a ?? [])[0]?.Extension || ""}
                       <br />
-                      {data?.Asignado_a[0]?.Correo}
-                      <br /> {data.Asignado_a[0]?.Ubicacion}
+                      {(data?.Asignado_a ?? [])[0]?.Correo || ""}
+                      <br /> {data?.Asignado_a?.[0]?.Ubicacion || ""}
                     </span>
                   </div>
                 )}
 
                 {/* Columna 2: Resolutor */}
-                {data?.Reasignado_a && (
-                  <div className="sm:text-left">
-                    {(data?.Reasignado_a ?? []).length > 0 && (
-                      <>
-                        <span className="block mb-1 text-sm font-medium text-gray-700 dark:text-gray-400">
-                          Resolutor
-                        </span>
-                        <h5 className="mb-2 text-base font-semibold text-gray-800 dark:text-white/90">
-                          {(data?.Reasignado_a ?? [])[0]?.Nombre || ""}
-                        </h5>
 
-                        <p className="mb-4 text-sm text-gray-500 dark:text-gray-400">
-                          {data?.Asignado_a?.[0]?.Dependencia?.Dependencia ||
-                            ""}
-                          <br />
-                          {data?.Asignado_a?.[0]?.Direccion_General
-                            .Direccion_General || ""}
-                          <br />
-                          {data?.Asignado_a[0]?.Area.map((a) => a.Area).join(
-                            ", "
-                          )}
-                        </p>
+                <div className="sm:text-left">
+                  <span className="block mb-1 text-sm font-medium text-gray-700 dark:text-gray-400">
+                    Resolutor
+                  </span>
+                  <h5 className="mb-2 text-base font-semibold text-gray-800 dark:text-white/90">
+                    {(data?.Reasignado_a ?? [])[0]?.Nombre || ""}
+                  </h5>
 
-                        <span className="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
-                          Contacto:
-                        </span>
+                  <p className="mb-4 text-sm text-gray-500 dark:text-gray-400">
+                    {data?.Reasignado_a?.[0]?.Dependencia?.Dependencia || ""}
+                    <br />
+                    {data?.Reasignado_a?.[0]?.Direccion_General
+                      .Direccion_General || ""}
+                    <br />
+                    {data?.Reasignado_a[0]?.Area.map((a) => a.Area).join(", ")}
+                  </p>
 
-                        <span className="block text-sm text-gray-500 dark:text-gray-400">
-                          3332080340 <span className="text-gray-700">Ext:</span>
-                          1364
-                          <br />
-                          {(data?.Reasignado_a ?? [])[0]?.Correo || ""}
-                          <br /> {data.Asignado_a?.[0]?.Ubicacion || ""}
-                        </span>
-                      </>
-                    )}
-                  </div>
-                )}
+                  <span className="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
+                    Contacto:
+                  </span>
+
+                  <span className="block text-sm text-gray-500 dark:text-gray-400">
+                    <span className="text-gray-700">Teléfono:</span>
+                    {(data?.Reasignado_a ?? [])[0]?.Telefono || ""}{" "}
+                    <span className="text-gray-700">Ext:</span>
+                    {(data?.Reasignado_a ?? [])[0]?.Extension || ""}
+                    <br />
+                    {(data?.Reasignado_a ?? [])[0]?.Correo || ""}
+                    <br /> {data?.Reasignado_a?.[0]?.Ubicacion || ""}
+                  </span>
+                </div>
 
                 {/* Columna 3: Descripcion de cierre */}
                 <div className="px-4 flex flex-col gap-2">
@@ -498,8 +499,8 @@ export default function TicketModal({
                     Historia del Ticket
                   </span>
                 </div>
-                <div className="">
-                  <InvoiceHistoria historia={data?.Historia_ticket} />
+                <div className="w-full">
+                  <TableHistoria historia={data?.Historia_ticket ?? []} />
                 </div>
               </div>
             </div>

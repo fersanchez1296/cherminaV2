@@ -9,8 +9,9 @@ import { useForm, Controller } from "react-hook-form";
 import { useNotification } from "@/context/NotificationProvider";
 import { useLoadingStore } from "@/stores/loadingStore";
 import { createPuestos, updatePuestos } from "@/services/ticketService";
+import { AxiosError } from "axios";
 interface userProps {
-  puesto: {value: string, label: string};
+  puesto: { value: string; label: string };
   disabled: boolean;
   isEdit?: boolean;
   isCreate?: boolean;
@@ -27,15 +28,15 @@ export default function FormularioPuestos({
   closeModal,
 }: userProps) {
   const [areaId, setAreaId] = useState("");
-  const { handleSubmit, control } = useForm();
+  const { handleSubmit, control } = useForm<{ puesto: string }>();
   const { showNotification } = useNotification();
   const setLoading = useLoadingStore((state) => state.setLoading);
 
-    useEffect(() => {
-        if(puesto) setAreaId(puesto.value)
-    },[])
+  useEffect(() => {
+    if (puesto) setAreaId(puesto.value);
+  }, []);
 
-  const onSubmit = async (data) => {
+  const onSubmit = async (data: { puesto: string }) => {
     try {
       setLoading(true);
       if (isCreate) {
@@ -79,8 +80,10 @@ export default function FormularioPuestos({
         }
       }
     } catch (error) {
-      const message =
-        error.response?.data?.desc || "Ocurrió un error inesperado.";
+      let message = "Ocurrió un error inesperado.";
+      if (error instanceof AxiosError && error.response?.data?.desc) {
+        message = error.response.data.desc;
+      }
       showNotification("Error", message, "error");
     } finally {
       setLoading(false);
@@ -93,8 +96,8 @@ export default function FormularioPuestos({
         isCreate
           ? "Crear Puesto de Trabajo"
           : isEdit
-          ? "Editar Puesto de Trabajo"
-          : puesto?.label || "Puesto de Trabajo"
+            ? "Editar Puesto de Trabajo"
+            : puesto?.label || "Puesto de Trabajo"
       }
     >
       <Form onSubmit={handleSubmit(onSubmit)}>

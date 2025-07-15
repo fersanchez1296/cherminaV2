@@ -18,29 +18,20 @@ import { useModal } from "@/hooks/useModal";
 import { Modal } from "@/components/ui/modal/index";
 import { Tooltip } from "@/components/ui/tooltip/Tooltip";
 import Button from "@/components/ui/button/Button";
-import { getUsers, updateEstadoUsuario } from "@/services/userService";
-import { useLoadingStore } from "@/stores/loadingStore";
-import { useNotification } from "@/context/NotificationProvider";
 import { getDependencias } from "@/services/ticketService";
 import FormularioDependencias from "@/components/form/example-form/FormularioDependencia";
-type SortKey = "Nombre";
+type SortKey = "label";
 type SortOrder = "asc" | "desc";
 
 interface data {
-  Area: Array<{ _id: string; Area: string }>;
-  Nombre: string;
-  Correo: string;
-  Rol: object;
-  Tickets_resueltos: object;
-  Username: string;
-  _id: string;
-  isActive: boolean;
+  label: string;
+  value: string;
 }
 
 export default function TableDependencias() {
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(5);
-  const [sortKey, setSortKey] = useState<SortKey>("Nombre");
+  const [sortKey, setSortKey] = useState<SortKey>("label");
   const [sortOrder, setSortOrder] = useState<SortOrder>("asc");
   const [searchTerm, setSearchTerm] = useState("");
   const { isOpen, openModal, closeModal } = useModal();
@@ -49,8 +40,6 @@ export default function TableDependencias() {
   const [isEdit, setIsEdit] = useState<boolean>(false);
   const [isCreate, setIsCreate] = useState<boolean>(false);
   const [disabled, setDisabled] = useState<boolean>(false);
-  const setLoading = useLoadingStore((state) => state.setLoading);
-  const { showNotification } = useNotification();
 
   const fetchData = async() => {
     try {
@@ -59,7 +48,7 @@ export default function TableDependencias() {
     if(result){
         setTableRowData(result.data.dependencias)
     }
-    } catch (error) {
+    } catch{
         setTableRowData([])
     }
   };
@@ -101,31 +90,6 @@ export default function TableDependencias() {
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = Math.min(startIndex + itemsPerPage, totalItems);
   const currentData = filteredAndSortedData.slice(startIndex, endIndex);
-  const handleChangeEstadoUsuario = async (estado: boolean, userId: string) => {
-    try {
-      setLoading(true);
-      const result = await updateEstadoUsuario(estado, userId);
-      if (result.status === 200) {
-        showNotification(
-          "Éxito",
-          result.data?.message || "Operación exitosa",
-          "success"
-        );
-      } else {
-        showNotification(
-          "Aviso",
-          result.data?.desc || "Respuesta inesperada del servidor",
-          "warning"
-        );
-      }
-    } catch (error) {
-      const message =
-        error.response?.data?.desc || "Ocurrió un error inesperado.";
-      showNotification("Error", message, "error");
-    } finally {
-      setLoading(false);
-    }
-  };
   return (
     <>
       <div className="flex gap-3 my-3">
@@ -334,7 +298,7 @@ export default function TableDependencias() {
       <Modal isOpen={isOpen} onClose={closeModal} className="max-w-[700px] m-4">
         <div className="no-scrollbar relative w-full max-w-[700px] max-h-[90vh] overflow-y-auto rounded-3xl bg-white p-4 dark:bg-gray-900 lg:p-4">
           <FormularioDependencias
-            dependencia={singleItem}
+            dependencia={singleItem ?? { value: "", label: "" }}
             disabled={disabled}
             isEdit={isEdit}
             isCreate={isCreate}

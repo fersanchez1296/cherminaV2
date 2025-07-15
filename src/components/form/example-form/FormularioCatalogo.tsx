@@ -6,15 +6,15 @@ import Label from "../Label";
 import Input from "../input/InputField";
 import Button from "../../ui/button/Button";
 import {
-  getInfoSelectsClientes,
   postCrearCliente,
   updateCliente,
 } from "@/services/clientService";
 import { useForm, Controller } from "react-hook-form";
 import { useNotification } from "@/context/NotificationProvider";
 import { useLoadingStore } from "@/stores/loadingStore";
-interface catalogo {
-  singleItem?: {
+import { AxiosError } from "axios";
+interface FormularioCatalogoProps  {
+  catalogo?: {
     _id: string;
     Subcategoria: string;
     "Categoría": string;
@@ -22,7 +22,10 @@ interface catalogo {
     Tipo: string;
     Descripcion_prioridad: string;
     Prioridad: number;
-    Area: { _id: string; Direccion_General: string };
+    Area?: {
+      _id: string;
+      Area: string;
+    };
   };
   disabled?: boolean;
   isEdit?: boolean;
@@ -31,20 +34,19 @@ interface catalogo {
   closeModal?: () => void;
   handleReturnClientId?: () => void;
 }
-interface SelectsData {
-  dareas: Array<{ _id: string; Direccion_General: string }>;
-  dgenerales: Array<{ _id: string; direccion_area: string }>;
-}
 
-interface Option {
-  value: string;
-  label: string;
-}
+interface CatalogoFormData {
+    subcategoria: string;
+    categoria: string;
+    servicio: string;
+    tipo_incidencia: string;
+    descripcion: string;
+    tiempo: number;
+    Direccion_General: {label: string, value: string},
+    direccion_area: {label: string, value: string},
+    Prioridad: string,
+  }
 
-interface GroupedOption {
-  label: string;
-  options: Option[];
-}
 
 export default function FormularioCatalogo({
   catalogo,
@@ -53,50 +55,21 @@ export default function FormularioCatalogo({
   isCreate,
   onSuccess,
   closeModal,
-}: catalogo) {
-  const [selectsData, setSelectsData] = useState<SelectsData>();
-  const { handleSubmit, control, setValue } = useForm();
+}: FormularioCatalogoProps ) {
+  const { handleSubmit, control } = useForm<CatalogoFormData>();
   const [clientId, setClientId] = useState("");
-  const [dGenerales, setDGenerales] = useState<Option[]>([]);
-  const [dAreas, setDAreas] = useState<Option[]>([]);
-  const [nuevaDireccionGeneral, setNuevaDireccionGeneral] = useState(false);
-  const [nuevaDireccionArea, setNuevaDireccionArea] = useState(false);
   const { showNotification } = useNotification();
   const setLoading = useLoadingStore((state) => state.setLoading);
 
   useEffect(() => {
-    setClientId(catalogo?._id);
-    getInfoSelectsClientes().then((res) => {
-      setSelectsData(res);
-      setDGenerales(res.dgenerales);
-      setDAreas(res.dareas);
-    });
+    setClientId(catalogo?._id ?? "");
   }, []);
 
-  useEffect(() => {
-    if (catalogo?.Direccion_General) {
-      const values = {
-        value: catalogo.Direccion_General._id,
-        label: catalogo.Direccion_General.Direccion_General,
-      };
-      setValue("Direccion_General", values);
-    }
-
-    if (catalogo?.direccion_area) {
-      const values = {
-        value: catalogo.direccion_area._id,
-        label: catalogo.direccion_area.direccion_area,
-      };
-      setValue("direccion_area", values);
-    }
-  }, [catalogo, setValue]);
-
-  const onSubmit = async (data: any) => {
+  const onSubmit = async (data: CatalogoFormData) => {
     try {
       setLoading(true);
       if (isCreate) {
         const result = await postCrearCliente(data);
-        console.log(result);
         onSuccess?.();
         closeModal?.();
         showNotification(
@@ -124,9 +97,10 @@ export default function FormularioCatalogo({
         }
       }
     } catch (error) {
-      console.log(error);
-      const message =
-        error.response?.data?.desc || "Ocurrió un error inesperado.";
+      let message = "Ocurrió un error inesperado.";
+      if (error instanceof AxiosError && error.response?.data?.desc) {
+        message = error.response.data.desc;
+      }
       showNotification("Error", message, "error");
     } finally {
       setLoading(false);
@@ -233,36 +207,6 @@ export default function FormularioCatalogo({
               )}
             />
           </div>
-          {/* Area */}
-            {/* <div className="col-span-1">
-              <Label htmlFor="Direccion_General">Área</Label>
-              <Controller
-                name="Direccion_General"
-                control={control}
-                rules={{ required: "Este campo es obligatorio" }}
-                render={({ field, fieldState }) => (
-                  <div>
-                    <Select<Option, false, GroupedOption>
-                      placeholder="Selecciona la Dirección General"
-                      {...field}
-                      value={dGenerales?.find(
-                        (option) => option.value === field.value?.value
-                      )}
-                      onChange={(selected) => field.onChange(selected)}
-                      options={dGenerales}
-                      isDisabled={disabled}
-                      className="basic-multi-select"
-                      classNamePrefix="select"
-                    />
-                    {fieldState.error && (
-                      <span style={{ color: "red", fontSize: "0.875rem" }}>
-                        {fieldState.error.message}
-                      </span>
-                    )}
-                  </div>
-                )}
-              />
-            </div> */}
             {/* Descripcion prioridad */}
           <div className="col-span-1">
             <Label htmlFor="descripcion">Descripción prioridad</Label>
@@ -292,7 +236,7 @@ export default function FormularioCatalogo({
               name="tiempo"
               control={control}
               rules={{ required: "Este campo es obligatorio" }}
-              defaultValue={catalogo?.Prioridad || ""}
+              defaultValue={typeof catalogo?.Prioridad === "number" ? catalogo?.Prioridad : (catalogo?.Prioridad ? Number(catalogo?.Prioridad) : undefined)}
               render={({ field, fieldState }) => (
                 <Input
                   type="number"
