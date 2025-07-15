@@ -212,7 +212,7 @@ const tableRowData = [
 type SortKey = "name" | "position" | "location" | "age" | "date" | "salary";
 type SortOrder = "asc" | "desc";
 
-export default function DataTableThree() {cle
+export default function DataTableThree() {
   //utilizado para acceder a los tickets
   const [isChecked, setIsChecked] = useState(false);
   const [sortKey, setSortKey] = useState<SortKey>("name");
