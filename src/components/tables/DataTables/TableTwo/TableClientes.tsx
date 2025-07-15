@@ -115,9 +115,16 @@ export default function TableClientes() {
         >
           Registrar Cliente
         </Button>
-        <Button size="sm" variant="outline">
+        {/* <Button size="sm" variant="outline"
+         onClick={() => {
+            openModal();
+            setIsEdit(true);
+            setIsCreate(false);
+            setDisabled(false);
+            setSingleItem(undefined);
+          }}>
           Actualizar
-        </Button>
+        </Button> */}
       </div>
       <div className="overflow-hidden rounded-xl bg-white dark:bg-white/[0.03]">
         <div className="flex flex-col gap-2 px-4 py-4 border border-b-0 border-gray-100 dark:border-white/[0.05] rounded-t-xl sm:flex-row sm:items-center sm:justify-between">
@@ -323,7 +330,7 @@ export default function TableClientes() {
                       <div className="flex gap-3">
                         <div>
                           <p className="block font-medium text-gray-800 text-theme-sm dark:text-white/90">
-                            {item.Direccion_General.Direccion_General}
+                            {item?.Direccion_General.Direccion_General}
                           </p>
                         </div>
                       </div>

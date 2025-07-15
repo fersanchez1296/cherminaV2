@@ -11,7 +11,6 @@ import { AngleDownIcon, AngleUpIcon } from "../../../icons";
 import PaginationWithButton from "../../tables/DataTables/TableTwo/PaginationWithButton";
 import Badge from "../../ui/badge/Badge";
 import { Tooltip } from "@/components/ui/tooltip/Tooltip";
-import { getTickets } from "@/services/ticketService";
 import { Send, SendHorizontal } from "lucide-react";
 import { Ticket } from "@/common/interfaces/ticket.interface";
 import { SortKey, SortOrder } from "@/types/sort";
@@ -36,7 +35,7 @@ export default function FilaCorreos({ status }: props) {
   //estados relacionados a la info del ticket
   const { showNotification } = useNotification();
   useEffect(() => {
-    const fetchTickets = async () => {
+    const fetchCorreos = async () => {
       setLoading(true);
       // const correos = await getCorreosPendientes("PENDIENTES");
       // console.log(correos);
@@ -44,13 +43,13 @@ export default function FilaCorreos({ status }: props) {
         const res = await getCorreosPendientes("PENDIENTES");
         setTableRowData(res.data);
       } catch (error) {
-        showNotification("Error", "Error al cargar tickets", "error");
+        showNotification("Error", "Error al cargar correos", "error");
       } finally {
         setLoading(false);
       }
     };
 
-    fetchTickets();
+    fetchCorreos();
   }, [status]);
 
   const getNestedValue = (obj: any, path: string): any => {
@@ -274,7 +273,7 @@ export default function FilaCorreos({ status }: props) {
                   {[
                     { key: "Id", label: "Id" },
                     { key: "motivo", label: "Motivo" },
-                    { key: "nombre", label: "Cliente" },
+                    { key: "details", label: "Detalles" },
                     { key: "Destinatario", label: "Destinatario" },
                     { key: "emails_extra", label: "Extras" },
                     { key: "Fecha_hora_agregado", label: "Fecha" },
@@ -319,20 +318,11 @@ export default function FilaCorreos({ status }: props) {
                         <div className="flex justify-center text-blue-600 underline">
                           <Tooltip content={"Reenviar"} theme="dark">
                             <button
-                              // onClick={() => {
-                              //   setSingleItem(item);
-                              //   //toggleModal("ver", true);
-                              // }}
                               onClick={() => {
                                 handleSave(item._id)
                               }}
                               className="text-gray-500 hover:text-gray-800"
                             >
-                              {/* <Link
-                                href={`/tickets/${status}/${item.Id}`}
-                                scroll={false}
-                                className="text-blue-600 underline"
-                              > */}
                               <Send />
                               {/* </Link> */}
                             </button>
@@ -359,9 +349,13 @@ export default function FilaCorreos({ status }: props) {
                           </div>
                         </div>
                       </TableCell>
-                      {/* Cliente */}
-                      <TableCell className="px-4 py-4 font-normal text-gray-800 border border-gray-100 dark:border-white/[0.05] text-theme-sm dark:text-white/90 whitespace-nowrap">
-                        {item.nombre}
+                      {/* DETAILS */}
+                      <TableCell
+                        title={item.details} // TEXTO COMPLETO AQUÍ
+                        className="px-4 py-4 font-normal text-gray-800 border border-gray-100 dark:border-white/[0.05] text-theme-sm dark:text-white/90 whitespace-nowrap overflow-hidden text-ellipsis max-w-[200px]"
+                      >
+                        {/* SOLO MUESTRA RESUMEN */}
+                        {item.details.length > 60 ? `${item.details.slice(0, 60)}...` : item.details}
                       </TableCell>
                       {/* DESTINATARIO */}
                       <TableCell className="px-4 py-4 font-normal text-gray-800 border border-gray-100 dark:border-white/[0.05] text-theme-sm dark:text-white/90 whitespace-nowrap">
