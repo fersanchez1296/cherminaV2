@@ -1086,7 +1086,6 @@ const AppSidebar: React.FC = () => {
     //   visible: ["Administrador", "Usuario", "Root", "Moderador", "Auditor"],
     // },
   ];
-  console.log(session);
   const renderMenuItems = (
     navItems: NavItem[],
     menuType: "main" | "support" | "others"
