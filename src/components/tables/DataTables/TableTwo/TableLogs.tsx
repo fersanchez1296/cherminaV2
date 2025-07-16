@@ -22,6 +22,17 @@ interface data {
   Log: string;
   Fecha_hora_log: string;
 }
+export interface LogEntry {
+  Log: string;
+  Username: string;
+  Fecha_hora_log: { $date: string };
+}
+
+export interface LogItem {
+  Tipo: string;
+  Logs: LogEntry[];
+}
+
 
 export default function TableLogs() {
   const [currentPage, setCurrentPage] = useState(1);
@@ -29,12 +40,12 @@ export default function TableLogs() {
   const [sortKey, setSortKey] = useState<SortKey>("Id");
   const [sortOrder, setSortOrder] = useState<SortOrder>("asc");
   const [searchTerm, setSearchTerm] = useState("");
-  const [tableRowData, setTableRowData] = useState<Array<data>>([]);
+  const [tableRowData, setTableRowData] = useState<LogItem[]>([]);
+
 
   const fetchLogs = () => {
-    getLogs().then((res) => setTableRowData(res.data));
+    getLogs().then((data) => setTableRowData(data)); // ahora data es LogItem[]
   };
-
   useEffect(() => {
     fetchLogs();
   }, []);
@@ -72,6 +83,7 @@ export default function TableLogs() {
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = Math.min(startIndex + itemsPerPage, totalItems);
   const currentData = filteredAndSortedData.slice(startIndex, endIndex);
+  console.log(currentData);
   return (
     <>
       <div className="overflow-hidden rounded-xl bg-white dark:bg-white/[0.03]">
@@ -171,18 +183,16 @@ export default function TableLogs() {
                         </p>
                         <button className="flex flex-col gap-0.5">
                           <AngleUpIcon
-                            className={`text-gray-300 dark:text-gray-700 ${
-                              sortKey === key && sortOrder === "asc"
-                                ? "text-brand-500"
-                                : ""
-                            }`}
+                            className={`text-gray-300 dark:text-gray-700 ${sortKey === key && sortOrder === "asc"
+                              ? "text-brand-500"
+                              : ""
+                              }`}
                           />
                           <AngleDownIcon
-                            className={`text-gray-300 dark:text-gray-700 ${
-                              sortKey === key && sortOrder === "desc"
-                                ? "text-brand-500"
-                                : ""
-                            }`}
+                            className={`text-gray-300 dark:text-gray-700 ${sortKey === key && sortOrder === "desc"
+                              ? "text-brand-500"
+                              : ""
+                              }`}
                           />
                         </button>
                       </div>
@@ -191,34 +201,39 @@ export default function TableLogs() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {currentData.map((item, index) => (
-                  <TableRow key={index}>
-                    {/* cliente */}
-                    <TableCell className="px-4 py-4 border border-gray-100 dark:border-white/[0.05] dark:text-white/90 whitespace-nowrap w-1">
-                      <div className="flex gap-3">
-                        <div>
-                          <p className="block font-medium text-gray-800 text-theme-sm dark:text-white/90">
-                            {item.Id}
-                          </p>
+                {currentData.map((item: LogItem, index: number) => (
+                  item.Logs.map((logItem: LogEntry, logIndex: number) => (
+                    <TableRow key={`${index}-${logIndex}`}>
+                      {/* Usuario (Username) */}
+                      <TableCell className="px-4 py-4 border border-gray-100 dark:border-white/[0.05] dark:text-white/90 whitespace-nowrap w-1">
+                        <div className="flex gap-3">
+                          <div>
+                            <p className="block font-medium text-gray-800 text-theme-sm dark:text-white/90">
+                              {item.Tipo}
+                            </p>
+                          </div>
                         </div>
-                      </div>
-                    </TableCell>
-                    {/* id */}
-                    <TableCell className="px-4 py-4 font-normal text-gray-800 border border-gray-100 dark:border-white/[0.05] text-theme-sm dark:text-white/90 whitespace-nowrap">
-                      {item.Log}
-                    </TableCell>
-                    {/* estado */}
-                    <TableCell className="px-4 py-4 font-normal text-gray-800 border border-gray-100 dark:border-white/[0.05] text-theme-sm dark:text-white/90 whitespace-nowrap">
-                      <div className="flex gap-3">
-                        <div>
-                          <p className="block font-medium text-gray-800 text-theme-sm dark:text-white/90">
-                            {item.Fecha_hora_log}
-                          </p>
+                      </TableCell>
+
+                      {/* Mensaje del Log */}
+                      <TableCell className="px-4 py-4 font-normal text-gray-800 border border-gray-100 dark:border-white/[0.05] text-theme-sm dark:text-white/90 whitespace-nowrap">
+                        {logItem.Log}
+                      </TableCell>
+
+                      {/* Fecha y hora */}
+                      <TableCell className="px-4 py-4 font-normal text-gray-800 border border-gray-100 dark:border-white/[0.05] text-theme-sm dark:text-white/90 whitespace-nowrap">
+                        <div className="flex gap-3">
+                          <div>
+                            <p className="block font-medium text-gray-800 text-theme-sm dark:text-white/90">
+                              {logItem.Fecha_hora_log.toString()}
+                            </p>
+                          </div>
                         </div>
-                      </div>
-                    </TableCell>
-                  </TableRow>
+                      </TableCell>
+                    </TableRow>
+                  ))
                 ))}
+
               </TableBody>
             </Table>
           </div>
