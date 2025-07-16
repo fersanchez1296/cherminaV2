@@ -48,5 +48,6 @@ export const updateCliente = async (clientId: string, data: object) => {
 };
 
 export const getBuscarCliente = async (data: string) => {
+  const api = await getApi();
   return await api.get(`clients/${data}`)
 }
